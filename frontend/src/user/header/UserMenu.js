@@ -2,7 +2,9 @@ import React from 'react';
 import { Routes, Route, Link, Navigate, useNavigate, useLocation } from 'react-router-dom';
 import HeaderMenu from 'user/header/HeaderMenu';
 import ContentHome from 'user/content/ContentHome';
+import RentalCarsPage from 'reservations/RentalCarsPage';
 import FooterMain from 'user/footer/FooterMain';
+import Filter from 'reservations/Filter';
 
 const UserMenu = () => {
   return (
@@ -15,6 +17,7 @@ const UserMenu = () => {
           <Route path="/" element={<ContentHome />} ></Route>
           {/* <Route path="/login" element={<UserLogin />} ></Route> */}
         </Routes>
+        <RentalCarsPage></RentalCarsPage>
       </div>
       <div className='user-menu-footer-wrap'>
         <FooterMain />

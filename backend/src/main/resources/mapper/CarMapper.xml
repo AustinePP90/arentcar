@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.apple.arentcar.mapper.CarMapper">
+
+    <!-- 모든 조회 -->
+    <select id="getAllCars" resultType="com.apple.arentcar.model.RentalCars">
+        SELECT
+        ct.car_type_name,
+        cc1.common_name AS fuel_type,
+        cc2.common_name AS seating_capacity,
+        rc.model_year,
+        ct.car_image_name
+        FROM
+        rental_cars rc
+        JOIN
+        car_types ct ON rc.car_type_code = ct.car_type_code
+        JOIN
+        common_codes cc1 ON cc1.common_code = ct.fuel_type AND cc1.common_kind_code = 'fuel_type'
+        JOIN
+        common_codes cc2 ON cc2.common_code = ct.seating_capacity AND cc2.common_kind_code = 'seating_capacity';
+    </select>
+    <select id="getCarType" resultType="com.apple.arentcar.model.CarType">
+        SELECT common_name as car_type_name from common_codes cc WHERE common_kind_code = 'car_type_category';
+    </select>
+    <select id="getCarManufacturer" resultType="com.apple.arentcar.model.CarManufacturer">
+        SELECT common_name as car_manufacturer from common_codes cc WHERE common_kind_code = 'car_manufacturer';
+    </select>
+    <select id="getFuelType" resultType="com.apple.arentcar.model.FuelType">
+        SELECT common_name as fuel_type from common_codes cc WHERE common_kind_code = 'fuel_type';
+    </select>
+    <select id="getSeatingCapacity" resultType="com.apple.arentcar.model.SeatingCapacity">
+        SELECT common_name as seating_capacity from common_codes cc WHERE common_kind_code = 'seating_Capacity';
+    </select>
+    <select id="getModelYear" resultType="com.apple.arentcar.model.ModelYear">
+        SELECT DISTINCT model_year  from rental_cars order by model_year;
+    </select>
+
+</mapper>

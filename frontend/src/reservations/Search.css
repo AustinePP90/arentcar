@@ -1,0 +1,70 @@
+.search-wrap{
+    width: 1280px;
+    margin: 50px auto;
+}
+#line{
+    width: 40px;
+    height: 1px;
+    border-bottom: 3px solid red;
+    margin: 0 auto;
+}
+.search-title{
+    text-align: center;
+    font-size: 24px;
+    margin: 0;
+    margin-bottom: 10px;
+}
+.search-detail{
+    text-align: center;
+    font-size: 16px;
+}
+.search-form-wrap{
+    width: 1280px;
+    height: 100px;
+    box-sizing: border-box;
+    background-color: #ededf0;
+    padding-top: 25px;
+}
+#rental-date{
+    display: block;
+    width: 300px;
+    height: 50px;
+}
+
+#return-date{
+    display: block;
+    width: 300px;
+    height: 50px;
+}
+
+#lang{
+    display: block;
+width: 400px;
+height: 50px;
+}
+#submit-button{
+    display: block;
+    width: 180px;
+    height: 50px;
+    background-color: #f3454c;
+    border: none;
+    color: white;
+    font-size: 16px;
+    border-radius: 6px;
+    transition : all 0.6s;
+}
+#submit-button:hover{
+    cursor: pointer;
+    background-color: #ff7916;
+}
+#search-form{
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center; /* 가운데 정렬 */
+    gap: 20px; /* 각 요소들 사이의 간격을 20px로 설정 */
+    
+}
+
+
+
