@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import "./RentalCarFilter.css";
+import "./CarSearchFilter.css";
 
 const RentalCarFilter = ({
   label,

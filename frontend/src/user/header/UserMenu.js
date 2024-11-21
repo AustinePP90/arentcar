@@ -4,7 +4,7 @@ import HeaderMenu from 'user/header/HeaderMenu';
 import ContentHome from 'user/content/ContentHome';
 // import UserLogin from 'user/content/UserLogin';
 import FooterMain from 'user/footer/FooterMain';
-import RentalCarsPage from 'reservations/RentalCarsPage';
+import ReservationPage from 'reservations/ReservationPage';
 import ReservationDetail from 'reservations/ReservationDetail';
 
 const UserMenu = () => {
@@ -17,7 +17,7 @@ const UserMenu = () => {
         <Routes>
           <Route path="/" element={<ContentHome />} ></Route>
           {/* <Route path="/login" element={<UserLogin />} ></Route> */}
-          <Route path="/reservation" element={<RentalCarsPage />} ></Route>
+          <Route path="/reservation" element={<ReservationPage />} ></Route>
           <Route path="/reservationdetail" element={<ReservationDetail />} ></Route>
         </Routes>
       </div>

@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import RentalCar from './CarList';
-import './RentalCarsPage.css';
+import CarList from './CarList';
+import './ReservationPage.css';
 import axios from 'axios';
-import RentalCarFilter from './RentalCarFilter';
+import CarSearchFilter from './CarSearchFilter';
 
 const RentalCarsPage = () => {
     const [filtersState, setFiltersState] = useState({});
@@ -43,7 +43,6 @@ const RentalCarsPage = () => {
       
   
     useEffect(() => {
-      // 모든 필터 데이터를 한 번에 가져옴
       const fetchFilters = async () => {
         const newFiltersState = {};
   
@@ -70,8 +69,9 @@ const RentalCarsPage = () => {
         [id]: value,
       }));
     };
+
     const handleResetFilter = () => {
-        setSelectedFilters('')
+        setSelectedFilters({});
     }
   
     return (
@@ -80,11 +80,11 @@ const RentalCarsPage = () => {
           <h2 className="rental-cars-page-header-title">단기렌트카</h2>
         </div>
         <div className="rental-cars-page-content-wrap">
-            <RentalCar {...selectedFilters} />
+            <CarList {...selectedFilters} />
           <div className="rental-cars-page-content-filter-wrap">
             <h3 className='rental-cars-page-content-filter-title'>검색옵션 선택</h3>
             {filters.map((filter) => (
-              <RentalCarFilter
+              <CarSearchFilter
                 key={filter.id}
                 label={filter.label}
                 optionList={filtersState[filter.id] || []}

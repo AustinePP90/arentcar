@@ -1,28 +1,19 @@
 import React, { useEffect, useState } from 'react';
 import './CarList.css';
 import axios from 'axios';
-import ReservationDetail from 'reservations/ReservationDetail';
 import { useNavigate } from 'react-router-dom';
 
 const RentalCar = ({ ...selectedFilters }) => {
   const [cars, setCars] = useState([]);
   const [carsCount, setCarsCount] = useState(0);
-  const [selectCar, setSelectCar] = useState(null);
-  const [isCarSelected, setIsCarSelected] = useState(false);
   const navigate  = useNavigate();
 
   const handleCarClick = (car) => {
-    setSelectCar(car);
     navigate('/reservationdetail',{
       state: {
         ...car
       }
     });
-  };
-
-  const handleBackClick = () => {
-    setSelectCar(null);
-    setIsCarSelected(false);
   };
 
   useEffect(() => {
@@ -31,7 +22,7 @@ const RentalCar = ({ ...selectedFilters }) => {
     const fetchCars = async () => {
       try {
         const response = await axios.get(`${process.env.REACT_APP_API_URL}/arentcar/user/cars`, {
-          params: selectedFilters, // 모든 필터를 요청의 쿼리로 전송
+          params: selectedFilters,
           signal: controller.signal, // 요청 취소 연결
         });
         if (response.data) {
@@ -49,7 +40,7 @@ const RentalCar = ({ ...selectedFilters }) => {
     const fetchCarsCount = async () => {
       try {
         const response = await axios.get(`${process.env.REACT_APP_API_URL}/arentcar/user/filter/countall`, {
-          params: selectedFilters, // 모든 필터를 요청의 쿼리로 전송
+          params: selectedFilters,
           signal: controller.signal, // 요청 취소 연결
         });
         if (response.data || response.data === 0) {
@@ -70,14 +61,13 @@ const RentalCar = ({ ...selectedFilters }) => {
     return () => {
       controller.abort(); // 컴포넌트 언마운트 시 요청 취소
     };
-  }, [selectedFilters]); // selectedFilters 변경 시 요청 트리거
+  }, [selectedFilters]);
 
   return (
     <>
     <div className="car-list-wrap">
     <h3 className='car-list-title'>총 <span>{`${cars != [] ? carsCount : 0}`}</span> 건의 검색 결과가 있습니다.</h3>
-      {!isCarSelected &&
-        cars.map((car, index) => (
+      {cars.map((car, index) => (
           <div className="car-list-card-wrap" key={index} onClick={() => handleCarClick(car)}>
             <div className='car-list-card-top-area'>
             <div className="car-list-card-info">
@@ -102,14 +92,6 @@ const RentalCar = ({ ...selectedFilters }) => {
             </div>
           </div>
         ))}
-      {isCarSelected && (
-        <>
-          <button className="back-button" onClick={handleBackClick}>
-            뒤로가기
-          </button>
-          <ReservationDetail car={selectCar} />
-        </>
-      )}
     </div>
     </>
   );
