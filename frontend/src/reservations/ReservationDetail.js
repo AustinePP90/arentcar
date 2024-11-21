@@ -1,10 +1,15 @@
 import React, { useEffect, useState } from 'react';
 import 'reservations/ReservationDetail.css'
 import NaverMap from 'reservations/NaverMap';
+import { useLocation } from 'react-router-dom';
 
-const ReservationDetail = ({ car }, onClick) => {
+const ReservationDetail = (onClick) => {
     const [isMapClick, setIsMapClick] = useState(false);
-
+    const location = useLocation();
+    const car = location.state;
+    useEffect(()=> {
+        console.log(car);
+    },[]);
     const branchLocation = {
         branch_latitude: car.branch_latitude,
         branch_longitude: car.branch_longitude

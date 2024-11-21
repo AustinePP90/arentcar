@@ -1,5 +1,5 @@
 .reservation-detail-wrap{
-    position: absolute;
+    position: relative;
     width: 1080px;
     margin: 50px auto;
     background-color: white;

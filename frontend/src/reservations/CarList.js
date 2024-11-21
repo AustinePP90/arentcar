@@ -2,16 +2,22 @@ import React, { useEffect, useState } from 'react';
 import './CarList.css';
 import axios from 'axios';
 import ReservationDetail from 'reservations/ReservationDetail';
+import { useNavigate } from 'react-router-dom';
 
 const RentalCar = ({ ...selectedFilters }) => {
   const [cars, setCars] = useState([]);
   const [carsCount, setCarsCount] = useState(0);
   const [selectCar, setSelectCar] = useState(null);
   const [isCarSelected, setIsCarSelected] = useState(false);
+  const navigate  = useNavigate();
 
   const handleCarClick = (car) => {
     setSelectCar(car);
-    setIsCarSelected(true);
+    navigate('/reservationdetail',{
+      state: {
+        ...car
+      }
+    });
   };
 
   const handleBackClick = () => {
@@ -46,7 +52,7 @@ const RentalCar = ({ ...selectedFilters }) => {
           params: selectedFilters, // 모든 필터를 요청의 쿼리로 전송
           signal: controller.signal, // 요청 취소 연결
         });
-        if (response.data || response.data == 0) {
+        if (response.data || response.data === 0) {
           setCarsCount(response.data);
         }
       } catch (error) {
