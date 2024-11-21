@@ -1,20 +1,22 @@
 .reservation-detail-wrap{
-    position: relative;
-    width: 1280px;
+    position: absolute;
+    width: 1080px;
     margin: 50px auto;
+    background-color: white;
+    z-index: 100;
 }
-.reservation-detail-header{
+.reservation-detail-header-wrap{
     margin-bottom: 40px;
 }
-.reservation-detail-header-detail{
-    width: 800px;
+.reservation-detail-header-info-wrap{
+    width: 720px;
     border-bottom: 1px solid black;
 }
-.reservation-detail-header-detail-title{
+.reservation-detail-header-info-title{
     margin-bottom: 40px;
 }
 
-.reservation-detail-header-detail-title h3{
+.reservation-detail-header-info-title h3{
     width: 100%;
     height: 50px;
     font-size: 24px;
@@ -24,80 +26,84 @@
     border-radius: 12px;
     color: black;
 }
-.reservation-detail-header-detail div{
+.reservation-detail-header-info-detail{
     display: flex;
     margin-bottom: 40px;
+    justify-content: space-between;
 }
-.reservation-detail-header-detail p{
+.reservation-detail-header-info-detail p{
     display: block;
     width: 600px;
     font-size: 18px;
 }
-.reservation-detail-header-detail a{
+.reservation-detail-header-info-detail a{
     display: block;
-    width: 200px;
     font-size: 18px;
     font-weight: bold;
     color: rgb(87, 141, 211);
 }
-.reservation-detail-header-car-image{
+.reservation-detail-side-car-image{
     position: absolute;
-    width: 400px;
+    width: 300px;
     height: 300px;
     top: 0;
     right: 0;
     border: 1px solid black;
     border-radius: 20px;
 }
-.reservation-detail-payment-details-wrap{
+.reservation-detail-side-reservation-wrap{
     position: absolute;
-    width: 400px;
+    width: 300px;
     top: 340px;
     right: 0;
     border: 1px solid black;
     border-radius: 20px;
     padding: 20px 0;
 }
-.reservation-detail-payment-details-wrap h3{
+.reservation-detail-side-reservation-wrap h3{
     font-size: 16px;
     font-weight: bold;
     padding: 0 20px;
     margin-bottom: 28px;
 }
-.reservation-detail-header-car-image img{
+.reservation-detail-side-car-image img{
     display: block;
     width: 300px;
     height: 200px;
     object-fit: cover;
     margin: 50px auto;
 }
-.reservation-detail-body{
-    width: 800px;
+.reservation-detail-content-wrap{
+    width: 720px;
 }
-
-.reservation-detail-body h3{
+.reservation-detail-content-wrap h3{
     margin-bottom: 40px;
     font-size: 18px;
     font-weight: bold;
 }
-.reservation-detail-body p{
+.reservation-detail-content-contract-information-title{
+    margin-bottom: 40px;
+    font-size: 18px;
+    font-weight: bold;
+}
+.reservation-detail-content-wrap p{
     font-size: 16px;
 }
-.contract-information{
+.reservation-detail-content-contract-information{
     display: flex;
     justify-content: space-between;
     margin-bottom: 20px;
     padding: 0 20px;
 }
-.reservation-detail-payment-details{
+.reservation-detail-side-reservation-details{
     display: flex;
     justify-content: space-between;
     margin-bottom: 20px;
     padding: 0 20px;
 }
-.reservation-detail-payment-rental-fee{
+.reservation-detail-side-reservation-rental-fee{
     display: flex;
-    width: 328px;
+    width: 260px;
     justify-content: space-between;
     font-size: 24px;
     font-weight: bold;
@@ -106,10 +112,10 @@
     border-top: 1px solid #ccc;
     padding-top: 20px;
 }
-.reservation-detail-payment-rental-fee :nth-child(2){
+.reservation-detail-side-reservation-rental-fee :nth-child(2){
     color: #D60228;
 }
-.reservation-detail-payment-details ul{
+.reservation-detail-side-reservation-details ul{
     display: flex;
     width: 328px;
     flex-direction: column;
@@ -117,11 +123,11 @@
     gap: 20px;
     margin: 0 auto;
 }
-.reservation-detail-payment-details li{
+.reservation-detail-side-reservation-details li{
     display: flex;
     justify-content: space-between;
 }
-.fee{
+.reservation-detail-content-contract-information-fee{
     display: flex;
     justify-content: space-between;
     background-color: #ccc;
@@ -131,17 +137,20 @@
     padding: 0 20px;
     margin-bottom: 40px;
 }
-.driver-range{
+.reservation-detail-content-contract-information-driver-range{
     border-top: 1px solid black;
     padding-top: 40px;
     display: flex;
     justify-content: space-between;
     font-size: 16px;
 }
-.radio-wrap{
+.reservation-detail-content-contract-information-driver-range-radio-wrap{
     width: 500px;
 }
-.insurance{
+.reservation-detail-content-contract-information-insurance-radio-wrap{
+    width: 500px;
+}
+.reservation-detail-content-contract-information-insurance{
     border-top: 1px solid black;
     padding-top: 40px;
     display: flex;
@@ -149,24 +158,24 @@
     font-size: 16px;
     border-bottom: 1px solid black;
 }
-.maintenance{
+.reservation-detail-content-contract-information-maintenance{
     width: 100%;
     border: 1px solid black;
     padding: 20px;
     border-radius: 12px;
     margin: 40px 0;
 }
-.maintenance h3{
+.reservation-detail-content-contract-information-maintenance h3{
     border-bottom: 1px solid #ccc;
     padding-bottom: 20px;
     margin-bottom: 20px;
 }
-#note{
+.reservation-detail-content-contract-information-note{
     margin-top: 40px;
 }
-#reservation-button{
+.reservation-detail-side-reservation-button{
     display: block;
-    width: 328px;
+    width: 260px;
     height: 60px;
     border-radius: 30px;
     margin: 0 auto;

@@ -45,7 +45,7 @@ function App() {
 
         {/* 사용자 페이지 */}
         <Route
-          path="/"
+          path="/*"
           element={
             isAuthenticated ? (
               <Navigate to="/" />

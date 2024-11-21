@@ -7,7 +7,10 @@ import java.util.List;
 
 @Mapper
 public interface CarMapper {
-    List<RentalCars> getAllCars();
+    List<RentalCars> getAllCars(String branchName, String fuelType, String carTypeCategory, String carManufacturer, String seatingCapacity);
+
+    Integer getFilterCarsCount(String branchName, String fuelType, String carTypeCategory, String carManufacturer, String seatingCapacity);
+
 
     List<CarType> getCarType();
 
@@ -18,4 +21,8 @@ public interface CarMapper {
     List<SeatingCapacity> getSeatingCapacity();
 
     List<ModelYear> getModelYear();
+
+    List<Branchs> getAllBranchs();
+
+    List<CarTypeCategory> getCarTypeCategory();
 }

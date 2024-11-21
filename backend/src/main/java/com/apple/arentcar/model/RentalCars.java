@@ -18,4 +18,14 @@ public class RentalCars {
     private String modelYear;
 
     private String carImageName;
+
+    private String carManufacturer;
+
+    private String branchName;
+
+    private String brandImageName;
+
+    private String branchLatitude;
+
+    private String branchLongitude;
 }
