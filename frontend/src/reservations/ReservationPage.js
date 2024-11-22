@@ -3,6 +3,7 @@ import CarList from './CarList';
 import './ReservationPage.css';
 import axios from 'axios';
 import CarSearchFilter from './CarSearchFilter';
+import ReservationCalender from './ReservationCalender';
 
 const RentalCarsPage = () => {
     const [filtersState, setFiltersState] = useState({});
@@ -76,6 +77,7 @@ const RentalCarsPage = () => {
   
     return (
       <div className="rental-cars-page-wrap">
+        <ReservationCalender></ReservationCalender>
         <div className="rental-cars-page-header-wrap">
           <h2 className="rental-cars-page-header-title">단기렌트카</h2>
         </div>
