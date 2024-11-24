@@ -88,3 +88,8 @@
     width: 84px;
     justify-content: space-between;
 }
+.reservation-calendar-day.selected-range {
+    background-color: #f0ad4e; /* 선택 범위 색상 */
+    color: white;
+  }
+  
