@@ -1,33 +1,76 @@
-.reservation-statistics-list {
+.manager-branchs-reservation-chart-wrap {
+    width: 100%;
+    margin: 20px 20px;
+  }
+  
+  
+  .manager-branchs-reservation-chart-title-wrap {
+    margin: 20px;
+  }
+
+  .manager-branchs-reservation-chart-popup-section-title {
+    font-weight: bold; /* 섹션 제목 강조 */
+    color: #333; /* 글자 색상 */
+    margin-left: 10px;
+    margin-bottom: 5px;
+  }
+
+  .manager-branchs-reservation-chart-table-button-wrap {
     display: flex;
-    flex-direction: column; /* 정렬을 아래로 정함 */
-    margin-top: 20px;
-}
-
-/* 통계 필터 제목 */
-.daily-and-monthly-filter-head {
-    margin: 30px 30px 30px 30px;
-    color: navy;
-    font-size: 20px;
-    font-weight: bold;
-}
-
-/* 일별, 월별 필터 */
-.daily-and-monthly-filter-row {
+    align-items: center;
+    justify-content: space-between;
+  }
+  
+  .manager-branchs-reservation-chart-content-header {
     display: flex;
-    align-items: center; /* 컨테이너 세로 축의 중앙으로 정렬 */
-    gap: 10px; /* 아이템들 사이의 공간*/
-    margin-left: 20px; /* 왼쪽 바깥 여백*/
-    margin-bottom: 20px;
-}
+    align-items: center;
+    margin-top: 10px;
+  }
 
-.chart-container h3 {
-    margin-top: 7%;
-}
+  .manager-branchs-reservation-chart-content-row {
+    display: flex;
+    align-items: center;
+  }
+  
+  .manager-branchs-reservation-chart-content-popup-wrap {
+    width: 500px;
+    margin: 250px auto;
+    padding: 20px 20px;
+    background-color: #fff;
+    border-radius: 6px;
+  }
 
-/* 전체 지점, 지역별 지점 버튼 */
-.daily-and-monthly-filter-row {
-    color: green;
-    font-size: 14px;
-    font-weight: bold;
-}
+
+  .manager-branchs-reservation-chart-detail-popup-close {
+    display: flex;
+    justify-content: space-between;
+  }
+  .manager-branchs-reservation-chart-info-pageing-wrap {
+    margin-top: 5px;
+  }
+  
+  .manager-branchs-reservation-chart-info-pageing-display {
+    margin: 0px 10px;
+  }
+  
+  .manager-branch-detail-popup-wrap {
+    width: 500px;
+    margin: 250px auto;
+    padding: 20px 20px;
+    background-color: #fff;
+    border-radius: 6px;
+  }
+  
+  .manager-branchs-reservation-chart-detail-popup-close {
+    display: flex;
+    justify-content: space-between;
+  }
+  
+  .manager-branchs-reservation-chart-detail-popup-line {
+    margin: 5px 0px;
+  }
+
+  .manager-button manager-branch-button-detail {
+    color: #77777a;
+  }
+  
