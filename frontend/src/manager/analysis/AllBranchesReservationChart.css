@@ -1,76 +1,140 @@
 .manager-branchs-reservation-chart-wrap {
-    width: 100%;
-    margin: 20px 20px;
-  }
-  
-  
-  .manager-branchs-reservation-chart-title-wrap {
-    margin: 20px;
-  }
+  width: 100%;
+  margin: 20px 20px;
+}
 
-  .manager-branchs-reservation-chart-popup-section-title {
-    font-weight: bold; /* 섹션 제목 강조 */
-    color: #333; /* 글자 색상 */
-    margin-left: 10px;
-    margin-bottom: 5px;
-  }
+.manager-branchs-reservation-chart-title-wrap {
+  margin: 20px;
+}
+.manager-branchs-reservation-chart-content-header {
+  display: flex;
+  align-items: center;
+  margin-top: 10px;
+}
 
-  .manager-branchs-reservation-chart-table-button-wrap {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-  }
-  
-  .manager-branchs-reservation-chart-content-header {
-    display: flex;
-    align-items: center;
-    margin-top: 10px;
-  }
+.manager-branchs-reservation-chart-content-row {
+  display: flex;
+  align-items: center;
+}
 
-  .manager-branchs-reservation-chart-content-row {
-    display: flex;
-    align-items: center;
-  }
-  
-  .manager-branchs-reservation-chart-content-popup-wrap {
-    width: 500px;
-    margin: 250px auto;
-    padding: 20px 20px;
-    background-color: #fff;
-    border-radius: 6px;
-  }
+.manager-branchs-reservation-table-content-wrap {
+  margin-bottom: 150px;
+}
 
+.manager-branch-popup-section {
+  margin-bottom: 10px; /* 섹션 간 간격 */
+  padding-bottom: 10px; /* 구분선 위쪽 여백 */
+  padding: 10px; /* 내부 여백 */
+  border-radius: 8px; /* 모서리를 둥글게 */
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* 부드러운 그림자 */
+  background-color: #fff; /* 섹션 배경색 */
+  border: 1px solid #ddd; /* 구분을 위한 테두리 */
+}
 
-  .manager-branchs-reservation-chart-detail-popup-close {
-    display: flex;
-    justify-content: space-between;
-  }
-  .manager-branchs-reservation-chart-info-pageing-wrap {
-    margin-top: 5px;
-  }
-  
-  .manager-branchs-reservation-chart-info-pageing-display {
-    margin: 0px 10px;
-  }
-  
-  .manager-branch-detail-popup-wrap {
-    width: 500px;
-    margin: 250px auto;
-    padding: 20px 20px;
-    background-color: #fff;
-    border-radius: 6px;
-  }
-  
-  .manager-branchs-reservation-chart-detail-popup-close {
-    display: flex;
-    justify-content: space-between;
-  }
-  
-  .manager-branchs-reservation-chart-detail-popup-line {
-    margin: 5px 0px;
-  }
+.manager-branchs-reservation-chart-popup-section-title {
+  font-weight: bold;
+  /* 섹션 제목 강조 */
+  color: #333;
+  /* 글자 색상 */
+  margin-left: 10px;
+  margin-bottom: 5px;
+}
 
-  .manager-button manager-branch-button-detail {
-    color: #77777a;
-  }
-  
+.manager-branchs-reservation-chart-table-button-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.manager-branchs-reservation-chart-table-button-wrap .left-group {
+  display: flex;
+  align-items: center;
+}
+
+.right-group .manager-chart-button-close {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end; /* 오른쪽 끝으로 정렬 */
+}
+
+.manager-branchs-reservation-chart-content-popup-wrap {
+  width: 500px;
+  margin: 250px auto;
+  padding: 20px 20px;
+  background-color: #fff;
+  border-radius: 6px;
+}
+
+.manager-branchs-reservation-chart-detail-popup-close {
+  display: flex;
+  justify-content: space-between;
+}
+
+.manager-branch-popup-high-branch-id {
+  margin-bottom: 5px;
+}
+
+.manager-branch-popup-section-title {
+  font-weight: bold;
+  /* 섹션 제목 강조 */
+  color: #333;
+  /* 글자 색상 */
+  margin-left: 10px;
+  margin-bottom: 5px;
+}
+
+.manager-branch-popup-field-row {
+  display: flex;
+  /* 라벨과 값을 한 줄에 배치 */
+  justify-content: space-between;
+  /* 라벨과 값 간의 간격 균등 배치 */
+  align-items: center;
+  /* 세로 중앙 정렬 */
+  gap: 0;
+  /* 라벨과 값 사이의 간격 완전히 제거 */
+  margin-bottom: 1px;
+  /* 필드 간 간격 최소화 */
+}
+
+.manager-branch-popup-field-row label {
+  width: 16%;
+  /* flex: 0 0 10%; 라벨의 고정 너비를 20%로 줄임 */
+  text-align: right;
+  /* 라벨 왼쪽 정렬 */
+  font-weight: bold;
+  /* 라벨 강조 */
+  margin-right: 5px;
+  /* 라벨과 값 사이의 간격 최소화 */
+}
+
+.manager-branch-popup-field-row span {
+  flex: 1;
+  /* 값이 남은 공간을 차지 */
+  text-align: left;
+  /* 값도 왼쪽 정렬 */
+}
+
+.manager-branchs-reservation-chart-info-pageing-wrap {
+  margin-top: 5px;
+  padding-bottom: 50px;
+}
+
+.manager-branchs-reservation-chart-info-pageing-display {
+  margin: 0px 10px;
+}
+
+.manager-branch-detail-popup-wrap {
+  width: 500px;
+  margin: 250px auto;
+  padding: 20px 20px;
+  background-color: #fff;
+  border-radius: 6px;
+}
+
+.manager-branchs-reservation-chart-detail-popup-line {
+  margin: 5px 0px;
+}
+
+.manager-button manager-branch-button-detail {
+  color: #77777a;
+}

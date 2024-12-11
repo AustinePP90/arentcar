@@ -3,7 +3,7 @@
     width: 100%; /* 반응형 너비 */
     max-width: 600px; /* 최대 너비 제한 */
     text-align: center;
-    margin: 0 auto; /* 가운데 정렬 */
+    margin-top: 30px;
     margin-bottom: 30px;
     position: relative;
     display: flex; /* Flexbox로 정렬 */

@@ -5,6 +5,7 @@ import { refreshAccessToken, handleLogout as handleAdminLogout, formatTime, isVa
 import Loading from 'common/Loading';
 import { Chart as ChartJS, BarElement, CategoryScale, LinearScale, Tooltip, Legend, Title } from 'chart.js';
 import { Bar } from 'react-chartjs-2';
+import './Charts.css';
 
 // 차트 라이브러리의 필요한 요소를 등록
 ChartJS.register(BarElement, CategoryScale, LinearScale, Tooltip, Legend, Title);
@@ -13,11 +14,14 @@ const AllBranchesReservationChart = ({ onClick }) => {
     const [branchs, setBranchs] = useState([]); // DB에서 읽어온 지점 데이터
     const [isDetailPopUp, setIsDetailPopUp] = useState(false); // 지점 상세 팝업
     const [searchBranchName, setSearchBranchName] = useState(""); // 지점명 검색
+    const [reservationStartDate, setReservationStartDate] = useState(""); // 예약 시작일
+    const [reservationEndDate, setReservationEndDate] = useState(""); // 예약 종료일
     const [branchDetails, setBranchDetails] = useState([]); // 지점 상세 데이터
     const [loading, setLoading] = useState(false);
     const [pageNumber, setPageNumber] = useState(1); // 페이지 번호
     const [totalCount, setTotalCount] = useState(0); // 총 검색 건수
     const [chartData, setChartData] = useState([]);
+    const [isSearched, setIsSearched] = useState(false); // 지점명 검색 여부 상태 추가
     const pageSize = 10;
 
     const [columnDefs] = useState([
@@ -30,20 +34,6 @@ const AllBranchesReservationChart = ({ onClick }) => {
         { headerName: '폐점시간', field: 'available_return_time', width: 100, align: 'center' },
         { headerName: '상세보기', field: '', width: 180, align: 'center' },
     ]);
-
-    // 지점 데이터 관리
-    const [branchCode, setBranchCode] = useState("");
-    const [branchName, setBranchName] = useState("");
-    const [branchLongitude, setBranchLongitude] = useState("");
-    const [branchLatitude, setBranchLatitude] = useState("");
-    const [regionCode, setRegionCode] = useState("");
-    const [regionName, setRegionName] = useState("");
-    const [postCode, setPostCode] = useState("");
-    const [branchBasicAddress, setBranchBasicAddress] = useState("");
-    const [branchDetailedAddress, setBranchDetailedAddress] = useState("");
-    const [branchPhoneNumber, setBranchPhoneNumber] = useState("");
-    const [availablePickupTime, setAvailablePickupTime] = useState("");
-    const [availableReturnTime, setAvailableReturnTime] = useState("");
 
     // 지점 데이터 가져오기
     const getBranchs = async (token) => {
@@ -110,9 +100,6 @@ const AllBranchesReservationChart = ({ onClick }) => {
                 },
                 withCredentials: true,
             });
-
-        console.log('Branch count response:', response.data);
-
         // 응답 데이터가 숫자라면 상태로 저장
         if (typeof response.data === 'number') {
             setTotalCount(response.data);
@@ -183,12 +170,49 @@ const AllBranchesReservationChart = ({ onClick }) => {
     const handleSearchClick = async () => {
         pageingBranchs();
         getTotalCount();
+
+        // 검색어를 입력하지 않은 경우
+        if (!searchBranchName || searchBranchName.trim() === '') {
+            alert("검색할 지점명을 입력해주세요!");
+            return;
+        }
+
+        try {
+            // DB에서 검색 결과 가져오기
+            const response = await axios.get(`${process.env.REACT_APP_API_URL}/arentcar/manager/branchs/paged`, {
+                params: { branchName: searchBranchName.trim() },
+            });
+
+            // 검색 결과가 없는 경우
+            if (response.data.length === 0) {
+                alert("존재하지 않는 지점명입니다. 다시 입력해주세요.");
+                return;
+            }
+
+            // 검색 결과가 있는 경우
+            pageingBranchs();
+            getTotalCount();
+            setBranchs(response.data);
+            setIsSearched(true); // 검색 후 상태 업데이트
+
+        } catch (error) {
+            console.error("Error during branch search:", error);
+            alert("검색 중 오류가 발생했습니다. 다시 시도해주세요.");
+        }
+    };
+
+    // 초기화 함수
+    const handleSearchReset = () => {
+        setSearchBranchName(''); // 검색어 초기화
+        setBranchs([]); // 검색 결과 초기화
+        setReservationStartDate(''); // 예약 시작일 초기화
+        setReservationEndDate(''); // 예약 종료일 초기화
+        setLoading(false); // 로딩 상태 초기화
+        setIsSearched(false); // 검색 여부 초기화
     };
 
     // 지점 상세 팝업창 열기
     const fetchBranchDetails = async (branchCode) => {
-        console.log("[fetchBranchDetails] 시작 - branchCode:", branchCode); // 함수 시작
-
         try {
             const token = localStorage.getItem("accessToken");
             await getBranchDetails(token, branchCode);
@@ -206,7 +230,6 @@ const AllBranchesReservationChart = ({ onClick }) => {
                 }
             } else {
                 console.error("[fetchBranchDetails] 예외 처리되지 않은 에러:", error);
-                // console.error("There was an error fetching the branchs details!", error);
             }
         }
     };
@@ -229,7 +252,6 @@ const AllBranchesReservationChart = ({ onClick }) => {
                 },
                 withCredentials: true,
             });
-            console.log("[getBranchDetails] 응답 성공:", response.data);
             setBranchDetails(response.data);
         } catch (error) {
             console.error("[getBranchDetails] 에러 발생:", error);
@@ -252,54 +274,6 @@ const AllBranchesReservationChart = ({ onClick }) => {
         setIsDetailPopUp(true);
         fetchBranchDetails(branchCode);
     };
-
-    // 개점시간 입력 포맷 설정 (09:00)
-    const formatPickupTime = (available_pickup_time) => {
-        if (available_pickup_time && available_pickup_time.length === 4) {
-            // '0900' -> '09:00'
-            return `${available_pickup_time.slice(0, 2)}:${available_pickup_time.slice(2, 4)}`;
-        }
-        // 기본값으로 원래 시간 반환
-        return available_pickup_time; // 
-    };
-
-    const handlePickupTimeChange = (e) => {
-        const input = e.target.value.replace(/[^0-9:]/g, ""); // 숫자와 ':'만 허용
-        const formatted = input.replace(":", ""); // ':' 제거한 값 (저장된 값이 09:00 이기 때문)
-
-        // 최대 4자리까지만 상태 저장
-        if (formatted.length <= 4) {
-            if (formatted.length === 4 && !isValidTimeFormat(formatted)) {
-                alert("00:00 ~ 23:59 까지만 입력할 수 있습니다.");
-                // 잘못된 형식일 경우 상태 변경하지 않음
-                return;
-            }
-            // 정상 입력이라면 상태 갱신
-            setAvailablePickupTime(formatted);
-        }
-    };
-
-    // 폐점시간 입력 포맷 설정 (09:00)
-    const formatReturnTime = (available_return_time) => {
-        if (available_return_time && available_return_time.length === 4) {
-            return `${available_return_time.slice(0, 2)}:${available_return_time.slice(2, 4)}`;
-        }
-        return available_return_time; // 
-    };
-
-    const handleReturnTimeChange = (e) => {
-        const input = e.target.value.replace(/[^0-9:]/g, "");
-        const formatted = input.replace(":", "");
-
-        if (formatted.length <= 4) {
-            if (formatted.length === 4 && !isValidTimeFormat(formatted)) {
-                alert("00:00 ~ 23:59 까지만 입력할 수 있습니다.");
-                return;
-            }
-            setAvailableReturnTime(formatted);
-        }
-    };
-
 
     // 매장 전화번호 형식 변환 함수
     const formatBranchPhoneNumber = (branchPhoneNumber) => {
@@ -326,6 +300,7 @@ const AllBranchesReservationChart = ({ onClick }) => {
         return "";
     };
 
+    // 지점 상세 > 전화번호 포맷팅 (031-000-0000)
     const formatPhoneNumber = (branch_phone_number) => {
         if (branch_phone_number && branch_phone_number.length === 10) {
             // '0311234567'
@@ -335,27 +310,46 @@ const AllBranchesReservationChart = ({ onClick }) => {
         return branch_phone_number;
     };
 
-
     // 차트 띄우기
-    const fetchBranchReservations = async (token) => {
-        const response = await axios.get(`${process.env.REACT_APP_API_URL}/arentcar/manager/branchs/reservation`, {
-            headers: { Authorization: `Bearer ${token}` },
-            withCredentials: true,
-        });
+    // const fetchBranchReservations = async (token) => {
+    //     const response = await axios.get(`${process.env.REACT_APP_API_URL}/arentcar/manager/branchs/reservation`, {
+    //         headers: { Authorization: `Bearer ${token}` },
+    //         withCredentials: true,
+    //     });
 
-        setChartData(response.data);
+    //     setChartData(response.data);
+    //     console.log(response.data)
+    // };
+
+    // 디버깅: API 응답 데이터 확인
+    const fetchBranchReservations = async (token) => {
+        try {
+            const response = await axios.get(`${process.env.REACT_APP_API_URL}/arentcar/manager/branchs/reservation`, {
+                headers: { Authorization: `Bearer ${token}` },
+                params: {
+                    reservationStartDate: reservationStartDate ? reservationStartDate.replace(/-/g, '') : undefined,
+                    reservationEndDate: reservationEndDate ? reservationEndDate.replace(/-/g, '') : undefined,
+                    branchName: searchBranchName || undefined,
+                },
+                withCredentials: true,
+            });
+            console.log("API Response:", response.data);
+            setChartData(response.data);
+        } catch (error) {
+            console.error("API Error:", error);
+        }
     };
 
     // 지점별 예약 건수 가져오기
     const getBranchReservations = async () => {
         try {
             const token = localStorage.getItem('accessToken');
-            await fetchBranchReservations(token);
+            await fetchBranchReservations(token, reservationStartDate);
         } catch (error) {
             if (error.response && error.response.status === 403) {
                 try {
                     const newToken = await refreshAccessToken();
-                    await fetchBranchReservations(newToken);
+                    await fetchBranchReservations(newToken, reservationStartDate);
                 } catch (refreshError) {
                     alert("인증이 만료되었습니다. 다시 로그인 해주세요.");
                     handleAdminLogout();
@@ -368,7 +362,11 @@ const AllBranchesReservationChart = ({ onClick }) => {
 
     useEffect(() => {
         getBranchReservations();
-    }, []);
+    }, [reservationStartDate, reservationEndDate, searchBranchName]);
+
+    // useEffect(() => {
+    //     getBranchReservations();
+    // }, []);
 
     const data = {
         labels: chartData?.map(branch => branch.branch_name) || [],
@@ -419,34 +417,72 @@ const AllBranchesReservationChart = ({ onClick }) => {
                     style={{ width: `${totalWidth}px` }}
                 >
 
-                    {/* 지점명 검색 버튼 */}
-                    <div className='flex-align-center'>
-                        <label className='manager-label' htmlFor="">지점명</label>
-                        <input className='width200' type="text" value={searchBranchName} onChange={(e) => (setSearchBranchName(e.target.value))} />
-                        <button className='manager-button manager-button-search' onClick={() => handleSearchClick()}>검색</button>
-                        <span>[검색건수 : {totalCount}건]</span>
+                    <div className='left-group'>
+
+                        {/* 지점명 검색 버튼 */}
+                        <div className='flex-align-center'>
+                            <label className='manager-label' htmlFor="">지점명</label>
+                            <input className='width200' type="text" value={searchBranchName} onChange={(e) => (setSearchBranchName(e.target.value))} />
+
+                            {/* 예약 시작일 */}
+                            <input
+                                type="date"
+                                value={reservationStartDate}
+                                onChange={(e) => setReservationStartDate(e.target.value)}
+                                className="manager-reservation-date-input"
+                            />
+
+                            {/* 예약 종료일 */}
+                            <input
+                                type="date"
+                                value={reservationEndDate}
+                                onChange={(e) => setReservationEndDate(e.target.value)}
+                                className="manager-reservation-date-input"
+                            />
+
+                            {/* 검색 버튼 */}
+                            <button className='manager-button manager-button-search' onClick={() => handleSearchClick()}>검색</button>
+                            <span>[검색건수 : {totalCount}건]</span>
+                        </div>
                     </div>
 
+
                     {/* 컴포넌트 닫기 */}
-                    <div>
-                        <button className='manager-button manager-button-close' onClick={() => handleCloseClick()}>닫기</button>
+                    <div className='right-group'>
+                        <button className='manager-button manager-chart-button-reset'
+                            onClick={handleSearchReset}
+                            disabled={!isSearched}
+                            style={{
+                                color: isSearched ? 'rgb(38, 49, 155)' : '#AAAAAA', // 조건에 맞게 color 변경
+                                cursor: isSearched ? 'pointer' : 'not-allowed', // disabled일 때 커서 스타일 변경
+                            }}>초기화
+                        </button>
                     </div>
+                    <button className='manager-button manager-chart-button-close' onClick={() => handleCloseClick()}>닫기</button>
                 </div>
             </div>
 
             {/* 차트 표시 */}
             <div className="chart-container">
-                <Bar data={data} options={options} />
+                {chartData.length > 0 ? (
+                    <Bar data={data} options={options} />
+                ) : (
+                    <p>데이터를 불러오는 중입니다...</p>
+                )}
             </div>
 
-            {/* 차트에 branchs 데이터 출력 */}
+
+            {/* 테이블에 branchs 데이터 출력 */}
             <div className='manager-branchs-reservation-chart-content-wrap'>
+
+                {/* 테이블 헤더 */}
                 <div className='manager-branchs-reservation-chart-content-header'>
                     {columnDefs.map((title, index) => (
                         <div key={index} className='manager-head-column' style={{ width: `${title.width}px`, textAlign: `center` }}>{title.headerName}</div>
                     ))}
                 </div>
-                {/* map을 이용하여 columDefs 배열에 있는 내용 출력 */}
+
+                {/* 테이블 내용 */}
                 <div className='manager-branchs-reservation-chart-table-content-wrap'>
                     {branchs.map((row, index) => (
                         <div key={index} className='manager-branchs-reservation-chart-content-row'>
