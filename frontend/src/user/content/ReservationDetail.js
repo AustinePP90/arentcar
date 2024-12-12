@@ -289,7 +289,7 @@ function calculateRentalPeriod(rentalDate, returnDate) {
                 </div>
             </div>
             {isMapClick &&
-                <NaverMap handleMapCloseClick={handleMapCloseClick} branchLocation={branchLocation} />
+                <NaverMap handleMapCloseClick={handleMapCloseClick} branchLocation={branchLocation} car={car}/>
             }
         </>
     );

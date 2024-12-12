@@ -9,23 +9,51 @@
 }
 .naver-map-map{
     position: absolute;
-    width: 600px;
-    height: 400px;
-    top: 50%;
+    width: 500px;
+    height: 300px;
+    top: 35%;
     left: 50%;
     transform: translate(-50%,-50%);
 }
 .naver-map{
     position: relative;
-    width: 800px;
+    width: 700px;
     height: 600px;
     background-color: white;
     top: 50%;
     left: 50%;
+    padding: 20px;
     transform: translate(-50%,-50%);
+    border-radius: 12px;
+}
+.naver-map-branch-name{
+    text-align: center;
+    margin-top: 69px;
+    font-size: 24px;
+    font-weight: bold;
+}
+.naver-map-title{
+    font-size: 32px;
+    text-align: center;
+    font-weight: bold;
 }
 .close-button{
     position: absolute;
     top: 20px;
     right: 20px;
+}
+.naver-map-address{
+    text-align: center;
+    font-size: 16px;
+}
+.naver-map-detail{
+    position: absolute;
+    width: 400px;
+    left: 50%;
+    transform: translateX(-50%);
+    bottom: 10%;
+    border-top: 1px solid #ccc;
+    border-bottom: 1px solid #ccc;
+    text-align: center;
+    font-size: 14px;
 }

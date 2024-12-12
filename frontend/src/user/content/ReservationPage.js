@@ -6,7 +6,7 @@ import CarSearchFilter from './CarSearchFilter';
 import ReservationCalender from './ReservationCalender';
 import SelectBranch from './SelectBranch';
 
-const RentalCarsPage = ({ onClick }) => {
+const RentalCarsPage = () => {
   const [filtersState, setFiltersState] = useState({});
   const [selectedFilters, setSelectedFilters] = useState({});
   const [branchs, setBranch] = useState([]);
@@ -16,7 +16,7 @@ const RentalCarsPage = ({ onClick }) => {
   const [selectBranch, setSelectBranch] = useState('');
   const [isSelectPeriod, setIsSelectPeriod] = useState(true);
   const [isSelected, setIsSelected] = useState(false);
-  const [rentalPeriod, setRentalPeriod] = useState([new Date(), new Date()]);
+  const [rentalPeriod, setRentalPeriod] = useState([]);
   const [rentalperiod, setRentalperiod] = useState(5);
   const [rentalTime, setRentalTime] = useState([]);
 
@@ -98,8 +98,10 @@ function calculateRentalPeriod(rentalDate, returnDate) {
 
   return rentalDays;
 }
-        
-        setRentalperiod(calculateRentalPeriod(rentalPeriod[0].getFullYear().toString() + (rentalPeriod[0].getMonth() + 1).toString() + rentalPeriod[0].getDate().toString(),rentalPeriod[1].getFullYear().toString() + (rentalPeriod[1].getMonth() + 1).toString() + rentalPeriod[1].getDate().toString()));
+        if(rentalPeriod.length>0){
+
+          setRentalperiod(calculateRentalPeriod(rentalPeriod[0].getFullYear().toString() + (rentalPeriod[0].getMonth() + 1).toString() + rentalPeriod[0].getDate().toString(),rentalPeriod[1].getFullYear().toString() + (rentalPeriod[1].getMonth() + 1).toString() + rentalPeriod[1].getDate().toString()));
+        }
   }, []);
 
   const handleFilterChange = (id, value) => {
@@ -114,6 +116,9 @@ function calculateRentalPeriod(rentalDate, returnDate) {
       'branchName': selectBranch,
       'rentalDate': rentalPeriod[0].getFullYear().toString() + (rentalPeriod[0].getMonth() + 1).toString() + rentalPeriod[0].getDate().toString(),
       'returnDate': rentalPeriod[1].getFullYear().toString() + (rentalPeriod[1].getMonth() + 1).toString() + rentalPeriod[1].getDate().toString(),
+      'rentalTime': rentalTime[0].toString().padStart(2, '0'),
+        'returnTime': rentalTime[1].toString().padStart(2, '0'),
+        'rentalperiod': rentalperiod
     });
   }
   const hendelSelectRegion = (region) => {

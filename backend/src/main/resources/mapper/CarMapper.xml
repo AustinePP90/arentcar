@@ -20,6 +20,10 @@
         b.branch_name,
         b.branch_latitude,
         b.branch_longitude,
+        b.branch_detailed_address,
+        b.branch_phone_number,
+        b.available_pickup_time,
+        b.available_return_time,
         cc3.brand_image_name,
         rr.rental_rate,
         rr.rental_discount_rate
