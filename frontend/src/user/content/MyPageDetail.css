@@ -61,11 +61,6 @@
   padding: 0 5px;
 }
 
-/* .mypage-detail-update-basic-info-name,
-.mypage-detail-update-basic-info-data {
-  
-} */
-
 .mypage-detail-update-basic-info-wrap {
   padding: 10px 20px;
 }
@@ -81,6 +76,12 @@ display: flex;
 justify-content: space-between;
 }
 
+.mypage-detail-popup-save-wrap {
+  display: flex;          /* flex 컨테이너로 설정 */
+  justify-content: flex-end; /* 오른쪽 정렬 */
+  /* 다른 스타일 속성들... */
+}
+
 .mypage-detail-update-signout-box {
 margin: 10px 0;
 padding-right: 5pxS;
@@ -91,12 +92,53 @@ padding-right: 5pxS;
   justify-content: space-between;
 }
 
-.mypage-detail-button {
+.mypage-detail-button,
+.mypage-detail-popup-close-button,
+.mypage-detail-popup-save-button {
   background: none;
 }
 
-.mypage-detail-button:hover {
+.mypage-detail-button:hover,
+.mypage-detail-popup-close-button:hover,
+.mypage-detail-popup-save-button:hover {
   background-color: #ff7916;
   color: white;
   border-radius: 5px;
+}
+
+.mypage-detail-popup-wrap {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.3);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000; /* 팝업이 다른 요소 위에 나타나도록 설정 */
+  
+}
+
+.mypage-detail-content-popup-wrap {
+  width: 600px;
+  background-color: #fff;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0px 8px 8px rgba(0, 0, 0, 0.12);
+}
+
+.mypage-detail-content-popup-close {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.mypage-detail-popup-line label {
+  padding-right: 20px;
+}
+
+.mypage-detail-popup-line input {
+  padding-left: 20px;
 }
