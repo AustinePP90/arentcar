@@ -218,6 +218,7 @@
         cc_speed_limit.common_name AS speed_limit,
         cc_insurance_type.common_name AS insurance_type,
         cc_fuel_type.common_name AS fuel_type,
+        cc_reservation_status.common_name AS reservation_status,
         cc_payment_status.common_name AS payment_status,
         cc_payment_category.common_name AS payment_category,
         cc_payment_type.common_name AS payment_type
@@ -245,6 +246,9 @@
         LEFT JOIN common_codes cc_payment_status
         ON cc_payment_status.common_kind_code = 'payment_status'
         AND r.payment_status = cc_payment_status.common_code
+        LEFT JOIN common_codes cc_reservation_status
+        ON cc_reservation_status.common_kind_code = 'reservation_status'
+        AND r.reservation_status = cc_reservation_status.common_code
         LEFT JOIN common_codes cc_payment_category
         ON cc_payment_category.common_kind_code = 'payment_category'
         AND r.payment_category = cc_payment_category.common_code
@@ -261,10 +265,8 @@
     </select>
     <update id="updateCarStatusForCancellation" parameterType="com.apple.arentcar.dto.ReservationStatusRequestDTO">
         UPDATE rental_cars
-        SET
-        car_status = #{carStatus}
-        WHERE
-        car_code = (
+        SET car_status = #{carStatus}
+        WHERE car_code = (
         SELECT car_code
         FROM reservations
         WHERE user_code = #{userCode}
