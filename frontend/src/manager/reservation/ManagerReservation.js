@@ -7,7 +7,6 @@ import { useNavigate } from "react-router-dom";
 
 const ManagerReservation = ({ onClick }) => {
   const isLoginState = useSelector((state) => state.adminState.loginState);
-  const navigate = useNavigate();
   const [branchNames, setBranchNames] = useState([]);
   const [selectedBranch, setSelectedBranch] = useState("");
   const [reservationDate, setReservationDate] = useState("");
@@ -32,20 +31,19 @@ const ManagerReservation = ({ onClick }) => {
   // 렌더링
   useEffect(() => {
     if (!isLoginState) {
-      return;
-    }
-    handleFetchBranchNames();
-  },[]);
-
-  useEffect(() => {
-    if (!isLoginState) {
       alert("로그인이 필요합니다.");
-      navigate("/admin");
       return;
     }
     pageingReservations();
     getTotalCount();
   }, [pageNumber]);
+
+  useEffect(() => {
+    if (!isLoginState) {
+      return;
+    }
+    handleFetchBranchNames();
+  },[]);
 
   // YYYY-MM-DD → YYYYMMDD 변환 함수
   const formatDateToCompact = (date) => {
