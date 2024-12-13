@@ -18,7 +18,7 @@ public interface BranchsMapper {
     List<Branchs> findAllBranches();
 
     // 차트에 넣을 지점 데이터 조회
-    List<ChartDataDTO> getBranchChartData();
+    List<ChartDataDTO> getBranchChartData(@Param("startDate") String startDate, @Param("endDate") String endDate);
 
     // 지점 조회 및 페이지네이션(검색 기능 포함)
     List<BranchsSearchDTO> getBranchsNameWithPaging(@Param("branchName") String branchName,

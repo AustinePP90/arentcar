@@ -22,9 +22,9 @@ public class BranchsService {
         return branchsMapper.findAllBranches();
     }
 
-    // 차트에 넣을 지점 데이터 조회
-    public List<ChartDataDTO> getBranchChartData() {
-        return branchsMapper.getBranchChartData();
+    // 차트에 넣을 지점명과 예약건수 조회
+    public List<ChartDataDTO> getBranchChartData(String startDate, String endDate) {
+        return branchsMapper.getBranchChartData(startDate, endDate);
     }
 
     // 지점 조회 및 페이지네이션 (검색 기능 포함)

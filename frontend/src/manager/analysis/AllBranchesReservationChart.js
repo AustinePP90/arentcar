@@ -14,8 +14,20 @@ const AllBranchesReservationChart = ({ onClick }) => {
     const [branchs, setBranchs] = useState([]); // DB에서 읽어온 지점 데이터
     const [isDetailPopUp, setIsDetailPopUp] = useState(false); // 지점 상세 팝업
     const [searchBranchName, setSearchBranchName] = useState(""); // 지점명 검색
-    const [reservationStartDate, setReservationStartDate] = useState(""); // 예약 시작일
-    const [reservationEndDate, setReservationEndDate] = useState(""); // 예약 종료일
+    const [startDate, setStartDate] = useState(() => {
+        const date = new Date();
+        date.setDate(date.getDate() - 7); // 일주일 전
+        return date.toISOString().split('T')[0].replace(/-/g, ''); // "YYYYMMDD" 형식으로 변환
+    });
+    const [endDate, setEndDate] = useState(() => {
+        const date = new Date();
+        return date.toISOString().split('T')[0].replace(/-/g, ''); // "YYYYMMDD" 형식으로 변환
+    });
+
+    const formatDate = (dateStr) => {
+        return dateStr ? `${dateStr.slice(0, 4)}-${dateStr.slice(4, 6)}-${dateStr.slice(6, 8)}` : '';
+    };
+
     const [branchDetails, setBranchDetails] = useState([]); // 지점 상세 데이터
     const [loading, setLoading] = useState(false);
     const [pageNumber, setPageNumber] = useState(1); // 페이지 번호
@@ -203,8 +215,8 @@ const AllBranchesReservationChart = ({ onClick }) => {
     const handleSearchReset = () => {
         setSearchBranchName(''); // 검색어 초기화
         setBranchs([]); // 검색 결과 초기화
-        setReservationStartDate(''); // 예약 시작일 초기화
-        setReservationEndDate(''); // 예약 종료일 초기화
+        setStartDate(''); // 예약 시작일 초기화
+        setEndDate(''); // 예약 종료일 초기화
         setLoading(false); // 로딩 상태 초기화
         setIsSearched(false); // 검색 여부 초기화
     };
@@ -330,18 +342,24 @@ const AllBranchesReservationChart = ({ onClick }) => {
 
     // 디버깅: API 응답 데이터 확인
     const fetchBranchReservations = async (token) => {
+        if (!startDate || !endDate) {
+            return;
+        }
+
+        console.log('Start Date:', startDate);
+        console.log('End Date:', endDate);
+
         try {
             const response = await axios.get(`${process.env.REACT_APP_API_URL}/arentcar/manager/branchs/reservation`, {
                 headers: { Authorization: `Bearer ${token}` },
-                params: {
-                    reservationStartDate: reservationStartDate ? reservationStartDate.replace(/-/g, '') : undefined,
-                    reservationEndDate: reservationEndDate ? reservationEndDate.replace(/-/g, '') : undefined,
-                    branchName: searchBranchName || undefined,
-                },
+                params: { startDate, endDate },
                 withCredentials: true,
             });
-            console.log("API Response:", response.data);
+            console.log('API Response:', response); // 전체 응답 객체 확인
+            console.log('Response Data:', response.data); // 응답 데이터만 확인
+
             setChartData(response.data);
+            console.log('Request Params:', { startDate, endDate }); // 전달된 파라미터 확인
         } catch (error) {
             console.error("API Error:", error);
         }
@@ -351,25 +369,25 @@ const AllBranchesReservationChart = ({ onClick }) => {
     const getBranchReservations = async () => {
         try {
             const token = localStorage.getItem('accessToken');
-            await fetchBranchReservations(token, reservationStartDate);
+            await fetchBranchReservations(token);
         } catch (error) {
             if (error.response && error.response.status === 403) {
                 try {
                     const newToken = await refreshAccessToken();
-                    await fetchBranchReservations(newToken, reservationStartDate);
+                    await fetchBranchReservations(newToken);
                 } catch (refreshError) {
                     alert("인증이 만료되었습니다. 다시 로그인 해주세요.");
                     handleAdminLogout();
                 }
             } else {
-                console.error('There was an error fetching the branch reservations!', error);
+                console.error('There was an error fetching the chart reservations!', error);
             }
         }
     };
 
     useEffect(() => {
         getBranchReservations();
-    }, [reservationStartDate, reservationEndDate, searchBranchName]);
+    }, [startDate, endDate]);
 
     // useEffect(() => {
     //     getBranchReservations();
@@ -432,24 +450,25 @@ const AllBranchesReservationChart = ({ onClick }) => {
                         {/* 예약 시작일 */}
                         <input
                             type="date"
-                            value={reservationStartDate}
-                            onChange={(e) => setReservationStartDate(e.target.value)}
-                            className="manager-reservation-date-input"
+                            value={formatDate(startDate)}
+                            onChange={(e) => setStartDate(e.target.value.replace(/-/g, ''))} // "YYYYMMDD" 형식으로 저장
+                            max={new Date().toISOString().slice(0, 10)}
                         />
 
                         {/* 예약 종료일 */}
                         <input
                             type="date"
-                            value={reservationEndDate}
-                            onChange={(e) => setReservationEndDate(e.target.value)}
-                            className="manager-reservation-date-input"
+                            value={formatDate(endDate)}
+                            onChange={(e) => setEndDate(e.target.value.replace(/-/g, ''))} // "YYYYMMDD" 형식으로 저장
+                            min={startDate}
+                            max={new Date().toISOString().slice(0, 10)}
                         />
 
                         {/* 검색 버튼 */}
                         <button className='manager-button manager-button-search' onClick={() => handleSearchClick()}>검색</button>
                         <span>[검색건수 : {totalCount}건]</span>
                     </div>
-                    
+
                     {/* 컴포넌트 초기화 및 닫기 */}
                     <div>
                         <button className='manager-button manager-button-reset'

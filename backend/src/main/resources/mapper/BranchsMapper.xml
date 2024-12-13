@@ -16,6 +16,7 @@
         WHERE branch_name LIKE CONCAT('%', #{branchname}, '%')
     </select>
 
+    <!-- 차트에 넣을 지점명, 예약건수 조회 -->
     <select id="getBranchChartData" resultType="com.apple.arentcar.dto.ChartDataDTO">
         SELECT b.branch_name AS branchName , COUNT(r.reservation_code) as reservationCode
         FROM reservations r

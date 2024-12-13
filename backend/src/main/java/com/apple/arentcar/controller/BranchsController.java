@@ -24,10 +24,10 @@ public class BranchsController {
         return branchsService.findAllBranches();
     }
 
-    // 차트에 나타낼 지점 데이터 가져오기
+    // 차트에 넣을 지점 데이터 조회
     @GetMapping("/manager/branchs/reservation")
-    public ResponseEntity<List<ChartDataDTO>> getBranchsChartData() {
-        List<ChartDataDTO> chartDataDto = branchsService.getBranchChartData();
+    public ResponseEntity<List<ChartDataDTO>> getBranchsChartData(@RequestParam String startDate, @RequestParam String endDate) {
+        List<ChartDataDTO> chartDataDto = branchsService.getBranchChartData(startDate, endDate);
         return ResponseEntity.ok(chartDataDto);
     }
 
