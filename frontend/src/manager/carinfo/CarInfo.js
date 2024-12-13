@@ -1,10 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { refreshAccessToken, handleAdminLogout } from 'common/Common';
+import { useSelector } from 'react-redux';
 import Loading from 'common/Loading';
 import "manager/carinfo/CarInfo.css";
 
 const CarInfo = ({ onClick }) => {
+  const isLoginState = useSelector((state) => state.adminState.loginState);
+
   const [vehicles, setVehicles] = useState([]) // DB에서 읽어온 차종 데이터를 배열로 담기
   const [vehiclesTrigger, setVehiclesTrigger] = useState(false);
 
@@ -107,6 +110,11 @@ const CarInfo = ({ onClick }) => {
   ];
 
   useEffect(() => {
+    if (!isLoginState) {
+      alert("로그인이 필요합니다.");
+      return;
+    }
+
     pageingVehicles();
     getTotalCount();
   }, [pageNumber, vehiclesTrigger]); // pageNumber가 변경될때면 pageingVehicles(), getTotalCount() 함수 호출

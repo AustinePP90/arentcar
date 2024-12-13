@@ -1,10 +1,13 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { refreshAccessToken, handleAdminLogout } from 'common/Common';
+import { useSelector } from "react-redux";
 import Loading from 'common/Loading';
 import "manager/carinfo/CarInfo.css";
 
 const RentalCarInfo = ({ onClick }) => {
+  const isLoginState = useSelector((state) => state.adminState.loginState);
+
   const [vehicles, setVehicles] = useState([])
   const [vehiclesTrigger, setVehiclesTrigger] = useState(false);
 
@@ -27,6 +30,7 @@ const RentalCarInfo = ({ onClick }) => {
 
   const [isHandleDetailRentalCarsSearchClick, setIsHandleDetailRentalCarsSearchClick] = useState(false); // 상세검색 SELECT, COUNT 조건에 활용
   const [isSearchClicked, setIsSearchClicked] = useState(false); // 플래그 상태 추가
+  const [isAlertShown, setIsAlertShown] = useState(false);
   
   const [columnDefs] = useState([
     { headerName: '코드', field: 'car_code', width: 75, align: 'center' },
@@ -116,6 +120,11 @@ const RentalCarInfo = ({ onClick }) => {
   ];
 
   useEffect(() => {
+    if (!isLoginState) {
+      alert("로그인이 필요합니다.");
+      return;
+    }
+
     handleSearchVehiclesWithPagingClick();
     getTotalCount();
  
@@ -125,6 +134,11 @@ const RentalCarInfo = ({ onClick }) => {
   }, [pageNumber, vehiclesTrigger]);
 
   useEffect(() => {
+    if (!isLoginState) {
+      alert("로그인이 필요합니다.");
+      return;
+    }
+
     const fetchCarMenus = async () => {
       try {
         const token = localStorage.getItem('accessToken');
@@ -259,6 +273,9 @@ const RentalCarInfo = ({ onClick }) => {
   };
 
   const getDetailVehicles = async (token) => {
+    // alert 플래그 초기화
+    setIsAlertShown(false);
+
     const params = {
       pageSize,
       pageNumber,
@@ -293,13 +310,15 @@ const RentalCarInfo = ({ onClick }) => {
         withCredentials: true,
       });
 
-      setVehicles(response.data);
-
-      if (!response.data || (Array.isArray(response.data) && response.data.length === 0) || 
-         (typeof response.data === 'object' && Object.keys(response.data).length === 0)) {
+    // 검색 결과가 없고 아직 alert가 표시되지 않았을 때만 alert 표시
+    if (!response.data || response.data.length === 0) {
+      if (!isAlertShown) {
         alert("조건에 맞는 차량이 없습니다.");
-        setVehicles(response.data);
+        setIsAlertShown(true);
       }
+    }
+
+    setVehicles(response.data);
    };
 
   const getTotalCount = async () => {
@@ -536,6 +555,7 @@ const RentalCarInfo = ({ onClick }) => {
    }
 
   const handleInsertClick = (workMode) => {
+    setIsHandleDetailRentalCarsSearchClick(false); // 상세검색 내역이 없는 상태에서 차량을 등록할 때 alert 호출되는 현상 막기 위해 적용 
     setIsPopUp(true);
     setWorkMode(workMode);
     viewDataInit();
