@@ -24,6 +24,14 @@ const ManagerReservation = ({ onClick }) => {
     { titlename: "반납일", field: "return_date", width: 150, align: "center" },
     { titlename: "상세", field: "", width: 100, align: "center" },
   ]);
+  // 렌더링
+  useEffect(() => {
+    handleFetchBranchNames();
+  },[]);
+  useEffect(() => {
+    pageingReservations();
+    getTotalCount();
+  }, [pageNumber, pageSize]);
 
   // YYYY-MM-DD → YYYYMMDD 변환 함수
   const formatDateToCompact = (date) => {
@@ -134,15 +142,6 @@ const ManagerReservation = ({ onClick }) => {
       console.error('Unexpected response:', response.data);
     }
   };
-  // 렌더링
-  useEffect(() => {
-    handleFetchBranchNames();
-  },[]);
-  useEffect(() => {
-    pageingReservations();
-    getTotalCount();
-  }, [pageNumber, pageSize]);
-
 
   // 지점명 데이터 가져오기
   const handleFetchBranchNames = async () => {
