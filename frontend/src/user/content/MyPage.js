@@ -245,6 +245,10 @@ const MyPage = () => {
     setIsDetailPopup(true);
   }
 
+  const handleInfoDetailCloseClick = () => {
+    setIsDetailPopup(false);
+  }
+
   const handleMyReservationCancel = async (reservationCode, userCode) => {
     // 예약 취소 여부 확인
     const MyreservationCancelConfirmed = window.confirm("정말로 예약을 취소하시겠습니까?");
@@ -316,7 +320,7 @@ const MyPage = () => {
               </button>
               {isDetailPopup &&
                 <div className='manager-popup'>
-                  <MyPageDetail />
+                  <MyPageDetail onClick={handleInfoDetailCloseClick}/>
                 </div>
               }
             </div>

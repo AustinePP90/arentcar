@@ -218,9 +218,7 @@ const MyPageDetail = ({onClick}) => {
 	const handleCloseClick = () => {
     if (onClick) {
       onClick();
-    } else {
-			console.warn("No onClick function provided for closing popup.")
-		}
+    }
   };
 
 	
