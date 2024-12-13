@@ -20,4 +20,5 @@ public class ReservationsResponseDTO {
     private String rentalLocationName;   // 대여 지점 이름
     private String rentalDate;        // 대여 날짜
     private String returnDate;        // 반납 날짜
+    private String carStatus;         // 차량 상태
 }

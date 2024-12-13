@@ -17,6 +17,7 @@ public class ReservationDetailDTO {
     private String userPhoneNumber;      // 연락처
     private String userEmail;            // 이메일
     private String driverLicenseNumber;    // 면허 갱신일
+    private String carCode;              // 차량 코드
     private String carNumber;            // 차량 번호
     private String carTypeName;          // 차량명
     private String modelYear;            // 차량 연도
@@ -33,6 +34,7 @@ public class ReservationDetailDTO {
     private String paymentAmount;        // 결제 금액
     private String reservationStatus;    // 예약 상태
     private String paymentStatus;        // 결제 상태
+    private String carStatus;            // 차량 상태
     private String reservationDate;      // 예약일
     private String paymentDate;          // 결제일
 }

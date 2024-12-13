@@ -10,6 +10,7 @@
         r.reservation_code AS reservation_code,
         u.user_name AS user_name,
         rc.car_number AS car_number,
+        cc_car_status.common_name AS car_status,
         ct.car_type_name AS car_type_name,
         rl.branch_name AS rental_location_name,
         r.rental_date AS rental_date,
@@ -19,6 +20,9 @@
         JOIN rental_cars rc ON r.car_code = rc.car_code
         JOIN car_types ct ON rc.car_type_code = ct.car_type_code
         JOIN branchs rl ON r.rental_location = rl.branch_code
+        JOIN common_codes cc_car_status
+        ON rc.car_status = cc_car_status.common_code
+        AND cc_car_status.common_kind_code = 'car_status'
         WHERE 1=1
         <if test="rentalLocationName != null and rentalLocationName != ''">
             AND rental_location_name = #{rentalLocationName}
@@ -56,6 +60,7 @@
     <select id="getReservationsDetailById" parameterType="String" resultType="com.apple.arentcar.dto.ReservationDetailDTO">
         SELECT
         r.reservation_code AS reservation_code,
+        r.car_code AS car_code,
         u.user_name AS user_name,
         u.user_birth_date AS user_birth_date,
         u.user_phone_number AS user_phone_number,
@@ -71,6 +76,7 @@
         rr.branch_name AS return_location_name,
         r.return_date AS return_date,
         r.return_time AS return_time,
+        cc_car_status.common_name AS car_status,
         cc_insurance.common_name AS insurance_name,
         cc_payment_category.common_name AS payment_category,
         cc_payment_type.common_name AS payment_type,
@@ -86,6 +92,9 @@
         JOIN car_types ct ON rc.car_type_code = ct.car_type_code
         JOIN branchs rl ON r.rental_location = rl.branch_code
         JOIN branchs rr ON r.return_location = rr.branch_code
+        JOIN common_codes cc_car_status
+        ON rc.car_status = cc_car_status.common_code
+        AND cc_car_status.common_kind_code = 'car_status'
         JOIN common_codes cc_fuel
         ON ct.fuel_type = cc_fuel.common_code
         AND cc_fuel.common_kind_code = 'fuel_type'
@@ -115,7 +124,16 @@
     <update id="updateCarStatus" parameterType="com.apple.arentcar.dto.CarReturnRequestDTO">
         UPDATE rental_cars
         SET car_status = #{carStatus}
-        WHERE car_number = #{carNumber}
+        WHERE car_code = (
+        SELECT car_code
+        FROM reservations
+        WHERE reservation_code = #{reservationCode}
+        );
+    </update>
+    <update id="ReservationStatusUpdate" parameterType="com.apple.arentcar.dto.CarReturnRequestDTO">
+        UPDATE reservations
+        SET reservation_status = #{reservationStatus}
+        WHERE reservation_code = #{reservationCode}
     </update>
     <update id="updateReservationStatus" parameterType="com.apple.arentcar.dto.ReservationStatusRequestDTO">
         UPDATE reservations
