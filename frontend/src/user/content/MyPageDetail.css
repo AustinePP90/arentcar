@@ -61,6 +61,10 @@
   padding: 0 5px;
 }
 
+.mypage-detail-update-info-name {
+  padding-right: 20px;
+}
+
 .mypage-detail-update-basic-info-wrap {
   padding: 10px 20px;
 }
@@ -95,13 +99,13 @@ padding-right: 5pxS;
 .mypage-detail-button,
 .mypage-detail-popup-close-button,
 .mypage-detail-popup-save-button {
-  background: none;
+  background-color: #ff7916;
 }
 
 .mypage-detail-button:hover,
 .mypage-detail-popup-close-button:hover,
 .mypage-detail-popup-save-button:hover {
-  background-color: #ff7916;
+  /* background-color: #ff7916; */
   color: white;
   border-radius: 5px;
 }
@@ -133,6 +137,10 @@ padding-right: 5pxS;
   justify-content: space-between;
   align-items: center;
   margin-bottom: 15px;
+}
+
+.mypage-detail-popup-line {
+  margin: 10px;
 }
 
 .mypage-detail-popup-line label {
