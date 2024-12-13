@@ -5,6 +5,8 @@ import 'manager/system/PostNotices.css';
 import { store } from '../../redux/store';
 // import { store } from 'redux/store'; 왜 안될까?
 import Loading from 'common/Loading';
+import { useNavigate } from 'react-router-dom';
+import { useSelector } from 'react-redux';
 
 
 const PostNotices = ({ onClick }) => {
@@ -39,6 +41,9 @@ const PostNotices = ({ onClick }) => {
   const [authorType,setAuthorType] = useState();
   const [authorName,setAuthorName] = useState();
 
+  const isLoginState = useSelector((state) => state.adminState.loginState);
+  const navigate = useNavigate();
+  
   //공지사항 가져오기
   const pageingNotices = async () => {
     try {
@@ -300,17 +305,26 @@ const PostNotices = ({ onClick }) => {
 
   //페이지 불러오기
   useEffect(()=>{
+    handleLogin();
     pageingNotices();
     getTotalCount();
   }, [totalNotices, pageNumber])
 
   useEffect(()=>{
-    console.log(textarea.current);
-    
+    // console.log(textarea.current);
+    handleLogin();
     if(textarea.current) {
       resizeHeight();
     }
   },[postContent, isPopUp])
+
+  const handleLogin = () => {
+    if (!isLoginState) {
+      alert("로그인이 필요합니다.");
+      navigate("/admin");
+      return;
+    }
+  }
 
   //검색
   const handleSearchClick = async () => {

@@ -2,6 +2,7 @@
     width: 100%;
     background-color: #ededf0;
     white-space: pre-line;
+    padding-top: 1px;
 }
 
 .user-customers-detail-reviews{
@@ -21,7 +22,7 @@
     text-align: end;
 }
 .user-customers-detail-reviews-content{
-    font-size: 16px;
+    font-size: 14px;
     padding: 0px 30px;
 }
 
@@ -49,7 +50,7 @@
 }
 .user-customers-create-review-popup-content{
     border: 1px solid #cfcfcf;
-    width: 900px;
+    width: 100%;
     resize: none;
     overflow:hidden;
     padding: 5px;
@@ -93,3 +94,11 @@
     color: #ee0a0a;
 }
 
+.user-customers-detail-reviews-title>h4{
+    /* font-size: 22px; */
+    font-weight: 600;
+}
+
+.user-customers-detail-reviews-title span{
+    font-weight: 100;
+}

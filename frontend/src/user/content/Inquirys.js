@@ -228,7 +228,7 @@ const Inquirys = () => {
 
         <div className="user-customers-list">
             {/* + state={{ postState: dtataInfo }} */}
-          <Link to={"/customers"} state={{ postState: 2 }} className="user-customers-list-button">리스트</Link>
+          <Link to={"/customers"} state={{ postState: 2 }} className="user-customers-list-button">목록보기</Link>
           {!params && 
             (<button className="user-customers-create-inquirys-popup-button" onClick={()=>handleCreate()}>작성</button>)}
           {authorCode === crystalCode && 
