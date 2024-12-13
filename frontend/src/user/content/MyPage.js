@@ -262,7 +262,7 @@
           myReservationDetails.reservation_code === reservationCode &&
           myReservationDetails.reservation_status === "이용완료"
         ) {
-          alert("이 예약은 이미 완료된 상태입니다.");
+          alert("이 예약은 이미 렌트카 이용이 완료된 상태입니다.");
           return;
         }
     
