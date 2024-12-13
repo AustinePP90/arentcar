@@ -3,7 +3,6 @@ import axios from "axios";
 import "manager/reservation/ManagerReservation.css";
 import { refreshAccessToken, handleAdminLogout, formatDate, formatTime, formatPhone } from "common/Common";
 import { useSelector } from "react-redux";
-import { useNavigate } from "react-router-dom";
 
 const ManagerReservation = ({ onClick }) => {
   const isLoginState = useSelector((state) => state.adminState.loginState);
@@ -158,7 +157,7 @@ const ManagerReservation = ({ onClick }) => {
   // 지점명 데이터 가져오기
   const handleFetchBranchNames = async () => {
     try {
-      const response = await axios.get(`${process.env.REACT_APP_API_URL}/arentcar/user/branches`);
+      const response = await axios.get(`${process.env.REACT_APP_API_URL}/arentcar/user/branchs`);
       if (response.data) {
         setBranchNames(response.data.map((branch) => branch.branch_name));
       }
@@ -502,11 +501,9 @@ const ManagerReservation = ({ onClick }) => {
                 <span>{reservationDetails.user_email}</span>
               </div>
               <div className="manager-reservation-popup-field-row">
-                <label>면허발급일 : </label>
-                <span>{formatDate(reservationDetails.license_issue_date) || "면허정보 없음"}</span>
-                <label>면허갱신일 : </label>
-                <span>{formatDate(reservationDetails.license_expiry_date) || "면허정보 없음"}</span>
-              </div>
+                <label>운전면허증 : </label>
+                <span>{reservationDetails.driver_license_number || "면허정보 없음"}</span>
+                </div>
             </div>
 
             {/* 예약정보 */}
@@ -528,7 +525,7 @@ const ManagerReservation = ({ onClick }) => {
                 <label>연식 : </label>
                 <span>{reservationDetails.model_year}</span>
                 <label>연료 : </label>
-                <span>{reservationDetails.fuel_type_name}</span>
+                <span>{reservationDetails.fuel_type}</span>
               </div>
               <div className="manager-reservation-popup-field-row">
                 <label>대여일시 : </label>
@@ -556,9 +553,9 @@ const ManagerReservation = ({ onClick }) => {
               <div className="manager-reservation-popup-section-title">결제정보</div>
               <div className="manager-reservation-popup-field-row">
                 <label>결제방식 : </label>
-                <span>{reservationDetails.payment_category_name}</span>
+                <span>{reservationDetails.payment_category}</span>
                 <label>결제수단 : </label>
-                <span>{reservationDetails.payment_type_name}</span>
+                <span>{reservationDetails.payment_type}</span>
               </div>
               <div className="manager-reservation-popup-field-row">
                 <label>결제금액 : </label>

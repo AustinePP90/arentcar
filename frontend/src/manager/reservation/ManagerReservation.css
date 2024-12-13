@@ -8,7 +8,7 @@
   width: 1000px;
 }
 .manager-reservation-controls-wrap{
-  margin: 20px 0;
+
   display: flex;
   justify-content: space-between;
  
@@ -19,6 +19,7 @@
   gap: 5px; /* 요소 간 간격 */
 }
 .manager-reservation-content-header-row-wrap {
+  margin-top: 10px;
   display: flex; 
   align-items: center;
 }
