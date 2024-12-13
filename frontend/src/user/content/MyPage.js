@@ -356,50 +356,51 @@ const MyPage = () => {
                   </ul>
                 </div>
                 {/* 테이블 데이터 */}
-                <div className="my-page-reservation-data-column">
-                  {myreservations.length > 0 ? (
-                    myreservations.map((myreservations, index) => (
-                      <ul key={index}
-                        className="my-page-reservation-data-column-data-ul">
-                        {columnDefs.map((column, colIndex) => (
-                          <li
-                            key={colIndex}
-                            className="my-page-reservation-data-column-data-li"
-                            style={{
-                              width: `${column.width}px`,
-                              textAlign: column.align || "center",
-                            }}
-                          >
-                            {column.field === "" ? (
-                              <button
-                                className="my-page-reservation-data-button-detail"
-                                onClick={() => handleDetailClick(myreservations.reservation_code, userCode)}
-                              >
-                                상세보기
-                              </button>
-                            ) : (
-                              column.field === "rental_date" ? (
-                                formatDate(myreservations[column.field])
-                              ) : column.field === "return_date" ? (
-                                formatDate(myreservations[column.field])
-                              ) : column.field === "reservation_date" ? (
-                                formatDate(myreservations[column.field])
-                              ) : column.field === "payment_date" ? (
-                                formatDate(myreservations[column.field])
-                              ) :
-                                myreservations[column.field]
-                            )}
-                          </li>
-                        ))}
-                      </ul>
-                    ))
-                  ) : (
-                    <div className="my-page-reservation-no-data">
-                      조건에 맞는 렌트내역이 없습니다.
-                    </div>
-                  )}
+                <div className='my-page-reservation-data-column-wrap'>
+                  <div className="my-page-reservation-data-column">
+                    {myreservations.length > 0 ? (
+                      myreservations.map((myreservations, index) => (
+                        <ul key={index}
+                          className="my-page-reservation-data-column-data-ul">
+                          {columnDefs.map((column, colIndex) => (
+                            <li
+                              key={colIndex}
+                              className="my-page-reservation-data-column-data-li"
+                              style={{
+                                width: `${column.width}px`,
+                                textAlign: column.align || "center",
+                              }}
+                            >
+                              {column.field === "" ? (
+                                <button
+                                  className="my-page-reservation-data-button-detail"
+                                  onClick={() => handleDetailClick(myreservations.reservation_code, userCode)}
+                                >
+                                  상세보기
+                                </button>
+                              ) : (
+                                column.field === "rental_date" ? (
+                                  formatDate(myreservations[column.field])
+                                ) : column.field === "return_date" ? (
+                                  formatDate(myreservations[column.field])
+                                ) : column.field === "reservation_date" ? (
+                                  formatDate(myreservations[column.field])
+                                ) : column.field === "payment_date" ? (
+                                  formatDate(myreservations[column.field])
+                                ) :
+                                  myreservations[column.field]
+                              )}
+                            </li>
+                          ))}
+                        </ul>
+                      ))
+                    ) : (
+                      <div className="my-page-reservation-no-data">
+                        조건에 맞는 렌트내역이 없습니다.
+                      </div>
+                    )}
+                  </div>
                 </div>
-
                 <div className="my-page-reservation-bottom-pagination-wrap ">
                   <button
                     className="my-page-reservation-pagination-button"
@@ -423,12 +424,12 @@ const MyPage = () => {
                 </div>
                 {/* 상세 팝업 */}
                 {isPopUp && (
-                  <div className=" manager-popup">
-                    <div className="my_page_reservation_content_popup_wrap">
-                      <div className="my_page_reservation_content_popup_header_wrap">
-                        <div className="my_page_popup_title">렌탈 상세내역</div>
+                  <div className="manager-popup">
+                    <div className="my-page-reservation-content-popup-wrap">
+                      <div className="my-page-reservation-content-popup-header-wrap">
+                        <div className="my-page-popup-title">렌탈 상세내역</div>
                         <button
-                          className="my_page_button my_page_button_close"
+                          className="my-page-button my-page-button-close"
                           onClick={handlePopupClodeClick}
                         >
                           닫기
@@ -436,21 +437,21 @@ const MyPage = () => {
                       </div>
 
                       {/* 예약 코드 */}
-                      <div className="my_page_reservation_popup_high_reservation_id">
+                      <div className="my-page-reservation-popup-high-reservation-id">
                         <label>예약ID : </label>
                         <span>{' '}{myReservationDetails?.reservation_code}</span>
                       </div>
 
                       {/* 예약 정보 */}
-                      <div className="my_page_reservation_popup_section">
-                        <div className="my_page_reservation_popup_section_title">예약정보</div>
-                        <div className="my_page_reservation_popup_field_row">
+                      <div className="my-page-reservation-popup-section">
+                        <div className="my-page-reservation-popup-section-title">예약정보</div>
+                        <div className="my-page-reservation-popup-field-row">
                           <label>예약ID : </label>
                           <span>{myReservationDetails?.reservation_code}</span>
                           <label>예약일 : </label>
                           <span>{formatDate(myReservationDetails?.reservation_date)}</span>
                         </div>
-                        <div className="my_page_reservation_popup_field_row">
+                        <div className="my-page-reservation-popup-field-row">
                           <label>예약자 : </label>
                           <span>{myReservationDetails?.user_name}</span>
                           <label>연락처 : </label>
@@ -459,25 +460,25 @@ const MyPage = () => {
                       </div>
 
                       {/* 차량 정보 */}
-                      <div className="my_page_reservation_popup_section">
-                        <div className="my_page_reservation_popup_section_title">차량정보</div>
-                        <div className="my_page_reservation_popup_field_row">
+                      <div className="my-page-reservation-popup-section">
+                        <div className="my-page-reservation-popup-section-title">차량정보</div>
+                        <div className="my-page-reservation-popup-field-row">
                           <label>차량명 : </label>
                           <span>{myReservationDetails?.car_type_name}</span>
                           <label>연식 : </label>
                           <span>{myReservationDetails?.model_year}년식</span>
                         </div>
-                        <div className="my_page_reservation_popup_field_row">
+                        <div className="my-page-reservation-popup-field-row">
                           <label>인승 : </label>
                           <span>{myReservationDetails?.seating_capacity}</span>
                           <label>연료 : </label>
                           <span>{myReservationDetails?.fuel_type}</span>
                         </div>
-                        <div className="my_page_reservation_popup_field_row">
+                        <div className="my-page-reservation-popup-field-row">
                           <label>보험 : </label>
                           <span>{myReservationDetails?.insurance_type}</span>
                         </div>
-                        <div className="my_page_reservation_popup_field_row">
+                        <div className="my-page-reservation-popup-field-row">
                           <label>특이사항 - </label>
                           <span>
                             {`면허제한 : ${myReservationDetails?.license_restriction || "없음"}, 속도제한 : ${myReservationDetails?.speed_limit || "없음"}`}
@@ -485,27 +486,27 @@ const MyPage = () => {
                         </div>
                       </div>
 
-                      <div className="my_page_reservation_popup_section">
-                        <div className="my_page_reservation_popup_section_title">이용지점</div>
-                        <div className="my_page_reservation_popup_field_row">
+                      <div className="my-page-reservation-popup-section">
+                        <div className="my-page-reservation-popup-section-title">이용지점</div>
+                        <div className="my-page-reservation-popup-field-row">
                           <label>대여일 : </label>
                           <span>{formatDate(myReservationDetails?.rental_date)} {formatTime(myReservationDetails?.rental_time) || ""}</span>
                           <label>대여지점 : </label>
                           <span>{myReservationDetails?.rental_branch_name}</span>
                         </div>
-                        <div className="my_page_reservation_popup_field_row">
+                        <div className="my-page-reservation-popup-field-row">
                           <label>주소 : </label>
                           <span>{myReservationDetails?.rental_branch_address}</span>
                           <label>연락처 : </label>
                           <span>{myReservationDetails?.rental_branch_phone_number}</span>
                         </div>
-                        <div className="my_page_reservation_popup_field_row">
+                        <div className="my-page-reservation-popup-field-row">
                           <label>반납일 : </label>
                           <span>{formatDate(myReservationDetails?.return_date)} {formatTime(myReservationDetails?.return_time) || ""}</span>
                           <label>반납지점 : </label>
                           <span>{myReservationDetails?.return_branch_name}</span>
                         </div>
-                        <div className="my_page_reservation_popup_field_row">
+                        <div className="my-page-reservation-popup-field-row">
                           <label>주소 : </label>
                           <span>{myReservationDetails?.return_branch_address}</span>
                           <label>연락처 : </label>
@@ -514,19 +515,19 @@ const MyPage = () => {
                       </div>
 
                       {/* 결제 정보 */}
-                      <div className="my_page_reservation_popup_section">
-                        <div className="my_page_reservation_popup_section_title">결제정보</div>
-                        <div className="my_page_reservation_popup_field_row">
+                      <div className="my-page-reservation-popup-section">
+                        <div className="my-page-reservation-popup-section-title">결제정보</div>
+                        <div className="my-page-reservation-popup-field-row">
                           <label>결제일 : </label>
                           <span>{formatDate(myReservationDetails?.payment_date)}</span>
                           <label>결제상태 : </label>
                           <span>{myReservationDetails?.payment_status}</span>
                         </div>
-                        <div className="my_page_reservation_popup_field_row">
+                        <div className="my-page-reservation-popup-field-row">
                           <label>결제금액 : </label>
                           <span>{formatNumberWithCommas(myReservationDetails?.payment_amount)}</span>
                         </div>
-                        <div className="my_page_reservation_popup_field_row">
+                        <div className="my-page-reservation-popup-field-row">
                           <label>결제방식 : </label>
                           <span>
                             {myReservationDetails?.payment_category || "정보 없음"} / {myReservationDetails?.payment_type || "정보 없음"}
@@ -535,9 +536,9 @@ const MyPage = () => {
                       </div>
 
                       {/* 액션 버튼 */}
-                      <div className="my_page_reservation_content_popup_footer_wrap">
+                      <div className="my-page-reservation-content-popup-footer-wrap">
                         <button
-                          className="my_page_reservation_content_popup_footer_cancel"
+                          className="my-page-reservation-content-popup-footer-cancel"
                           onClick={() => handleMyReservationCancel(myReservationDetails.reservation_code, userCode)}
                         >
                           예약취소
