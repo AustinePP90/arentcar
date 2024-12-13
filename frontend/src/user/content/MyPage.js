@@ -4,9 +4,10 @@ import { useNavigate } from "react-router-dom";
 import { useSelector } from 'react-redux';
 import axios from "axios";
 import { refreshAccessToken, handleLogout, formatDate, formatTime, formatPhone } from "common/Common";
-
+import MyPageDetail from 'user/content/MyPageDetail';
 
 const MyPage = () => {
+  const [isDetailPopup, setIsDetailPopup] = useState(false);
   const isUserName = useSelector((state) => state.userState.userName);
   const userCode = useSelector((state) => state.userState.userCode);
   const isLoginState = useSelector((state) => state.userState.loginState);
@@ -226,7 +227,6 @@ const MyPage = () => {
     }
   };
 
-
   const handleButtonNavigation = (path) => {
     navigate(path);
   };
@@ -236,12 +236,14 @@ const MyPage = () => {
     handleFetchMyReservationDetail(reservationCode, userCode);
   };
 
-
-
-  const handlePopupClodeClick = () => {
+  const handlePopupCloseClick = () => {
     setIsPopUp(false);
     setMyReservationDetails([]);
   };
+
+  const handleInfoDetailClick = () => {
+    setIsDetailPopup(true);
+  }
 
   const handleMyReservationCancel = async (reservationCode, userCode) => {
     // 예약 취소 여부 확인
@@ -306,7 +308,17 @@ const MyPage = () => {
                 <p className='my-page-profile-info-text-title'><strong>{isUserName}님</strong> 반갑습니다.</p>
                 <p className='my-page-profile-info-text-sub'>항상 A렌트카와 함께해 주셔서 감사합니다.</p>
               </div>
-              <button className="my-page-profile-info-button mypage-button">내 정보 관리</button>
+              <button
+                className="my-page-profile-info-button mypage-button"
+                onClick={handleInfoDetailClick}
+              >
+                내 정보 관리
+              </button>
+              {isDetailPopup &&
+                <div className='manager-popup'>
+                  <MyPageDetail />
+                </div>
+              }
             </div>
           </div>
           <div className="my-page-body-reservation-wrap">
@@ -430,7 +442,7 @@ const MyPage = () => {
                         <div className="my-page-popup-title">렌탈 상세내역</div>
                         <button
                           className="my-page-button my-page-button-close"
-                          onClick={handlePopupClodeClick}
+                          onClick={handlePopupCloseClick}
                         >
                           닫기
                         </button>
