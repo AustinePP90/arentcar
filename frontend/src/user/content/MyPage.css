@@ -11,7 +11,7 @@
 }
 .my-page-content-wrap{
   position: relative;
-  width: 960px;
+  width: 1080px;
   margin: 0 auto;
   padding: 60px 0;
 }
@@ -54,7 +54,7 @@
     padding: 30px;
     background: #FFFFFF;
     border: 1px solid #50555C;
-    box-shadow: 0px 8px 8px rgba(0, 0, 0, 0.12);
+    box-shadow: 0 5px 5px 1px #ccc;
     border-radius: 12px;
 }
 .my-page-reservation-data-list-search-wrap{
@@ -65,29 +65,36 @@
 }
 .my-page-reservation-data-list-search-wrap button{
   background: none;
-  background-color: #f7f7f9;
+  background-color: #ff7916;
+  color: white;
   border-radius: 5px;
   width: 50px;
 }
-.my-page-reservation-data-list-search-wrap button:hover{
-  background-color: #ff7916;
-  color: white;
-}
+
 .my-page-reservation-data-column-title-ul{
   display: flex;
   justify-content: center;
   font-size: 14px;
   text-align: center;
-  height: 30px;
 }
 .my-page-reservation-data-column-title-li {
   background-color: #f7f7f9;
   border: 1px solid white;
   border-bottom: 1px solid #f7f7f9; 
   color: #2E3033;
+  font-size: 16px;
   font-weight: 500;
+  line-height: 30px;
+  height: 30px;
 }
-
+.my-page-reservation-data-column-data-ul{
+  display: flex;
+  align-items: center; 
+  justify-content: center;
+  font-size: 14px;
+  text-align: center;
+  height: 30px;
+}
 .my-page-reservation-data-column{
   background-color: #f7f7f9;
   border-radius: 5px;
@@ -98,6 +105,8 @@
   background-color: #ffffff;
   border: 1px solid #f7f7f9;
   border-radius: 5px;
+  line-height: 30px;
+  height: 30px;
 
 }
 .my-page-reservation-data-button-detail{
@@ -106,6 +115,7 @@
   border-radius: 5px;
   width: 80px;
   height: 28px;
+  line-height: 28px;
 }
 .my-page-reservation-data-button-detail:hover{
   background-color: #ff7916;
@@ -127,11 +137,13 @@
 .my-page-reservation-no-data{
   text-align: center;
   font-size: 14px;
+  background-color: #ffffff;
+  line-height: 30px;
 }
 
 .my_page_reservation_content_popup_wrap {
   width: 600px;
-  margin: 250px auto;
+  margin: 100px auto;
   padding: 20px 20px;
   background-color: #fff;
   border-radius: 6px;
@@ -149,20 +161,18 @@
   font-size: 18px;
   font-weight: 700;
   color: #2E3033;
-  text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.4); /* 가벼운 그림자 */
+  text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.4);
 }
 
 .my_page_button_close{
-  background-color: #f7f7f9;
+  background-color: #ff7916;
+  color: white;
   border-radius: 5px;
   width: 50px;
   height: 30px;
   font-size: 14px;
 }
-.my_page_button_close:hover{
-  background-color: #ff7916;
-  color: white;
-}
+
 .my_page_reservation_popup_high_reservation_id{
   margin-bottom: 7px;
   color: #2E3033;
@@ -174,7 +184,7 @@
   padding-bottom: 10px; /* 구분선 위쪽 여백 */
   padding: 10px; /* 내부 여백 */
   border-radius: 8px; /* 모서리를 둥글게 */
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* 부드러운 그림자 */
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
   background-color: #fff; /* 섹션 배경색 */
   border: 1px solid #ddd; /* 구분을 위한 테두리 */
 }
@@ -218,13 +228,11 @@
 }
 .my_page_reservation_content_popup_footer_wrap button{
   background: none;
-  background-color: #f7f7f9;
-  border-radius: 5px;
-  width: 70px;
-  height: 30px;
-  font-size: 14px;
-}
-.my_page_reservation_content_popup_footer_wrap button:hover{
   background-color: #ff7916;
   color: white;
+  border-radius: 5px;
+  width: 75px;
+  height: 30px;
+  line-height: 30px;
+  font-size: 14px;
 }

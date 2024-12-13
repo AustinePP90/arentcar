@@ -3,6 +3,7 @@ package com.apple.arentcar.service;
 import com.apple.arentcar.dto.RentalCarsBranchOptionAttrDTO;
 import com.apple.arentcar.dto.RentalCarsDTO;
 import com.apple.arentcar.dto.RentalCarsCarOptionAttrDTO;
+import com.apple.arentcar.exception.DuplicateCarNumberException;
 import com.apple.arentcar.mapper.RentalCarsMapper;
 import com.apple.arentcar.model.RentalCars;
 import org.apache.poi.ss.usermodel.Row;
@@ -24,6 +25,11 @@ public class RentalCarsService {
 
     // 차량 등록
     public RentalCars createRentalCars(RentalCars rentalCars) {
+        // 중복 차량 번호 검사
+        if (rentalCarsMapper.existsByCarNumber(rentalCars.getCarNumber())) {
+            throw new DuplicateCarNumberException("이미 등록된 차량 번호입니다.");
+        }
+
         rentalCarsMapper.createRentalCars(rentalCars);
         return rentalCars;
     }
@@ -48,10 +54,11 @@ public class RentalCarsService {
 
     // 조건에 따라 차량 수 조회
     public int countRentalCarsWithConditions(String carNumber, String carStatus, String carTypeName, String branchName,
-                                  String carTypeCategory, String originType, String seatingCapacity,
-                                  String fuelType, String carManufacturer, String modelYear) {
-        return rentalCarsMapper.countRentalCarsWithConditions(carNumber, carStatus, carTypeName, branchName, carTypeCategory,
-                                                   originType, seatingCapacity, fuelType, carManufacturer, modelYear);
+                                             String carTypeCategory, String originType, String seatingCapacity,
+                                             String fuelType, String carManufacturer, String modelYear) {
+        return rentalCarsMapper.countRentalCarsWithConditions(carNumber, carStatus, carTypeName, branchName,
+                                                              carTypeCategory, originType, seatingCapacity, fuelType,
+                                                              carManufacturer, modelYear);
     }
 
     // 렌탈가능/렌탈중/정비중 전체 차량 수 조회

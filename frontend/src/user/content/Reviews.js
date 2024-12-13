@@ -127,7 +127,7 @@ const Reviews = () => {
               <div className="user-customers-detail-reviews-title">
                 <h4>
                   {reviews && (<>
-                    {reviews.post_title} {scoreSeting(reviews.review_rating)}
+                    {reviews.post_title} <span style={{color:"#ee0a0a"}}> {scoreSeting(reviews.review_rating)} </span>
                   </>)}
                 </h4>
                 

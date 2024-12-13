@@ -13,8 +13,8 @@ public class CarService {
     @Autowired
     private CarMapper CarMapper;
 
-    public List<CarCardDTO> getAllCars(String branchName, String fuelType, String carTypeCategory, String carManufacturer, String seatingCapacity,String rentalDate,String returnDate) {
-        return CarMapper.getAllCars(branchName,fuelType,carTypeCategory,carManufacturer,seatingCapacity, rentalDate,returnDate);
+    public List<CarCardDTO> getAllCars(String branchName, String fuelType, String carTypeCategory, String carManufacturer, String seatingCapacity, String rentalDate, String returnDate, Integer rentalPeriod) {
+        return CarMapper.getAllCars(branchName,fuelType,carTypeCategory,carManufacturer,seatingCapacity, rentalDate,returnDate, rentalPeriod);
     }
 
     public Integer getFilterCarsCount(String branchName, String fuelType, String carTypeCategory, String carManufacturer, String seatingCapacity,String rentalDate,String returnDate) {
@@ -52,11 +52,12 @@ public class CarService {
     }
 
 
-    public void InsertUserReservation(UserReservationDTO userReservationDTO) {
+    public UserReservationDTO InsertUserReservation(UserReservationDTO userReservationDTO) {
         int rowsInserted = CarMapper.InsertUserReservation(userReservationDTO);
         if (rowsInserted == 0) {
             throw new IllegalStateException("Reservation could not be inserted");
         }
+        return userReservationDTO;
     }
 
     public List<RegionsDTO> getAllRegions() {

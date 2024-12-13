@@ -35,4 +35,6 @@ public class CarCardDTO {
     private Integer rentalRate;
 
     private Integer rentalDiscountRate;
+
+    private Integer rentalPeriod;
 }

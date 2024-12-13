@@ -5,6 +5,7 @@ import com.apple.arentcar.dto.RentalCarsCarOptionAttrDTO;
 import com.apple.arentcar.dto.RentalCarsDTO;
 import com.apple.arentcar.model.RentalCars;
 import org.apache.ibatis.annotations.*;
+import org.springframework.security.core.parameters.P;
 
 import java.util.List;
 
@@ -13,6 +14,9 @@ public interface RentalCarsMapper {
 
     // 차량 등록
     void createRentalCars(RentalCars rentalCars);
+    // 충복 차량 번호 검사
+    @Select("SELECT EXISTS (SELECT 1 FROM rental_cars WHERE car_number = #{carNumber})")
+    boolean existsByCarNumber(@Param("carNumber") String carNumber);
     // 차량 삭제
     @Delete("DELETE FROM rental_cars where car_code = #{carCode}")
     void deleteRentalCarsById(@Param("carCode") Integer carCode);

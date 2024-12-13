@@ -40,7 +40,7 @@
                LEFT join admins am on am.admin_code = p.author_code
                LEFT join users us on us.user_code = p.author_code
         where p.post_type = 'NT' and p.post_title LIKE CONCAT('%', #{keyword}, '%')
-        ORDER BY p.post_code LIMIT #{pageSize} OFFSET #{pageNumber};
+        ORDER BY p.post_code DESC LIMIT #{pageSize} OFFSET #{pageNumber};
     </select>
 
     <select id="countSearchNotices" resultType="int">
@@ -101,7 +101,7 @@
         LEFT join users us on us.user_code = p.author_code
         join reviews rv on rv.post_code = p.post_code
         where p.post_title LIKE CONCAT('%', #{keyword}, '%')
-        ORDER BY p.post_code LIMIT #{pageSize} OFFSET #{pageNumber};
+        ORDER BY p.post_code DESC LIMIT #{pageSize} OFFSET #{pageNumber};
     </select>
 
     <select id="countSearchReviews" resultType="int">
@@ -264,7 +264,7 @@
                LEFT join users us on us.user_code = p.author_code
         join inquirys iq on iq.post_code = p.post_code
         where p.post_title LIKE CONCAT('%', #{keyword}, '%')
-        LIMIT #{pageSize} OFFSET #{pageNumber};
+        ORDER BY p.post_code DESC LIMIT #{pageSize} OFFSET #{pageNumber};
     </select>
 
     <select id="countSearchInquirys" resultType="int">

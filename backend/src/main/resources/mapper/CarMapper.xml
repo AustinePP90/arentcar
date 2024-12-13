@@ -54,16 +54,10 @@
             <if test='seatingCapacity != null and seatingCapacity != ""'>
                 AND cc2.common_name = #{seatingCapacity}
             </if>
-            AND NOT EXISTS (
-            SELECT 1
-            FROM reservations r
-            WHERE r.car_code = rc.car_code
-            AND (
-            STR_TO_DATE(r.rental_date, '%Y%m%d') &lt;= STR_TO_DATE(#{returnDate}, '%Y%m%d')
-            AND STR_TO_DATE(r.return_date, '%Y%m%d') >= STR_TO_DATE(#{rentalDate}, '%Y%m%d')
-            )
-            )
-            AND (#{returnDate} - #{rentalDate}) * 24 >= rr.rental_start_hours AND (#{returnDate} - #{rentalDate}) * 24 &lt;=rr.rental_end_hours
+            AND b.branch_name = #{branchName}
+            AND rc.car_status = "01"
+            AND rc.branch_code = (SELECT branch_code FROM branchs WHERE branch_name = #{branchName})
+            AND #{rentalPeriod} * 24 >= rr.rental_start_hours AND #{rentalPeriod} * 24 &lt;=rr.rental_end_hours
         </where>
     </select>
     <select id="getFilterCarsCount" resultType="int">
@@ -99,16 +93,7 @@
             <if test='seatingCapacity != null and seatingCapacity != ""'>
                 AND cc2.common_name = #{seatingCapacity}
             </if>
-                AND NOT EXISTS (
-                SELECT 1
-                FROM reservations r
-                WHERE r.car_code = rc.car_code
-                AND (
-                STR_TO_DATE(r.rental_date, '%Y%m%d') &lt;= STR_TO_DATE(#{returnDate}, '%Y%m%d')
-                AND STR_TO_DATE(r.return_date, '%Y%m%d') >= STR_TO_DATE(#{rentalDate}, '%Y%m%d')
-                )
-                )
-
+            AND rc.car_status = "01"
         </where>
     </select>
     <select id="getCarType" resultType="com.apple.arentcar.dto.CarTypeDTO">
@@ -192,7 +177,7 @@
     </insert>
 
     <update id="updateCarStatus">
-        UPDATE rental_cars SET car_status = 02 WHERE car_code = #{carCode}
+        UPDATE rental_cars SET car_status = "02" WHERE car_code = #{carCode}
     </update>
 
 

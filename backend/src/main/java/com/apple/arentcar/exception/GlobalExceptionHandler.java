@@ -74,6 +74,12 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
                 .body("MyBatis System Error: " + ex.getCause().getMessage());
     }
 
+    // 중복 차량 번호 등록 예외 처리
+    @ExceptionHandler(DuplicateCarNumberException.class)
+    public ResponseEntity<String> handleDuplicateCarNumberException(DuplicateCarNumberException ex) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
+    }
+
     // 그 외 모든 예외 처리
     @ExceptionHandler(Exception.class)
     public ResponseEntity<String> handleGlobalException(Exception ex) {

@@ -159,8 +159,8 @@ const ReservationCalender = ({ onRentalPeriod }) => {
                 className={`reservation-calendar-day
                 ${isDayInFirstRange(day) ? 'selected-range' : ''}
                 ${index % 7 === 0 ? 'day-off' : ''}
-                ${firstSelectedDay && firstSelectedDay.getMonth() === month && firstSelectedDay.getDate() === day ? 'selected' : ''}
-                ${secondSelectedDay && secondSelectedDay.getMonth() === month && secondSelectedDay.getDate() === day ? 'selected' : ''}
+                ${firstSelectedDay && firstSelectedDay.getFullYear() === year && firstSelectedDay.getMonth() === month && firstSelectedDay.getDate() === day ? 'selected' : ''}
+                ${secondSelectedDay && firstSelectedDay.getFullYear() === year && secondSelectedDay.getMonth() === month && secondSelectedDay.getDate() === day ? 'selected' : ''}
                 ${day ? '' : 'empty'}
                 ${currentDate.getMonth() + 1 === currentMonteDate.getMonth() + 1 && currentDate.getDate() > day ? 'disabled-day' : ''}
               `}
@@ -185,8 +185,8 @@ const ReservationCalender = ({ onRentalPeriod }) => {
                 className={`reservation-calendar-day 
                 ${isDayInSecondRange(day) ? 'selected-range' : ''}
                 ${index % 7 === 0 ? 'day-off' : ''}
-                ${firstSelectedDay && firstSelectedDay.getMonth() === nextMonth && firstSelectedDay.getDate() === day ? 'selected' : ''}
-                ${secondSelectedDay && secondSelectedDay.getMonth() === nextMonth && secondSelectedDay.getDate() === day ? 'selected' : ''}
+                ${firstSelectedDay && firstSelectedDay.getFullYear() === year && firstSelectedDay.getMonth() === nextMonth && firstSelectedDay.getDate() === day ? 'selected' : ''}
+                ${secondSelectedDay && firstSelectedDay.getFullYear() === year && secondSelectedDay.getMonth() === nextMonth && secondSelectedDay.getDate() === day ? 'selected' : ''}
                 ${day ? '' : 'empty'}
               `}
                 onClick={() => handleSelected(day, true)} // 두 번째 달력에서 클릭

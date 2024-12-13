@@ -44,7 +44,7 @@
     width: 45px;
     height: 23px;
     line-height: 23px; */
-    color: #ee0a0a;
+    color: rgb(38, 49, 155);
 }
 .post-btn2{
     /* display: inline-block;
@@ -54,7 +54,7 @@
     width: 45px;
     height: 23px;
     line-height: 23px; */
-    color: #3b70d6;
+    color: green;
 
 }
 .post-btn3{
@@ -65,7 +65,7 @@
     width: 45px;
     height: 23px;
     line-height: 23px; */
-    color: #77777a;
+    color: rgb(38, 49, 155);
 }
 
 .manager-post-notice-popup{

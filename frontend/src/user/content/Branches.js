@@ -19,14 +19,24 @@ const Branches = () => {
                                    // ref={mapElement}를 통해 해당 DOM 요소(<div></div>)가 mapElement.current에 저장된다, useRef로 생성된 객체에는 current라는 속성이 있어 이를 통해 값을 저장하거나 참조할 수 있다
 
   useEffect(() => {
+    if (!process.env.REACT_APP_API_URL) {
+      console.error("API URL is not defined in .env file");
+      alert("API URL이 설정되지 않았습니다.");
+    }
+
     const fetchBranches = async () => {
       try {
         const response = await axios.get(`${process.env.REACT_APP_API_URL}/arentcar/user/branchs`);
-        if (response.data) {
+        if (Array.isArray(response.data) && response.data.length > 0) {
           setBranches(response.data);
+        } else {
+          console.warn("No branches found.");
+          alert("등록된 지점이 없습니다.");
+          setBranches([]);
         }
       } catch (error) {
         console.error("There was an error fetching the branches", error);
+        alert("지점 정보를 불러오는 데 실패했습니다. 다시 시도해주세요.");
       }
     };
 
@@ -34,12 +44,20 @@ const Branches = () => {
   }, []);
 
   const handleBranchGuideClick = async (branch) => {
-    setBranchName(branch.branch_name);
-    setBranchAddress(branch.branch_detailed_address);
-    setBranchPostCode(branch.post_code);
-    setBranchPhone(branch.branch_phone_number);
-    setBranchPickup(branch.available_pickup_time);
-    setBranchReturn(branch.available_return_time);
+    if (loading) return; // 이미 로딩 중인 경우 중복 실행 방지
+
+    if (!branch || !branch.branch_longitude || !branch.branch_latitude) {
+      console.error("Invalid branch data. Longitude or Latitude is missing.");
+      alert("지점 데이터가 올바르지 않습니다.");
+      return;
+    }
+
+    setBranchName(branch.branch_name || "정보 없음");
+    setBranchAddress(branch.branch_detailed_address || "정보 없음");
+    setBranchPostCode(branch.post_code || "정보 없음");
+    setBranchPhone(branch.branch_phone_number || "정보 없음");
+    setBranchPickup(branch.available_pickup_time || "정보 없음");
+    setBranchReturn(branch.available_return_time || "정보 없음");
   
     const clientId = process.env.REACT_APP_NAVER_MAP_CLIENT_ID; // .env에서 가져오기
     if (!clientId) {
@@ -71,7 +89,11 @@ const Branches = () => {
         script.async = true;
   
         script.onload = () => resolve(); // 스크립트 로드 완료 시 resolve
-        script.onerror = () => reject(new Error("Failed to load Naver Map script"));
+        script.onerror = () => {
+          console.error("Failed to load Naver Map script");
+          alert("지도 로드에 실패했습니다. 인터넷 연결을 확인하세요.");
+          reject(new Error("Failed to load Naver Map script"));
+        };
         document.head.appendChild(script);
       }
     });
@@ -108,7 +130,9 @@ const Branches = () => {
         ))}
       </div>
       <div className="branches-guide-content-wrap">
-        <div className="branches-guide-map-wrap" ref={mapElement}>지점을 선택해주세요.</div> {/* ref={mapElement}를 통해 해당 DOM 요소(<div></div>)가 mapElement.current에 저장된다 */} 
+        <div className="branches-guide-map-wrap" ref={mapElement}>
+          {branchName ? null : "지점을 선택해주세요."}
+        </div> {/* ref={mapElement}를 통해 해당 DOM 요소(<div></div>)가 mapElement.current에 저장된다 */} 
         {branchName && (
         <div className="branches-guide-info-wrap">
          <div className="info-row">

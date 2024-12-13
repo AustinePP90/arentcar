@@ -100,7 +100,6 @@ function calculateRentalPeriod(rentalDate, returnDate) {
 }
         
         setRentalperiod(calculateRentalPeriod(rentalPeriod[0].getFullYear().toString() + (rentalPeriod[0].getMonth() + 1).toString() + rentalPeriod[0].getDate().toString(),rentalPeriod[1].getFullYear().toString() + (rentalPeriod[1].getMonth() + 1).toString() + rentalPeriod[1].getDate().toString()));
-    setRentalperiod(calculateRentalPeriod(rentalPeriod[0].getFullYear().toString() + (rentalPeriod[0].getMonth() + 1).toString() + rentalPeriod[0].getDate().toString(),rentalPeriod[1].getFullYear().toString() + (rentalPeriod[1].getMonth() + 1).toString() + rentalPeriod[1].getDate().toString()));
   }, []);
 
   const handleFilterChange = (id, value) => {
@@ -109,17 +108,12 @@ function calculateRentalPeriod(rentalDate, returnDate) {
       [id]: value,
     }));
   };
-  useEffect(()=>{
-    console.log(rentalperiod);
-  },[rentalperiod])
-
-
 
   const handleResetFilter = () => {
     setSelectedFilters({
-      ['branchName']: selectBranch,
-      ['rentalDate']: rentalPeriod[0].getFullYear().toString() + (rentalPeriod[0].getMonth() + 1).toString() + rentalPeriod[0].getDate().toString(),
-      ['returnDate']: rentalPeriod[1].getFullYear().toString() + (rentalPeriod[1].getMonth() + 1).toString() + rentalPeriod[1].getDate().toString(),
+      'branchName': selectBranch,
+      'rentalDate': rentalPeriod[0].getFullYear().toString() + (rentalPeriod[0].getMonth() + 1).toString() + rentalPeriod[0].getDate().toString(),
+      'returnDate': rentalPeriod[1].getFullYear().toString() + (rentalPeriod[1].getMonth() + 1).toString() + rentalPeriod[1].getDate().toString(),
     });
   }
   const hendelSelectRegion = (region) => {
@@ -146,12 +140,12 @@ function calculateRentalPeriod(rentalDate, returnDate) {
       setIsSelectPeriod(true);
       setIsSelected(true);
       setSelectedFilters({
-        ['branchName']: selectBranch,
-        ['rentalDate']: rentalPeriod[0].getFullYear().toString() + (rentalPeriod[0].getMonth() + 1).toString().padStart(2, '0') + rentalPeriod[0].getDate().toString().padStart(2, '0'),
-        ['returnDate']: rentalPeriod[1].getFullYear().toString() + (rentalPeriod[1].getMonth() + 1).toString().padStart(2, '0') + rentalPeriod[1].getDate().toString().padStart(2, '0'),
-        ['rentalTime']: rentalTime[0].toString().padStart(2, '0'),
-        ['returnTime']: rentalTime[1].toString().padStart(2, '0'),
-        ['rentalperiod']: rentalperiod
+        'branchName': selectBranch,
+        'rentalDate': rentalPeriod[0].getFullYear().toString() + (rentalPeriod[0].getMonth() + 1).toString().padStart(2, '0') + rentalPeriod[0].getDate().toString().padStart(2, '0'),
+        'returnDate': rentalPeriod[1].getFullYear().toString() + (rentalPeriod[1].getMonth() + 1).toString().padStart(2, '0') + rentalPeriod[1].getDate().toString().padStart(2, '0'),
+        'rentalTime': rentalTime[0].toString().padStart(2, '0'),
+        'returnTime': rentalTime[1].toString().padStart(2, '0'),
+        'rentalperiod': rentalperiod
       });
     } else {
       alert('대여 장소와 기간을 선택해 주세요.');

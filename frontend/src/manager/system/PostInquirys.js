@@ -450,8 +450,8 @@ const PostInquirys = ({ onClick }) => {
     if(column.field === '') {
       return(<>
         {/* <button className='manager-button post-btn3' > 보기 </button>  */}
-        <button className='manager-button post-btn2' onClick={()=>handleAnswer(value["post_code"])}> 답변 </button> 
-        <button className='manager-button post-btn1' onClick={()=>handleDeleteInquiry(value["post_code"])}> 삭제 </button> 
+        <button className='manager-button post-btn1' onClick={()=>handleAnswer(value["post_code"])}> 답변 </button> 
+        <button className='manager-button post-btn2' onClick={()=>handleDeleteInquiry(value["post_code"])}> 삭제 </button> 
       </>)
     } else if(column.field === 'post_type') {
       return( Type[value[column.field]] )

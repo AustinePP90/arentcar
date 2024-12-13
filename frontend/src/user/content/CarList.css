@@ -20,6 +20,7 @@
     border-radius: 12px;
     background-color: white;
     /* max-height: 130px; */
+    cursor: pointer;
 }
 
 .car-list-card-car-image-wrap{

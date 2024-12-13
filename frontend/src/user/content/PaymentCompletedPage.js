@@ -1,11 +1,12 @@
 import axios from 'axios';
 import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import 'user/content/PaymentCompletedPage.css'
 
 const PaymentCompletedPage = () => {
     const location = useLocation();
+    const navigator = useNavigate();
     const reservationInfo = location.state;
     const [reservationNumber,setReservationNumber] =useState(0);
     const userName = useSelector((state) => state.userState.userName);
@@ -18,6 +19,12 @@ const PaymentCompletedPage = () => {
           return fee.toString();
       }
       return fee.toString().slice(0, -3) + ',' + fee.toString().slice(-3);
+  }
+  const handelMypageNavigation = ()=>{
+    navigator("/mypage");
+  }
+  const handelHomeNavigation = ()=>{
+    navigator("/");
   }
 
     useEffect(() => {
@@ -59,6 +66,10 @@ const PaymentCompletedPage = () => {
                 <div className='payment-completed-page-item'><span>차량명</span><span>{reservationInfo.car_type_name}</span></div>
                 <div className='payment-completed-page-item'><span>예약기간</span><span>{reservationInfo.rental_date.substring(0, 4) + '.' + reservationInfo.rental_date.substring(4, 6) + '.' + reservationInfo.rental_date.substring(6)} ~ {reservationInfo.return_date.substring(0, 4) + '.' + reservationInfo.return_date.substring(4, 6) + '.' + reservationInfo.return_date.substring(6)}</span></div>
                 <div className='payment-completed-page-item'><span>요금</span><span>{addCommaToCurrency(reservationInfo.payment_amount)}원</span></div>
+            </div>
+            <div className='payment-completed-page-button-wrap'>
+              <button className='payment-completed-page-button' onClick={handelMypageNavigation}>예약정보 확인</button>
+              <button className='payment-completed-page-button' onClick={handelHomeNavigation}>홈으로</button>
             </div>
         </div>
     );

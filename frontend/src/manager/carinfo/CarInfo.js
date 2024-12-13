@@ -1,10 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { refreshAccessToken, handleAdminLogout } from 'common/Common';
+import { useSelector } from 'react-redux';
 import Loading from 'common/Loading';
 import "manager/carinfo/CarInfo.css";
 
 const CarInfo = ({ onClick }) => {
+  const isLoginState = useSelector((state) => state.adminState.loginState);
+
   const [vehicles, setVehicles] = useState([]) // DB에서 읽어온 차종 데이터를 배열로 담기
   const [vehiclesTrigger, setVehiclesTrigger] = useState(false);
 
@@ -106,6 +109,16 @@ const CarInfo = ({ onClick }) => {
     { value: '15', label: '폴스타' },
   ];
 
+  useEffect(() => {
+    if (!isLoginState) {
+      alert("로그인이 필요합니다.");
+      return;
+    }
+
+    pageingVehicles();
+    getTotalCount();
+  }, [pageNumber, vehiclesTrigger]); // pageNumber가 변경될때면 pageingVehicles(), getTotalCount() 함수 호출
+
   const pageingVehicles = async () => {
     try {
       const token = localStorage.getItem('accessToken');
@@ -144,10 +157,14 @@ const CarInfo = ({ onClick }) => {
         withCredentials: true,
       });
 
-    if (response.data) {
-      setVehicles(response.data);
-      console.log(vehicles);
-    }
+      if (response.data && response.data.length > 0) {  // 배열인 경우
+        setVehicles(response.data);
+      } else if (response.data && Object.keys(response.data).length > 0) {  // 객체인 경우
+        setVehicles(response.data);
+      } else {
+        alert("조건에 맞는 차종명이 없습니다.");
+        setVehicles(response.data);
+      }
   };
 
   const getTotalCount = async () => {
@@ -187,11 +204,6 @@ const CarInfo = ({ onClick }) => {
       console.error('Unexpected response:', response.data);
     }
   };
-
-  useEffect(() => {
-    pageingVehicles();
-    getTotalCount();
-  }, [pageNumber, vehiclesTrigger]); // pageNumber가 변경될때면 pageingVehicles(), getTotalCount() 함수 호출
 
   const handleUpdateClick = (updateData, workMode) => {
     setIsPopUp(true);
@@ -560,7 +572,7 @@ const CarInfo = ({ onClick }) => {
               </div>
               <div className='car-info-content-popup-line'>
                 <label className='width80 word-right label-margin-right' htmlFor="carTypeCategory">차종구분</label>
-                <select className='width100' id="carTypeCategory" value={carTypeCategory} onChange={(e) => (setCarTypeCategory(e.target.value))}>
+                <select className='width120' id="carTypeCategory" value={carTypeCategory} onChange={(e) => (setCarTypeCategory(e.target.value))}>
                   {optionsMenuCarTypeCategory.map((option) => (
                     <option key={option.value} value={option.value}>
                       {option.label}
@@ -570,7 +582,7 @@ const CarInfo = ({ onClick }) => {
               </div>
               <div className='car-info-content-popup-line'>
                 <label className='width80 word-right label-margin-right' htmlFor="originType">국산/수입</label>
-                <select className='width100' id="originType" value={originType} onChange={(e) => (setOriginType(e.target.value))}>
+                <select className='width120' id="originType" value={originType} onChange={(e) => (setOriginType(e.target.value))}>
                   {optionsMenuOriginType.map((option) => (
                     <option key={option.value} value={option.value}>
                       {option.label}
@@ -580,11 +592,11 @@ const CarInfo = ({ onClick }) => {
               </div>
               <div className='car-info-content-popup-line'>
                 <label className='width80 word-right label-margin-right' htmlFor="carTypeName">차종명</label>
-                <input className='width100 word-center' id='carTypeName' type="text" placeholder="모닝" maxLength={6} value={carTypeName} onChange={(e) => setCarTypeName(e.target.value)} />
+                <input className='width120 word-center' id='carTypeName' type="text" placeholder="예) 모닝" maxLength={20} value={carTypeName} onChange={(e) => setCarTypeName(e.target.value)} />
               </div>
               <div className='car-info-content-popup-line'>
                 <label className='width80 word-right label-margin-right' htmlFor="seatingCapacity">수용인원</label>
-                <select className='width100' id="seatingCapacity" value={seatingCapacity} onChange={(e) => (setSeatingCapacity(e.target.value))}>
+                <select className='width120' id="seatingCapacity" value={seatingCapacity} onChange={(e) => (setSeatingCapacity(e.target.value))}>
                   {optionsMenuSeatingCapacity.map((option) => (
                     <option key={option.value} value={option.value}>
                       {option.label}
@@ -594,7 +606,7 @@ const CarInfo = ({ onClick }) => {
               </div>
               <div className='car-info-content-popup-line'>
                 <label className='width80 word-right label-margin-right' htmlFor="fuelType">연료</label>
-                <select className='width100' id="fuelType" value={fuelType} onChange={(e) => (setFuelType(e.target.value))}>
+                <select className='width120' id="fuelType" value={fuelType} onChange={(e) => (setFuelType(e.target.value))}>
                   {optionsMenuFuelType.map((option) => (
                     <option key={option.value} value={option.value}>
                       {option.label}
@@ -604,7 +616,7 @@ const CarInfo = ({ onClick }) => {
               </div>
               <div className='car-info-content-popup-line'>
                 <label className='width80 word-right label-margin-right' htmlFor="speedLimit">속도제한</label>
-                <select className='width100' id="speedLimit" value={speedLimit} onChange={(e) => (setSpeedLimit(e.target.value))}>
+                <select className='width120' id="speedLimit" value={speedLimit} onChange={(e) => (setSpeedLimit(e.target.value))}>
                   {optionsMenuSpeedLimit.map((option) => (
                     <option key={option.value} value={option.value}>
                       {option.label}
@@ -614,7 +626,7 @@ const CarInfo = ({ onClick }) => {
               </div>
               <div className='car-info-content-popup-line'>
                 <label className='width80 word-right label-margin-right' htmlFor="licenseRestriction">면허제한</label>
-                <select className='width100' id="licenseRestriction" value={licenseRestriction} onChange={(e) => (setLicenseRestriction(e.target.value))}>
+                <select className='width120' id="licenseRestriction" value={licenseRestriction} onChange={(e) => (setLicenseRestriction(e.target.value))}>
                   {optionsMenuLicenseRestriction.map((option) => (
                     <option key={option.value} value={option.value}>
                       {option.label}
@@ -624,7 +636,7 @@ const CarInfo = ({ onClick }) => {
               </div>
               <div className='car-info-content-popup-line'>
                 <label className='width80 word-right label-margin-right' htmlFor="carManufacturer">제조사</label>
-                <select className='width100' id="carManufacturer" value={carManufacturer} onChange={(e) => (setCarManufacturer(e.target.value))}>
+                <select className='width120' id="carManufacturer" value={carManufacturer} onChange={(e) => (setCarManufacturer(e.target.value))}>
                   {optionsMenuCarManufacturer.map((option) => (
                     <option key={option.value} value={option.value}>
                       {option.label}
@@ -634,13 +646,12 @@ const CarInfo = ({ onClick }) => {
               </div>
               <div className='car-info-content-popup-line'>
                 <label className='width80 word-right label-margin-right' htmlFor="modelYear">년식</label>
-                <input className='width100  word-center' id='modelYear' type="text" placeholder="2020년식" maxLength={20} value={modelYear} onChange={(e) => {setModelYear(e.target.value)}} />
+                <input className='width120  word-center' id='modelYear' type="text" placeholder="예) 2020년식" maxLength={10} value={modelYear} onChange={(e) => {setModelYear(e.target.value)}} />
               </div>
               <div className='car-info-content-popup-line'>
                 <label className='width80 word-right label-margin-right' htmlFor="carImage">차량이미지</label>
                 <input className='car-info-file-button' id='carImage' name="file" type="file" accept="image/*" onChange={handleImageUpload} />
-                {carImage && <img className="width350" src={carImage} alt="Selected Car" />}
-                {/* <img className="width350" src = {carImage} alt={carImage}  /> */}
+                {carImage && <img className="width350" src={carImage} alt="Selected Car" />} 
                 {carImageName && <p className='word-center'>파일 이름 : {carImageName}</p>}
               </div>
             </div>

@@ -1,19 +1,18 @@
 import axios from 'axios';
 import React, { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { useSelector } from 'react-redux';
 import 'user/content/PaymentPage.css';
 import * as PortOne from "@portone/browser-sdk/v2";
+import { useSelector } from 'react-redux';
 
 const PaymentPage = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const reservationInfo = location.state;
-  const [userData, setUserData] = useState({});
-  const [reservationNumber, setReservationNumber] = useState({});
+  const isUserName = useSelector((state) => state.userState.userName);
+  const isUserPhoneNumber = useSelector((state) => state.userState.userPhoneNumber);
   const currentDate = new Date();
-  const userName = useSelector((state) => state.userState.userName);
-  const userLicense = useSelector((state) => state.userState.userLicense);
+
   const params = {
     userCode: reservationInfo.user_code,
     carCode: reservationInfo.car_code,
@@ -34,12 +33,12 @@ const PaymentPage = () => {
    const  requestPayment = async () => {
     const response = await PortOne.requestPayment(
       {
-        storeId: "", // Store ID
+        storeId: "store-56b88bd8-5068-4c9b-a6d7-7144ba4155ce", // Store ID
         paymentId: `payment-${crypto.randomUUID()}`, // 고유 결제 ID
         orderName: reservationInfo.car_type_name, // 결제 상품명
         totalAmount: 100, // 결제 금액
         currency: "KRW", // 올바른 통화 코드
-        channelKey: "", // 채널 키
+        channelKey: "channel-key-7c932c01-1547-4919-b86d-e0542a9b0b8b", // 채널 키
         payMethod: "CARD", // 결제 방식
       });
       if (response.code !== undefined) {
@@ -109,31 +108,6 @@ const PaymentPage = () => {
     return fee.toString().slice(0, -3) + ',' + fee.toString().slice(-3);
 }
 
-  useEffect(() => {
-    const GetUserData = async () => {
-      try {
-        const response = await axios.get(
-          `${process.env.REACT_APP_API_URL}/arentcar/user/users/${reservationInfo.user_code}`
-        );
-        if (response.data) {
-          setUserData(response.data);
-        }
-      } catch (error) {
-        if (axios.isCancel(error)) {
-          console.log('Request canceled:', error.message);
-        } else {
-          console.error('There was an error fetching the cars!', error);
-        }
-      }
-    };
-    GetUserData();
-    console.log(currentDate.getFullYear().toString()+(currentDate.getMonth()+1).toString().padStart(2,"0")+currentDate.getDate().toString().padStart(2,"0"));
-  }, []);
-
-  useEffect(() => {
-    console.log(userData);
-  }, [userData]);
-
   return (
     <div className='payment-page-wrap'>
       <div className='payment-page-title-wrap'>
@@ -149,11 +123,7 @@ const PaymentPage = () => {
           <div className='payment-page-content-reservation-info-content'>
             <div className='payment-page-content-reservation-info-content-item'>
               <span>예약자</span>
-              <span>{`${userData.user_name} / ${userData.user_phone_number}`}</span>
-            </div>
-            <div className='payment-page-content-reservation-info-content-item'>
-              <span>운전면허</span>
-              <span>{userData.driver_license_number}</span>
+              <span>{`${isUserName}`}</span>
             </div>
             <div className='payment-page-content-reservation-info-content-item'>
               <span>대여기간</span>
@@ -180,7 +150,6 @@ const PaymentPage = () => {
       <div className='payment-page-content-payment-info-content-item'>
               <span>차량 대여 요금</span>
               <span>{addCommaToCurrency(reservationInfo.rental_rate)}원</span>
-              <span>{addCommaToCurrency(reservationInfo.payment_amount+reservationInfo.discount_fee)}원</span>
             </div>
             <div className='payment-page-content-payment-info-content-item'>
               <span>차량 보험료</span>

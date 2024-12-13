@@ -65,6 +65,7 @@ const Customers = () => {
 
   useEffect(()=>{
     setPageNumber(0);
+    setPageOffset(0);
     setSearchName("");
   },[postState])
 
@@ -147,7 +148,7 @@ const Customers = () => {
 
               <div className="user-customers-wrap-post-paging">
                 <button onClick={()=>{handlePaging(-1)}}
-                  style={{color: pageNumber === 0 ? '#aaa' : '#fff'}}
+                  style={{color: pageNumber === 0 ? '#fff' : '#aaa'}}
                   disabled={pageNumber === 0}>◀</button>
                 {/* , backgroundColor:  pageNumber === 0 ? '#c25d16' : '#ff7916' */}
                 {pageNums && pageNums.map((e,i)=>(
@@ -156,7 +157,7 @@ const Customers = () => {
                   </>
                 ))}
                 <button onClick={()=>handlePaging(1)}
-                  style={{color: (pageNumber + 1) >= totalPages ? '#aaa' : '#fff'}}
+                  style={{color: (pageNumber + 1) >= totalPages ? '#fff' : '#aaa'}}
                   disabled={ (pageNumber + 1) >= totalPages }>▶</button>
                 {/* , backgroundColor:  (pageNumber + 1) >= totalPages ? '#c25d16' : '#ff7916' */}
               </div>
@@ -241,12 +242,12 @@ const Customers = () => {
                 ))}
                 {/* <li> <a href="/customers/코드"> 제목 </a> <div className="user-customers-wrap-post-list-info"> <span>작성자</span> <span>작성일</span> </div>  </li> */}
               </ul>
-
+              
               <div className="user-customers-wrap-post-paging">
                 <button onClick={()=>handlePaging(-1)}
                   style={{color: pageNumber === 0 ? '#aaa' : '#fff'}}
-                  disabled={pageNumber === 0}>◀</button>
-                {/* , backgroundColor:  pageNumber === 0 ? '#c25d16' : '#ff7916' */}
+                  disabled={pageNumber === 0}> ◀ </button>
+                {/* color: (pageNumber + 1) >= totalPages ? '#aaa' : '#fff', backgroundColor:  pageNumber === 0 ? '#c25d16' : '#ff7916' */}
                 {pageNums && pageNums.map((e,i)=>(
                   <>
                     <span key={i} className={ (e-1) === pageNumber ? "on" : "" } onClick={()=>setPageNumber(e-1)}> {e} </span> 
@@ -255,8 +256,8 @@ const Customers = () => {
                 
                 <button onClick={()=>handlePaging(1)}
                   style={{color: (pageNumber + 1) >= totalPages ? '#aaa' : '#fff'}}
-                  disabled={ (pageNumber + 1) >= totalPages }>▶</button>
-                {/* , backgroundColor:  (pageNumber + 1) >= totalPages ? '#c25d16' : '#ff7916'  {e < totalPages && ( <> / </> )}  */}
+                  disabled={ (pageNumber + 1) >= totalPages }> ▶ </button>
+                {/* color: (pageNumber + 1) >= totalPages ? '#aaa' : '#fff', backgroundColor:  (pageNumber + 1) >= totalPages ? '#c25d16' : '#ff7916'  {e < totalPages && ( <> / </> )}  */}
 
                 <div className="create">
                   <Link className="createBut" to="/customers/IQ">후기작성</Link>

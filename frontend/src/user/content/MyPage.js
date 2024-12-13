@@ -9,27 +9,45 @@ import { refreshAccessToken, handleLogout, formatDate, formatTime, formatPhone }
 const MyPage = () => {
   const isUserName = useSelector((state) => state.userState.userName);
   const userCode = useSelector((state) => state.userState.userCode);
+  const isLoginState = useSelector((state) => state.userState.loginState);
   const navigate = useNavigate();
   const [isPopUp, setIsPopUp] = useState(false);
   const [branchNames, setBranchNames] = useState([]);
   const [selectedBranch, setSelectedBranch] = useState("");
   const [selectedReservationDate, setSelcetedreservationDate] = useState("");
-  const [pageNumber, setPageNumber] = useState(1); // 현재 페이지 번호
-  const pageSize = 5; // 한 페이지에 보여줄 데이터 개수
-  const [totalCount, setTotalCount] = useState(0); // 전체 페이지 수
+  const [pageNumber, setPageNumber] = useState(1);
+  const pageSize = 5;
+  const [totalCount, setTotalCount] = useState(0);
   const [myreservations, setMyReservations] = useState([]);
   const [myReservationDetails, setMyReservationDetails] = useState([]);
   const [columnDefs] = useState([
     { titlename: "예약ID", field: "reservation_code", width: 90, align: "center" },
     { titlename: "예약일", field: "reservation_date", width: 120, align: "center" },
     { titlename: "대여일", field: "rental_date", width: 120, align: "center" },
-    { titlename: "대여지점", field: "rental_location_name", width: 120, align: "center" },
+    { titlename: "대여지점", field: "rental_location_name", width: 110, align: "center" },
     { titlename: "반납일", field: "return_date", width: 120, align: "center" },
-    { titlename: "반납지점", field: "return_location_name", width: 120, align: "center" },
+    { titlename: "반납지점", field: "return_location_name", width: 110, align: "center" },
     { titlename: "차종", field: "car_type_name", width: 150, align: "center" },
     { titlename: "예약상태", field: "reservation_status", width: 120, align: "center" },
-    { titlename: "", field: "", width: 100, align: "center" },
+    { titlename: "내역보기", field: "", width: 110, align: "center" },
   ]);
+  // 랜더링
+  useEffect(() => {
+    if (!isLoginState) {
+      alert("로그인이 필요합니다.");
+      navigate("/login", { state: { from: "/mypage" } });
+      return;
+    }
+    pagingMyReservations();
+    getTotalCount();
+  }, [pageNumber]);
+
+  useEffect(() => {
+    if (!isLoginState) {
+      return;
+    }
+    handleFetchBranchNames();
+  }, []);
 
   // YYYY-MM-DD → YYYYMMDD 변환 함수
   const formatDateToCompact = (date) => {
@@ -159,14 +177,6 @@ const MyPage = () => {
       console.error("There was an error fetching the branches", error);
     }
   };
-  useEffect(() => {
-    handleFetchBranchNames();
-  }, []);
-
-  useEffect(() => {
-    pagingMyReservations();
-    getTotalCount();
-  }, [pageNumber]);
 
   const handleFetchMyReservationDetail = async (reservationCode, userCode) => {
     if (!reservationCode || !userCode) {
@@ -242,7 +252,7 @@ const MyPage = () => {
     }
 
     try {
-      const token = localStorage.getItem("accessToken"); 
+      const token = localStorage.getItem("accessToken");
       const params = {
         reservationCode,
         userCode,
@@ -256,12 +266,12 @@ const MyPage = () => {
         {
           params,
           headers: {
-            Authorization: `Bearer ${token}`, // 인증 헤더
+            Authorization: `Bearer ${token}`,
           },
-          withCredentials: true, // 쿠키 포함
+          withCredentials: true,
         }
       );
-      alert("예약이 취소되었습니다."); // 성공 메시지
+      alert("예약이 취소되었습니다.");
       await handleFetchMyReservationDetail(reservationCode, userCode);
     } catch (error) {
       console.error("Error in handleMyReservationCancel:", error);
@@ -274,15 +284,15 @@ const MyPage = () => {
 
           await handleMyReservationCancel(reservationCode, userCode);
         } catch (error) {
-          alert("인증이 만료되었습니다. 다시 로그인 해주세요."); // 인증 만료 알림
-          handleLogout(); // 로그아웃 처리
+          alert("인증이 만료되었습니다. 다시 로그인 해주세요.");
+          handleLogout();
         }
       } else {
-        alert("예약 취소에 실패했습니다."); // 사용자 알림
+        alert("예약 취소에 실패했습니다.");
       }
     }
-};
-  
+  };
+
   return (
     <div className="my-page-wrap">
       <div className="my-page-content-wrap">
@@ -338,8 +348,6 @@ const MyPage = () => {
                         style={{
                           width: `${title.width}px`,
                           textAlign: title.align,
-                          fontSize: '16px',
-                          padding: '5px 0px',
                         }}
                       >
                         {title.titlename}
@@ -352,7 +360,7 @@ const MyPage = () => {
                   {myreservations.length > 0 ? (
                     myreservations.map((myreservations, index) => (
                       <ul key={index}
-                        className="my-page-reservation-data-column-title-ul">
+                        className="my-page-reservation-data-column-data-ul">
                         {columnDefs.map((column, colIndex) => (
                           <li
                             key={colIndex}
@@ -360,7 +368,6 @@ const MyPage = () => {
                             style={{
                               width: `${column.width}px`,
                               textAlign: column.align || "center",
-                              lineHeight: '30px',
                             }}
                           >
                             {column.field === "" ? (
@@ -368,7 +375,7 @@ const MyPage = () => {
                                 className="my-page-reservation-data-button-detail"
                                 onClick={() => handleDetailClick(myreservations.reservation_code, userCode)}
                               >
-                                예약상세
+                                상세보기
                               </button>
                             ) : (
                               column.field === "rental_date" ? (
@@ -415,9 +422,8 @@ const MyPage = () => {
                   </button>
                 </div>
                 {/* 상세 팝업 */}
-
                 {isPopUp && (
-                  <div className="my_page_reservation_popup my_page_popup manager-popup">
+                  <div className=" manager-popup">
                     <div className="my_page_reservation_content_popup_wrap">
                       <div className="my_page_reservation_content_popup_header_wrap">
                         <div className="my_page_popup_title">렌탈 상세내역</div>

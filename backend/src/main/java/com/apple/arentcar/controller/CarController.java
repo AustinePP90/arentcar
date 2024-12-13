@@ -23,9 +23,10 @@ public class CarController {
             @RequestParam(name = "carManufacturer",required = false) String carManufacturer,
             @RequestParam(name = "seatingCapacity",required = false) String seatingCapacity,
             @RequestParam(name = "rentalDate",required = false) String rentalDate,
-            @RequestParam(name = "returnDate",required = false) String returnDate
+            @RequestParam(name = "returnDate",required = false) String returnDate,
+            @RequestParam (name = "rentalperiod") Integer rentalperiod
     ) {
-        return carService.getAllCars(branchName,fuelType,carTypeCategory,carManufacturer,seatingCapacity, rentalDate,returnDate);
+        return carService.getAllCars(branchName,fuelType,carTypeCategory,carManufacturer,seatingCapacity, rentalDate,returnDate,rentalperiod);
     }
 
     @GetMapping("/user/cars/filter/countall")
@@ -92,11 +93,13 @@ public class CarController {
         public List<InsuranceDTO> getInsurance() { return carService.getInsurance(); }
 
     @GetMapping("/user/cars/reservation/number")
-    public Integer getReservationNumber() { return carService.getReservationNumber(); }
+    public Integer getReservationNumber() {
+        return carService.getReservationNumber();
+    }
 
 
     @PostMapping("/user/cars/reservation")
-    public ResponseEntity<Void> InsertUserReservation(
+    public ResponseEntity<UserReservationDTO> InsertUserReservation(
             @RequestParam (name = "userCode") Integer userCode,
             @RequestParam (name = "carCode") Integer carCode,
             @RequestParam (name = "rentalLocation") String rentalLocation,
@@ -111,10 +114,11 @@ public class CarController {
             @RequestParam (name = "paymentAmount") Integer paymentAmount,
             @RequestParam (name = "reservationDate") String reservationDate,
             @RequestParam (name = "paymentDate") String paymentDate
+
     ) {
         UserReservationDTO userReservationDTO = new UserReservationDTO(userCode,carCode,rentalLocation,rentalDate,rentalTime,returnLocation,returnDate,returnTime,insuranceType,paymentCategory,paymentType,paymentAmount,reservationDate,paymentDate);
-        carService.InsertUserReservation(userReservationDTO);
-        return ResponseEntity.ok(null);
+        UserReservationDTO savedReservation = carService.InsertUserReservation(userReservationDTO);
+        return ResponseEntity.ok(savedReservation);
     }
 
 }

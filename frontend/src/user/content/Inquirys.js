@@ -205,20 +205,16 @@ const Inquirys = () => {
           <div className="user-customers-create-inquiryss">
             <div className="user-customers-create-inquirys-popup-wrap">
               <div className="user-customers-create-inquirys-popup-line">
-                <div className="user-customers-create-inquirys-popup-title"> <h5> 문의 작성 </h5> </div>
+                <div className="user-customers-create-inquirys-popup-title"> <h4> 문의 작성 </h4> </div>
               </div>
               <div className="user-customers-create-inquirys-popup-line">
-                <div className="user-customers-create-inquirys-popup-score">
-
-                </div>
-              </div>
-              <div className="user-customers-create-inquirys-popup-line">
-                <h6>제목</h6> 
+                <h6 className="user-customers-create-inquirys-popup-line-title">제목</h6> 
                 <textarea className="width400 user-customers-create-inquirys-popup-content"
                 rows={1} ref={textarea} onChange={(e)=>{handleResizeHeight(e,setPostTitle)}}/> 
               </div>
+              <br/>
               <div className="user-customers-create-inquirys-popup-line">
-                <h6>내용</h6>
+                <h6 className="user-customers-create-inquirys-popup-line-title">내용</h6>
                 <textarea className="width400 user-customers-create-inquirys-popup-content"
                 rows={10} ref={textarea} onChange={(e)=>{handleResizeHeight(e,setPostContent)}}/>
               </div>

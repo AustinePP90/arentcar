@@ -39,7 +39,6 @@
         LIMIT #{pageSize} OFFSET #{offset}
     </select>
 
-
     <!-- 지점 조회 및 페이지네이션(검색 기능 포함) -->
     <select id="getBranchsNameWithPaging" resultType="com.apple.arentcar.dto.BranchsSearchDTO">
         SELECT *
@@ -50,6 +49,76 @@
         LIMIT #{pageSize} OFFSET #{offset}
     </select>
 
+    <!-- 지점 추가 -->
+    <insert id="createBranchs" parameterType="com.apple.arentcar.model.Branchs"
+            useGeneratedKeys="true" keyProperty="branchCode">
+        INSERT INTO branchs
+        (branch_code, branch_name, branch_longitude, branch_latitude,
+         region_code, post_code, branch_basic_address, branch_detailed_address,
+         branch_phone_number, available_pickup_time, available_return_time,
+         created_at, updated_at)
+        VALUES
+            (#{branchCode}, #{branchName}, #{branchLongitude}, #{branchLatitude}, #{regionCode},
+             #{postCode}, #{branchBasicAddress}, #{branchDetailedAddress}, #{branchPhoneNumber},
+             #{availablePickupTime},#{availableReturnTime}, NOW(), NOW())
+    </insert>
 
+    <!-- 지점 추가 시 지점명 중복 검증   -->
+    <select id="duplicateCountByBranchName" resultType="int">
+        SELECT COUNT(*)
+        FROM branchs
+        WHERE branch_name = #{branchName}
+    </select>
 
+    <!-- <select>의 <option>값으로 지역이름 동적으로 불러오기 -->
+    <select id="getRegionCodeName" resultType="com.apple.arentcar.dto.BranchsRegionNamesOptionDTO">
+        SELECT region_code, region_name
+        FROM regions
+    </select>
+
+    <!-- 지점 수정 -->
+    <update id="updateBranchsById" parameterType="com.apple.arentcar.dto.BranchsSearchDTO">
+        UPDATE branchs b
+        JOIN regions r ON b.region_code = r.region_code
+        SET
+            b.branch_name = #{branchName},
+            b.branch_longitude= #{branchLongitude},
+            b.branch_latitude= #{branchLatitude},
+            b.region_code= #{regionCode},
+            b.post_code= #{postCode},
+            b.branch_basic_address= #{branchBasicAddress},
+            b.branch_detailed_address= #{branchDetailedAddress},
+            b.branch_phone_number= #{branchPhoneNumber},
+            b.available_pickup_time= #{availablePickupTime},
+            b.available_return_time= #{availableReturnTime},
+            b.updated_at = NOW()
+        WHERE b.branch_code = #{branchCode}
+    </update>
+
+    <!-- 지점 삭제-->
+    <delete id="deleteBranchsById">
+        DELETE FROM branchs
+        WHERE branch_code = #{branchCode}
+    </delete>
+
+    <select id="getBranchsDetailById" parameterType="Integer" resultType="com.apple.arentcar.dto.BranchsSearchDTO">
+        SELECT
+            b.branch_code,
+            b.branch_name,
+            b.branch_longitude,
+            b.branch_latitude,
+            b.region_code,
+            b.post_code,
+            b.branch_basic_address,
+            b.branch_detailed_address,
+            b.branch_phone_number,
+            b.available_pickup_time,
+            b.available_return_time,
+            b.created_at,
+            b.updated_at,
+            r.region_name -- regions 테이블에서 region_name도 조회
+        FROM branchs b
+        LEFT JOIN regions r ON b.region_code = r.region_code
+        WHERE b.branch_code = #{branchCode}
+    </select>
 </mapper>

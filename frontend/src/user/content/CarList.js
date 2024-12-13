@@ -30,7 +30,6 @@ const RentalCar = ({ ...selectedFilters }) => {
         });
         if (response.data) {
           setCars(response.data);
-          console.log(response.data);
         }
       } catch (error) {
         if (axios.isCancel(error)) {

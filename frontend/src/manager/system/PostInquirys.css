@@ -37,37 +37,6 @@
     padding-left: 5px;
 }
 
-.post-btn1{
-    /* display: inline-block;
-    background-color: #ee0a0a;
-    color: #eeeeee;
-    text-align: center;
-    width: 45px;
-    height: 23px;
-    line-height: 23px; */
-    color: #ee0a0a;
-}
-.post-btn2{
-    /* display: inline-block;
-    background-color: #3b70d6;
-    color: #eeeeee;
-    text-align: center;
-    width: 45px;
-    height: 23px;
-    line-height: 23px; */
-    color: #3b70d6;
-
-}
-.post-btn3{
-    /* display: inline-block;
-    background-color: #ededf0;
-    color: #77777a;
-    text-align: center;
-    width: 45px;
-    height: 23px;
-    line-height: 23px; */
-    color: #77777a;
-}
 
 .manager-post-inquirys-popup{
     position: fixed;

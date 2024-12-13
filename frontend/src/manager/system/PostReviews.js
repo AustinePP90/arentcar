@@ -246,9 +246,9 @@ const PostReviews = ({ onClick }) => {
   const handleColumn = (value, column) => {
     if(column.field === '') {
       return(<>
-        <button className='manager-button post-btn2' onClick={()=> handlePopupClick([ "보기", value["post_code"] ])}> 보기 </button>
+        <button className='manager-button post-btn1' onClick={()=> handlePopupClick([ "보기", value["post_code"] ])}> 보기 </button>
         {/* <button className='manager-button post-btn3' > 수정 </button>  */}
-        <button className='manager-button post-btn1' onClick={()=> handleDeleteClick(value["post_code"]) }> 삭제 </button> 
+        <button className='manager-button post-btn2' onClick={()=> handleDeleteClick(value["post_code"]) }> 삭제 </button> 
       </>)
     } else if(column.field === 'post_type') {
       return( Type[value[column.field]] )

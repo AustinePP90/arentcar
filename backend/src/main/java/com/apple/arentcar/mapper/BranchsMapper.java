@@ -1,11 +1,7 @@
 package com.apple.arentcar.mapper;
 
-import com.apple.arentcar.dto.AdminsLoginDTO;
-import com.apple.arentcar.dto.BranchsSearchDTO;
-import com.apple.arentcar.dto.CarTypesDTO;
-import com.apple.arentcar.dto.ChartDataDTO;
+import com.apple.arentcar.dto.*;
 import com.apple.arentcar.model.Branchs;
-import com.apple.arentcar.model.Menus;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
@@ -36,4 +32,22 @@ public interface BranchsMapper {
 
     // 전체 차종 수 조회
     int countAllBranchs();
+
+    // 지점 추가
+    void createBranchs(Branchs branchs);
+
+    // 중복된 지점명 카운트
+    int duplicateCountByBranchName(@Param("branchName") String branchName);
+
+    // <select>의 <option>값으로 지역이름 동적으로 불러오기
+    List<BranchsRegionNamesOptionDTO> getRegionCodeName();
+
+    // 지점 수정
+    void updateBranchsById(BranchsSearchDTO branchsSearchDTO);
+
+    // 지점 삭제
+    void deleteBranchsById(@Param("branchCode") Integer branchCode);
+
+    // 지점 상세
+    BranchsSearchDTO getBranchsDetailById(@Param("branchCode") Integer branchCode);
 }

@@ -36,6 +36,7 @@
 }
 .select-branch-rental-location p{
     font-size: 16px;
+    cursor: pointer;
 }
 .select-branch-button{
     width: 120px;

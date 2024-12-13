@@ -128,13 +128,12 @@ function calculateRentalPeriod(rentalDate, returnDate) {
         
     }
     const handelReservationClick = () => {
-        // if(isLoginState){
-            alert('결제로 이동');
+        if(isLoginState){
             navigate('/paymentpage',{state : {...carInfo}});
-        // }else{
-        //     alert('로그인이 필요한 서비스 입니다.');
-        //     navigate('/login',{state : {...carInfo}});
-        // }
+        }else{
+            alert('로그인이 필요한 서비스 입니다.');
+            navigate('/login',{state : {...carInfo,from: "/reservationdetail"}});
+        }
     }
     return (
         <>
