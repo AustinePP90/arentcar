@@ -169,7 +169,7 @@ const MyPage = () => {
 
   const handleFetchBranchNames = async () => {
     try {
-      const response = await axios.get(`${process.env.REACT_APP_API_URL}/arentcar/user/branches`);
+      const response = await axios.get(`${process.env.REACT_APP_API_URL}/arentcar/user/branchs`);
       if (response.data) {
         setBranchNames(response.data.map((branch) => branch.branch_name));
       }
