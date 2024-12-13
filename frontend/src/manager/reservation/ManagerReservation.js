@@ -3,8 +3,11 @@ import axios from "axios";
 import "manager/reservation/ManagerReservation.css";
 import { refreshAccessToken, handleAdminLogout, formatDate, formatTime, formatPhone } from "common/Common";
 import { useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
 
 const ManagerReservation = ({ onClick }) => {
+  const isLoginState = useSelector((state) => state.adminState.loginState);
+  const navigate = useNavigate();
   const [branchNames, setBranchNames] = useState([]);
   const [selectedBranch, setSelectedBranch] = useState("");
   const [reservationDate, setReservationDate] = useState("");
@@ -28,9 +31,18 @@ const ManagerReservation = ({ onClick }) => {
 
   // 렌더링
   useEffect(() => {
+    if (!isLoginState) {
+      return;
+    }
     handleFetchBranchNames();
   },[]);
+
   useEffect(() => {
+    if (!isLoginState) {
+      alert("로그인이 필요합니다.");
+      navigate("/admin");
+      return;
+    }
     pageingReservations();
     getTotalCount();
   }, [pageNumber]);
@@ -493,9 +505,9 @@ const ManagerReservation = ({ onClick }) => {
               </div>
               <div className="manager-reservation-popup-field-row">
                 <label>면허발급일 : </label>
-                <span>{formatDate(reservationDetails.license_issue_date)}</span>
+                <span>{formatDate(reservationDetails.license_issue_date) || "면허정보 없음"}</span>
                 <label>면허갱신일 : </label>
-                <span>{formatDate(reservationDetails.license_expiry_date)}</span>
+                <span>{formatDate(reservationDetails.license_expiry_date) || "면허정보 없음"}</span>
               </div>
             </div>
 
@@ -506,7 +518,7 @@ const ManagerReservation = ({ onClick }) => {
                 <label>예약ID : </label>
                 <span>{reservationDetails.reservation_code}</span>
                 <label>예약일 : </label>
-                <span>{reservationDetails?.reservation_date || "예약일 없음"}</span>
+                <span>{formatDate(reservationDetails?.reservation_date)}</span>
               </div>
               <div className="manager-reservation-popup-field-row">
                 <label>차량번호 :{' '}</label>
