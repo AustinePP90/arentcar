@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import "manager/reservation/ManagerReservation.css";
 import { refreshAccessToken, handleAdminLogout, formatDate, formatTime, formatPhone } from "common/Common";
+import { useSelector } from "react-redux";
 
 const ManagerReservation = ({ onClick }) => {
   const [branchNames, setBranchNames] = useState([]);
@@ -24,6 +25,15 @@ const ManagerReservation = ({ onClick }) => {
     { titlename: "반납일", field: "return_date", width: 150, align: "center" },
     { titlename: "상세", field: "", width: 100, align: "center" },
   ]);
+
+  // 렌더링
+  useEffect(() => {
+    handleFetchBranchNames();
+  },[]);
+  useEffect(() => {
+    pageingReservations();
+    getTotalCount();
+  }, [pageNumber]);
 
   // YYYY-MM-DD → YYYYMMDD 변환 함수
   const formatDateToCompact = (date) => {
@@ -134,15 +144,6 @@ const ManagerReservation = ({ onClick }) => {
       console.error('Unexpected response:', response.data);
     }
   };
-  // 렌더링
-  useEffect(() => {
-    handleFetchBranchNames();
-  },[]);
-  useEffect(() => {
-    pageingReservations();
-    getTotalCount();
-  }, [pageNumber, pageSize]);
-
 
   // 지점명 데이터 가져오기
   const handleFetchBranchNames = async () => {
@@ -155,8 +156,6 @@ const ManagerReservation = ({ onClick }) => {
       console.error("There was an error fetching the branches", error);
     }
   };
-
-
 
   const fetchReservationDetail = async (reservationCode) => {
     try {
@@ -203,8 +202,6 @@ const ManagerReservation = ({ onClick }) => {
     setIsPopUp(true);
     fetchReservationDetail(reservationCode);
   };
-
-
 
   const handlePopupCloseClick = () => {
     setIsPopUp(false);
@@ -269,7 +266,6 @@ const ManagerReservation = ({ onClick }) => {
       }
     }
   };
-
 
   const handleCarReturn = async (carNumber) => {
     // 반납 여부 확인
