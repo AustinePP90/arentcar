@@ -2,37 +2,38 @@
 <!DOCTYPE mapper
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-
 <mapper namespace="com.apple.arentcar.mapper.ReservationsMapper">
-
-    <!-- 간략한 예약 데이터 보기 및 조건 조회 -->
     <select id="getReservations"
             parameterType="com.apple.arentcar.dto.ReservationsSearchRequestDTO"
             resultType="com.apple.arentcar.dto.ReservationsResponseDTO">
         SELECT
-        r.reservation_code,
-        u.user_name,
-        rc.car_number,
-        ct.car_type_name,
-        rl.branch_name AS rentalLocationName,
-        r.rental_date AS rentalDate,
-        r.return_date AS returnDate
+        r.reservation_code AS reservation_code,
+        u.user_name AS user_name,
+        rc.car_number AS car_number,
+        cc_car_status.common_name AS car_status,
+        ct.car_type_name AS car_type_name,
+        rl.branch_name AS rental_location_name,
+        r.rental_date AS rental_date,
+        r.return_date AS return_date
         FROM reservations r
         JOIN users u ON r.user_code = u.user_code
         JOIN rental_cars rc ON r.car_code = rc.car_code
         JOIN car_types ct ON rc.car_type_code = ct.car_type_code
         JOIN branchs rl ON r.rental_location = rl.branch_code
+        JOIN common_codes cc_car_status
+        ON rc.car_status = cc_car_status.common_code
+        AND cc_car_status.common_kind_code = 'car_status'
         WHERE 1=1
         <if test="rentalLocationName != null and rentalLocationName != ''">
-            AND rl.branch_name = #{rentalLocationName}
+            AND rental_location_name = #{rentalLocationName}
         </if>
         <if test="rentalDate != null and rentalDate != ''">
-            AND r.rental_date = #{rentalDate}
+            AND rental_date = #{rentalDate}
         </if>
         <if test="userName != null and userName != ''">
-            AND u.user_name = #{userName}
+            AND user_name = #{userName}
         </if>
-        ORDER BY r.rental_date DESC
+        ORDER BY rental_date DESC
         LIMIT #{offset}, #{pageSize}
     </select>
 
@@ -58,31 +59,32 @@
     </select>
     <select id="getReservationsDetailById" parameterType="String" resultType="com.apple.arentcar.dto.ReservationDetailDTO">
         SELECT
-        r.reservation_code,
-        u.user_name,
-        u.user_birth_date,
-        u.user_phone_number,
-        u.user_email,
-        u.license_issue_date,
-        u.license_expiry_date,
-        rc.car_number,
-        ct.car_type_name,
-        ct.model_year,
-        cc_fuel.common_name AS fuelTypeName,
-        rl.branch_name AS rentalLocationName,
-        r.rental_date AS rentalDate,
-        r.rental_time AS rentalTime,
-        rr.branch_name AS returnLocationName,
-        r.return_date AS returnDate,
-        r.return_time AS returnTime,
-        cc_insurance.common_name AS insuranceName,
-        cc_payment_category.common_name AS paymentCategoryName,
-        cc_payment_type.common_name AS paymentTypeName,
-        r.payment_amount,
-        cc_reservation_status.common_name AS reservationStatus,
-        cc_payment_status.common_name AS paymentStatus,
-        r.payment_date,
-        r.reservation_date
+        r.reservation_code AS reservation_code,
+        r.car_code AS car_code,
+        u.user_name AS user_name,
+        u.user_birth_date AS user_birth_date,
+        u.user_phone_number AS user_phone_number,
+        u.user_email AS user_email,
+        u.driver_license_number AS driver_license_number,
+        rc.car_number AS car_number,
+        ct.car_type_name AS car_type_name,
+        ct.model_year AS model_year,
+        cc_fuel.common_name AS fuel_type,
+        rl.branch_name AS rental_location_name,
+        r.rental_date AS rental_date,
+        r.rental_time AS rental_time,
+        rr.branch_name AS return_location_name,
+        r.return_date AS return_date,
+        r.return_time AS return_time,
+        cc_car_status.common_name AS car_status,
+        cc_insurance.common_name AS insurance_name,
+        cc_payment_category.common_name AS payment_category,
+        cc_payment_type.common_name AS payment_type,
+        r.payment_amount AS payment_amount,
+        cc_reservation_status.common_name AS reservation_status,
+        cc_payment_status.common_name AS payment_status,
+        r.payment_date AS payment_date,
+        r.reservation_date AS reservation_date
         FROM
         reservations r
         JOIN users u ON r.user_code = u.user_code
@@ -90,6 +92,9 @@
         JOIN car_types ct ON rc.car_type_code = ct.car_type_code
         JOIN branchs rl ON r.rental_location = rl.branch_code
         JOIN branchs rr ON r.return_location = rr.branch_code
+        JOIN common_codes cc_car_status
+        ON rc.car_status = cc_car_status.common_code
+        AND cc_car_status.common_kind_code = 'car_status'
         JOIN common_codes cc_fuel
         ON ct.fuel_type = cc_fuel.common_code
         AND cc_fuel.common_kind_code = 'fuel_type'
@@ -114,12 +119,21 @@
         ON r.payment_status = cc_payment_status.common_code
         AND cc_payment_status.common_kind_code = 'payment_status'
         WHERE
-        r.reservation_code = #{reservationCode};
+        reservation_code = #{reservationCode}
     </select>
     <update id="updateCarStatus" parameterType="com.apple.arentcar.dto.CarReturnRequestDTO">
         UPDATE rental_cars
         SET car_status = #{carStatus}
-        WHERE car_number = #{carNumber}
+        WHERE car_code = (
+        SELECT car_code
+        FROM reservations
+        WHERE reservation_code = #{reservationCode}
+        );
+    </update>
+    <update id="ReservationStatusUpdate" parameterType="com.apple.arentcar.dto.CarReturnRequestDTO">
+        UPDATE reservations
+        SET reservation_status = #{reservationStatus}
+        WHERE reservation_code = #{reservationCode}
     </update>
     <update id="updateReservationStatus" parameterType="com.apple.arentcar.dto.ReservationStatusRequestDTO">
         UPDATE reservations
