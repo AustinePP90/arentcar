@@ -108,7 +108,7 @@ const AllBranchesReservationChart = ({ onClick }) => {
         }
     };
 
-    // 지점 데이터 페이징 처리
+    // 지점 데이터 페이징 (가져오기)
     const pageingBranchs = async () => {
         try {
             const token = localStorage.getItem('accessToken');
@@ -168,8 +168,6 @@ const AllBranchesReservationChart = ({ onClick }) => {
 
     // 검색 버튼
     const handleSearchClick = async () => {
-        pageingBranchs();
-        getTotalCount();
 
         // 검색어를 입력하지 않은 경우
         if (!searchBranchName || searchBranchName.trim() === '') {
@@ -201,7 +199,7 @@ const AllBranchesReservationChart = ({ onClick }) => {
         }
     };
 
-    // 초기화 함수
+    // 검색어 초기화 함수
     const handleSearchReset = () => {
         setSearchBranchName(''); // 검색어 초기화
         setBranchs([]); // 검색 결과 초기화
@@ -210,6 +208,15 @@ const AllBranchesReservationChart = ({ onClick }) => {
         setLoading(false); // 로딩 상태 초기화
         setIsSearched(false); // 검색 여부 초기화
     };
+
+    // `searchBranchName`이 변경되었을 때 (지점명을 검색했을 때) 데이터 다시 로드
+    // 해당 useEffect가 없으면 방금 전 검색했던 지점명만 테이블에 표시 된다.
+    useEffect(() => {
+        if (searchBranchName === '') {
+            pageingBranchs();
+            getTotalCount();
+        }
+    }, [searchBranchName]);
 
     // 지점 상세 팝업창 열기
     const fetchBranchDetails = async (branchCode) => {
@@ -417,39 +424,35 @@ const AllBranchesReservationChart = ({ onClick }) => {
                     style={{ width: `${totalWidth}px` }}
                 >
 
-                    <div className='left-group'>
+                    {/* 지점명 검색 버튼 */}
+                    <div className='flex-align-center'>
+                        <label className='manager-label' htmlFor="">지점명</label>
+                        <input className='width200' type="text" value={searchBranchName} onChange={(e) => (setSearchBranchName(e.target.value))} />
 
-                        {/* 지점명 검색 버튼 */}
-                        <div className='flex-align-center'>
-                            <label className='manager-label' htmlFor="">지점명</label>
-                            <input className='width200' type="text" value={searchBranchName} onChange={(e) => (setSearchBranchName(e.target.value))} />
+                        {/* 예약 시작일 */}
+                        <input
+                            type="date"
+                            value={reservationStartDate}
+                            onChange={(e) => setReservationStartDate(e.target.value)}
+                            className="manager-reservation-date-input"
+                        />
 
-                            {/* 예약 시작일 */}
-                            <input
-                                type="date"
-                                value={reservationStartDate}
-                                onChange={(e) => setReservationStartDate(e.target.value)}
-                                className="manager-reservation-date-input"
-                            />
+                        {/* 예약 종료일 */}
+                        <input
+                            type="date"
+                            value={reservationEndDate}
+                            onChange={(e) => setReservationEndDate(e.target.value)}
+                            className="manager-reservation-date-input"
+                        />
 
-                            {/* 예약 종료일 */}
-                            <input
-                                type="date"
-                                value={reservationEndDate}
-                                onChange={(e) => setReservationEndDate(e.target.value)}
-                                className="manager-reservation-date-input"
-                            />
-
-                            {/* 검색 버튼 */}
-                            <button className='manager-button manager-button-search' onClick={() => handleSearchClick()}>검색</button>
-                            <span>[검색건수 : {totalCount}건]</span>
-                        </div>
+                        {/* 검색 버튼 */}
+                        <button className='manager-button manager-button-search' onClick={() => handleSearchClick()}>검색</button>
+                        <span>[검색건수 : {totalCount}건]</span>
                     </div>
-
-
-                    {/* 컴포넌트 닫기 */}
-                    <div className='right-group'>
-                        <button className='manager-button manager-chart-button-reset'
+                    
+                    {/* 컴포넌트 초기화 및 닫기 */}
+                    <div>
+                        <button className='manager-button manager-button-reset'
                             onClick={handleSearchReset}
                             disabled={!isSearched}
                             style={{
@@ -457,8 +460,8 @@ const AllBranchesReservationChart = ({ onClick }) => {
                                 cursor: isSearched ? 'pointer' : 'not-allowed', // disabled일 때 커서 스타일 변경
                             }}>초기화
                         </button>
+                        <button className='manager-button manager-button-close' onClick={() => handleCloseClick()}>닫기</button>
                     </div>
-                    <button className='manager-button manager-chart-button-close' onClick={() => handleCloseClick()}>닫기</button>
                 </div>
             </div>
 
