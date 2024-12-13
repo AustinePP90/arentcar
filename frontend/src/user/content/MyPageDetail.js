@@ -379,7 +379,7 @@ const MyPageDetail = ({ onClick }) => {
 					<div className='mypage-detail-update-signout-box'>
 						<div className="mypage-detail-update-signout-act">
 							<button
-								className='mypage-detail-button'
+								className='mypage-detail-signout-button'
 								onClick={handleDeleteClick}>
 								회원탈퇴 버튼</button>
 						</div>
@@ -397,12 +397,12 @@ const MyPageDetail = ({ onClick }) => {
 							</div>
 							<div className='mypage-detail-content-popup-close-button'>
 								<button
-									className='mypage-detail-popup-close-button'
+									className='mypage-detail-button'
 									onClick={handlePopupCloseClick}>닫기</button>
 							</div>
 						</div>
 						<div className='mypage-detail-popup-line'>
-							<label className='width200 word-right' htmlFor="">회원명</label>
+							<label className='width150 word-right' htmlFor="">회원명</label>
 							<input
 								className='width200'
 								type="text"
@@ -410,14 +410,14 @@ const MyPageDetail = ({ onClick }) => {
 								disabled />
 						</div>
 						<div className='mypage-detail-popup-line'>
-							<label className='width200 word-right' htmlFor="">이메일</label>
+							<label className='width150 word-right' htmlFor="">이메일</label>
 							<input
 								className='width200'
 								type="text" value={userEmail}
 								disabled />
 						</div>
 						<div className='mypage-detail-popup-line'>
-							<label className='width200 word-right' htmlFor="">생년월일</label>
+							<label className='width150 word-right' htmlFor="">생년월일</label>
 							<input
 								className='width200 word-left'
 								name="user_birth_date"
@@ -427,7 +427,7 @@ const MyPageDetail = ({ onClick }) => {
 								onChange={(e) => setUserBirthDate(e.target.value)} />
 						</div>
 						<div className='mypage-detail-popup-line'>
-							<label className='width200 word-right' htmlFor="">휴대폰 번호</label>
+							<label className='width150 word-right' htmlFor="">휴대폰 번호</label>
 							<input
 								className='width200 word-left'
 								name="user_phone_number"
@@ -437,7 +437,7 @@ const MyPageDetail = ({ onClick }) => {
 								onChange={(e) => setUserPhoneNumber(e.target.value)} />
 						</div>
 						<div className='mypage-detail-popup-line'>
-							<label className='width200 word-right' htmlFor="">운전면허 번호</label>
+							<label className='width150 word-right' htmlFor="">운전면허 번호</label>
 							<input
 								className='width200 word-left'
 								name="driver_license_number"
@@ -447,7 +447,7 @@ const MyPageDetail = ({ onClick }) => {
 								onChange={(e) => setDriverLicenseNumber(e.target.value)} />
 						</div>
 						<div className='mypage-detail-popup-line'>
-							<label className='width200 word-right' htmlFor="">운전면허 발급일</label>
+							<label className='width150 word-right' htmlFor="">운전면허 발급일</label>
 							<input
 								className='width200 word-left'
 								name="license_issue_date"
@@ -457,7 +457,7 @@ const MyPageDetail = ({ onClick }) => {
 								onChange={(e) => setLicenseIssueDate(e.target.value)} />
 						</div>
 						<div className='mypage-detail-popup-line'>
-							<label className='width200 word-right' htmlFor="">운전면허 갱신일</label>
+							<label className='width150 word-right' htmlFor="">운전면허 갱신일</label>
 							<input
 								className='width200 word-left'
 								name="license_expiry_date"
@@ -470,7 +470,7 @@ const MyPageDetail = ({ onClick }) => {
 							<div className='mypage-detail-popup-save'>
 								<div></div>
 								<button
-									className='mypage-detail-popup-save-button'
+									className='mypage-detail-button'
 									onClick={handleDataSaveClick}>저장</button>
 							</div>
 						</div>

@@ -10,7 +10,7 @@
 }
 
 .mypage-detail-update-contents-wrap {
-  width: 600px;
+  width: 400px;
   height: 500px;
 }
 
@@ -96,18 +96,24 @@ padding-right: 5pxS;
   justify-content: space-between;
 }
 
-.mypage-detail-button,
-.mypage-detail-popup-close-button,
-.mypage-detail-popup-save-button {
+.mypage-detail-button {
+  background: none;
   background-color: #ff7916;
-}
-
-.mypage-detail-button:hover,
-.mypage-detail-popup-close-button:hover,
-.mypage-detail-popup-save-button:hover {
-  /* background-color: #ff7916; */
   color: white;
   border-radius: 5px;
+  width: 50px;
+  height: 24px;
+  font-size: 12px;
+}
+
+.mypage-detail-signout-button {
+  background: none;
+  background-color: #ff7916;
+  color: white;
+  border-radius: 5px;
+  width: 100px;
+  height: 24px;
+  font-size: 12px;
 }
 
 .mypage-detail-popup-wrap {
@@ -125,7 +131,7 @@ padding-right: 5pxS;
 }
 
 .mypage-detail-content-popup-wrap {
-  width: 600px;
+  width: 400px;
   background-color: #fff;
   padding: 20px;
   border-radius: 8px;
@@ -140,7 +146,7 @@ padding-right: 5pxS;
 }
 
 .mypage-detail-popup-line {
-  margin: 10px;
+  margin: 10px 0px;
 }
 
 .mypage-detail-popup-line label {
