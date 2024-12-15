@@ -473,24 +473,42 @@ const ManageBranchs = ({ onClick }) => {
 
     // 지점 추가
     const createBranch = async (token, newBranch) => {
-        // 지점명, 지역코드, 상세주소, 전화번호 입력칸이 공란인지 검증
-        const response = await axios.post(`${process.env.REACT_APP_API_URL}/arentcar/manager/branchs`,
-            newBranch,
-            {
-                headers: {
-                    Authorization: `Bearer ${token}`
-                },
-                withCredentials: true,
+        try {
+            // 지점명, 지역코드, 상세주소, 전화번호 입력칸이 공란인지 검증
+            const response = await axios.post(`${process.env.REACT_APP_API_URL}/arentcar/manager/branchs`,
+                newBranch,
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    },
+                    withCredentials: true,
+                });
+            newBranch.branch_code = response.data.branch_code;
+            newBranch.branch_name = response.data.branch_name;
+
+            // // 지점 리스트에 새로 추가된 지점 등록
+            // setBranchs((prevBranch) => [...prevBranch, newBranch]);
+
+            // 전체 지점 수 증가
+            setTotalCount((prevCount) => {
+                const updatedCount = prevCount + 1;
+
+                // 페이지 번호를 마지막 페이지로 이동
+                const totalPages = Math.ceil(updatedCount / pageSize); // 새 데이터 포함한 총 페이지 수 계산
+
+                setPageNumber(totalPages); // 마지막 페이지로 이동
+                return updatedCount; // 상태 업데이트 후 return
             });
-        newBranch.branch_code = response.data.branch_code;
-        newBranch.branch_name = response.data.branch_name;
 
-        // 지점 리스트에 새로 추가된 지점 등록
-        setBranchs((prevBranch) => [...prevBranch, newBranch]);
-
-        // 전체 지점 수 증가
-        setTotalCount((prevCount) => prevCount + 1);
-        alert("지점이 추가 되었습니다.");
+            // setPageNumber((prevPage) => {
+            //     const totalPages = Math.ceil((totalCount + 1 / pageSize)); // 새 데이터 포함한 총 페이지 수 계산
+            //     return totalPages; // 마지막 페이지로 이동
+            // });
+            alert("지점이 추가 되었습니다.");
+        } catch (error) {
+            console.error("지점 추가 실패:", error);
+            throw error;
+        }
     };
 
     // 지점 상세 팝업창 열기
@@ -718,7 +736,6 @@ const ManageBranchs = ({ onClick }) => {
 
             {/* 지점 추가 팝업 */}
             {isCreatePopUp &&
-                // TODO: manager 앞에 register 붙여야 함
                 <div className='manager-branch-create-popup manager-popup'>
                     <div className='register-branch-content-popup-wrap'>
                         <div className='register-branch-content-popup-close'>
