@@ -275,7 +275,6 @@ const ManageBranchs = ({ onClick }) => {
 
     // 수정 버튼 클릭
     const handleUpdateClick = (findCode, workMode) => {
-        console.log("수정 버튼 눌렸어용")
         setBranchCode(findCode.branch_code);
         setBranchName(findCode.branch_name);
         setIsUpdatePopUp(true);
@@ -965,9 +964,11 @@ const ManageBranchs = ({ onClick }) => {
                             >
                                 {title.field === '' ? (
                                     <>
-                                        <button className='manager-button manager-branch-button-detail' onClick={() => handleDetailClick(row, "상세")}>상세</button>
                                         <button className='manager-button manager-branch-button-update' onClick={() => handleUpdateClick(row, "수정")}>수정</button>
                                         <button className='manager-button manager-branch-button-delete' onClick={() => handleDeleteClick(row.branch_code)}>삭제</button>
+                                        <button className='manager-button manager-branch-button-detail' onClick={() => handleDetailClick(row, "상세")}>상세</button>
+                                        
+                                        
                                     </>
                                 ) : (
                                     <div>
