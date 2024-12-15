@@ -1,14 +1,16 @@
 // 전체 지점 예약 통계
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import { refreshAccessToken, handleLogout as handleAdminLogout, formatTime, isValidTimeFormat } from 'common/Common';
+import { refreshAccessToken, handleLogout as handleAdminLogout, formatTime} from 'common/Common';
 import Loading from 'common/Loading';
-import { Chart as ChartJS, BarElement, CategoryScale, LinearScale, Tooltip, Legend, Title } from 'chart.js';
-import { Bar } from 'react-chartjs-2';
+import { Chart as ChartJS, ArcElement, Tooltip, Legend, Title,  } from 'chart.js';
+import ChartDataLabels from 'chartjs-plugin-datalabels';
+import { Pie } from 'react-chartjs-2';
 import './Charts.css';
 
 // 차트 라이브러리의 필요한 요소를 등록
-ChartJS.register(BarElement, CategoryScale, LinearScale, Tooltip, Legend, Title);
+ChartJS.register(ArcElement, Tooltip, Legend, Title, ChartDataLabels);
+
 
 const AllBranchesReservationChart = ({ onClick }) => {
     const [branchs, setBranchs] = useState([]); // DB에서 읽어온 지점 데이터
@@ -16,7 +18,7 @@ const AllBranchesReservationChart = ({ onClick }) => {
     const [searchBranchName, setSearchBranchName] = useState(""); // 지점명 검색
     const [startDate, setStartDate] = useState(() => {
         const date = new Date();
-        date.setDate(date.getDate() - 7); // 일주일 전
+        date.setFullYear(date.getFullYear(), 0, 1); // 올해 1월 1일로 설정
         return date.toISOString().split('T')[0].replace(/-/g, ''); // "YYYYMMDD" 형식으로 변환
     });
     const [endDate, setEndDate] = useState(() => {
@@ -46,6 +48,13 @@ const AllBranchesReservationChart = ({ onClick }) => {
         { headerName: '폐점시간', field: 'available_return_time', width: 100, align: 'center' },
         { headerName: '상세보기', field: '', width: 180, align: 'center' },
     ]);
+
+    // 차트에 사용될 파스텔 색상들
+    const pastelColors = [
+        '#FFB3BA', '#FFDFBA', '#FFFFBA', '#BAFFC9', '#BAE1FF',
+        '#C2B0FF', '#FFB2FF', '#FF8D8D', '#FFAEAE', '#E6FFFB',
+        '#FFC9F9', '#FFDDC1'
+    ];
 
     // 지점 데이터 가져오기
     const getBranchs = async (token) => {
@@ -189,7 +198,6 @@ const AllBranchesReservationChart = ({ onClick }) => {
 
         try {
             const token = localStorage.getItem('accessToken')
-            
             // DB에서 검색 결과 가져오기
             const response = await axios.get(`${process.env.REACT_APP_API_URL}/arentcar/manager/branchs/paged`, {
                 params: { branchName: searchBranchName.trim() },
@@ -403,31 +411,37 @@ const AllBranchesReservationChart = ({ onClick }) => {
         datasets: [
             {
                 data: chartData?.map(branch => Number(branch.reservation_code) || 0) || [],
-                backgroundColor: ['red', 'green', 'blue', 'yellow', 'purple'],
+                backgroundColor: pastelColors,
             },
         ],
     };
 
     const options = {
         scales: {
-            y: {
-                ticks: {
-                    stepSize: 1, // Y축 단위를 1로 설정
-                    callback: function (value) {
-                        return Number.isInteger(value) ? value : null; // 정수만 표시
-                    },
-                },
-            },
+            // Y축을 사용할 필요가 없으므로 제거
         },
         plugins: {
             legend: {
-                display: false,
+                display: false, // 범례 숨기기
             },
-            // 범례 숨기기
             title: {
                 display: true, // 제목 표시
                 text: '예약 건수', // 제목 내용
                 align: 'start', // 제목을 왼쪽 정렬
+            },
+            datalabels: {
+                display: true,
+                color: '#000000',  // 퍼센트 텍스트 색상
+                font: {
+                    weight: 'bold',
+                    size: 14,
+                },
+                formatter: function (value, context) {
+                    const total = context.dataset.data.reduce((acc, val) => acc + val, 0); // 전체 값 계산
+                    const percentage = ((value / total) * 100).toFixed(0); // 퍼센트 계산
+                    const branchName = context.chart.data.labels[context.dataIndex]; // 지점 이름
+                    return `${branchName}: ${percentage}%`; // 지점 이름과 퍼센트 표시
+                },
             },
         },
     };
@@ -492,7 +506,7 @@ const AllBranchesReservationChart = ({ onClick }) => {
             {/* 차트 표시 */}
             <div className="chart-container">
                 {chartData.length > 0 ? (
-                    <Bar data={data} options={options} />
+                    <Pie data={data} options={options} />
                 ) : (
                     <p>데이터를 불러오는 중입니다...</p>
                 )}

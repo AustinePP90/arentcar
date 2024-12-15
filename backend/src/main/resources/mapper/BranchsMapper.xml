@@ -24,7 +24,6 @@
         WHERE r.rental_date BETWEEN #{startDate} AND #{endDate}
         GROUP BY b.branch_name
         order by reservationCode DESC
-        LIMIT 5;
     </select>
 
     <!-- 전체 지점 수 조회 -->
