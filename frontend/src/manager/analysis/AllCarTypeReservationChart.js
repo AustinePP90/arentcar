@@ -54,6 +54,13 @@ const AllCarTypeReservation = ({ onClick }) => {
         { headerName: '년식', field: 'model_year', width: 85, align: 'center' },
     ]);
 
+    // 차트에 사용될 파스텔 색상들
+    const pastelColors = [
+        '#FFB3BA', '#FFDFBA', '#FFFFBA', '#BAFFC9', '#BAE1FF',
+        '#C2B0FF', '#FFB2FF', '#FF8D8D', '#FFAEAE', '#E6FFFB',
+        '#FFC9F9', '#FFDDC1'
+    ];
+
     useEffect(() => {
         if (!isLoginState) {
             alert("로그인이 필요합니다.");
@@ -272,7 +279,7 @@ const AllCarTypeReservation = ({ onClick }) => {
         datasets: [
             {
                 data: chartData?.map(reservations => Number(reservations.reservation_code) || 0),
-                backgroundColor: ['red', 'green', 'blue', 'yellow', 'purple'],
+                backgroundColor: pastelColors,
             },
         ],
     };
@@ -290,16 +297,30 @@ const AllCarTypeReservation = ({ onClick }) => {
         },
         plugins: {
             legend: {
-                display: false,
+                display: false, // 범례 숨기기
             },
-            // 범례 숨기기
             title: {
                 display: true, // 제목 표시
                 text: '예약 건수', // 제목 내용
                 align: 'start', // 제목을 왼쪽 정렬
             },
+            datalabels: {
+                display: true,
+                color: '#000000',  // 퍼센트 텍스트 색상
+                font: {
+                    weight: 'bold',
+                    size: 14,
+                },
+                formatter: function (value, context) {
+                    const total = context.dataset.data.reduce((acc, val) => acc + val, 0); // 전체 값 계산
+                    const percentage = ((value / total) * 100).toFixed(0); // 퍼센트 계산
+                    const carTypes = context.chart.data.labels[context.dataIndex]; // 차종 이름
+                    return `${carTypes}: ${percentage}%`; // 차종 이름과 퍼센트 표시
+                },
+            },
         },
     };
+    
     return (
         <div className='manager-branchs-reservation-chart-wrap'>
             <div className='manager-branchs-reservation-chart-chart-header-wrap'>
