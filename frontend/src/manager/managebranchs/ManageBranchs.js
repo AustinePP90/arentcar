@@ -6,6 +6,7 @@ import "manager/managebranchs/ManageBranchs.css";
 
 const ManageBranchs = ({ onClick }) => {
     const [branchs, setBranchs] = useState([]); // DB에서 읽어온 지점 데이터
+    const [branchsTrigger, setbranchsTrigger] = useState(false); 
     const [isCreatePopUp, setIsCreatePopUp] = useState(false); // 지점 추가 팝업
     const [isUpdatePopup, setIsUpdatePopUp] = useState(false); // 지점 수정 팝업
     const [isDetailPopUp, setIsDetailPopUp] = useState(false); // 지점 상세 팝업
@@ -78,20 +79,27 @@ const ManageBranchs = ({ onClick }) => {
             params.branchName = searchName;
         }
 
-        // API 요청: 지점 데이터 가져오기
-        const response = await axios.get(`${process.env.REACT_APP_API_URL}/arentcar/manager/branchs/paged`,
-            {
-                params, // 위에서 정의한 페이징과 검색 조건
+        try {
+            const response = await axios.get(`${process.env.REACT_APP_API_URL}/arentcar/manager/branchs/paged`, {
+                params,
                 headers: {
-                    Authorization: `Bearer ${token}` // 인증 토큰 헤더에 추가
+                    Authorization: `Bearer ${token}`,
                 },
-                withCredentials: true, // 쿠키 전송 활성화
+                withCredentials: true,
             });
 
-        // 만약 응답 데이터가 있다면 상태로 업데이트
-        if (response.data) {
-            // 지점 데이터를 상태로 저장
-            setBranchs(response.data);
+            if (response.data && response.data.length === 0) {
+                if (branchs.length !== 0) { 
+                    setBranchs([]); // 상태가 이미 빈 배열이면 업데이트하지 않음
+                }
+                setPageNumber(1); 
+                return;
+            } else {
+                setBranchs(response.data); // 응답이 있다면 지점 데이터 상태에 저장
+                getTotalCount(); // 검색 결과에 맞는 총 개수 다시 가져오기
+            }
+        } catch (error) {
+            console.error('Error fetching branches:', error);
         }
     };
 
@@ -116,28 +124,38 @@ const ManageBranchs = ({ onClick }) => {
         }
     };
 
+    useEffect(() => {
+        console.log("useEffect 실행: branchs.length =", branchs.length);
+        // 상태가 빈 배열이 되고, 검색어가 있는 경우에만 alert 실행
+        if (branchs.length === 0 && searchName.trim() !== '') {
+            setTimeout(() => {
+                alert("존재하지 않는 지점명입니다. 다시 입력해주세요.");
+            }, 0); // 비동기적으로 alert 호출
+        }
+    }, [branchs]); // branchs 상태 변경 감지
+    
+
     // 총 지점 수 요청
     const getCount = async (token) => {
         // 검색어(searchName)이 있다면 params에 추가
         const params = searchName ? { branchName: searchName } : {};
 
-        // API 요청: 지점 수 가져오기
-        const response = await axios.get(`${process.env.REACT_APP_API_URL}/arentcar/manager/branchs/count`,
-            {
-                params,
-                headers: {
-                    Authorization: `Bearer ${token}`
-                },
-                withCredentials: true,
-            });
+        try {
+            // API 요청: 지점 수 가져오기
+            const response = await axios.get(`${process.env.REACT_APP_API_URL}/arentcar/manager/branchs/count`,
+                {
+                    params,
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    },
+                    withCredentials: true,
+                });
 
-        console.log('Branch count response:', response.data);
-
-        // 응답 데이터가 숫자라면 상태로 저장
-        if (typeof response.data === 'number') {
-            setTotalCount(response.data);
-        } else {
-            console.error('Unexpected response:', response.data);
+            if (typeof response.data === 'number') {
+                setTotalCount(response.data);
+            }
+        } catch (error) {
+            console.error('총 지점 수를 가져오는데 실패했습니다:', error);
         }
     };
 
@@ -168,6 +186,11 @@ const ManageBranchs = ({ onClick }) => {
 
     // 검색 버튼
     const handleSearchClick = async () => {
+        if (pageNumber === 1) {
+            setbranchsTrigger((prev) => !prev);
+        } else if (searchName.trim() === '') {
+            alert("지점명을 입력해주세요.");
+        }
         pageingBranchs();
         getTotalCount();
     };
@@ -934,14 +957,14 @@ const ManageBranchs = ({ onClick }) => {
                                     </>
                                 ) : (
                                     <div>
-                                    {(title.field === 'available_pickup_time' || title.field === 'available_return_time') ? (
-                                        formatTime(row[title.field]) // 시간 필드만 09:00 형식으로 표시되게 포맷
-                                    ) : title.field === 'branch_phone_number' ? (
-                                        formatPhoneNumber(row[title.field]) // 전화번호 필드 포맷
-                                    ) : (
-                                        row[title.field] // 다른 필드는 그대로 출력
-                                    )}
-                                </div>
+                                        {(title.field === 'available_pickup_time' || title.field === 'available_return_time') ? (
+                                            formatTime(row[title.field]) // 시간 필드만 09:00 형식으로 표시되게 포맷
+                                        ) : title.field === 'branch_phone_number' ? (
+                                            formatPhoneNumber(row[title.field]) // 전화번호 필드 포맷
+                                        ) : (
+                                            row[title.field] // 다른 필드는 그대로 출력
+                                        )}
+                                    </div>
                                 )}
                             </div>
                         ))}
