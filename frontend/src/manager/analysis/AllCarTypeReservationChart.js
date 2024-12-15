@@ -231,54 +231,47 @@ const AllCarTypeReservation = ({ onClick }) => {
         }
     }, [searchCarType]);
 
-    //  API 응답 데이터 확인
-    const fetchBranchReservations = async (token) => {
-        if (!startDate || !endDate) {
-            return;
-        }
+    const fetchCarTypesReservations = async (token) => {
+        if (!startDate || !endDate) return;
 
-        try {
-            const response = await axios.get(`${process.env.REACT_APP_API_URL}/arentcar/manager/branchs/reservation`, {
-                headers: { Authorization: `Bearer ${token}` },
-                params: { startDate, endDate },
-                withCredentials: true,
-            });
+        const response = await axios.get(`${process.env.REACT_APP_API_URL}/arentcar/manager/rentalcars`, {
+            params: { startDate, endDate},
+            headers: { Authorization: `Bearer ${token}` },
+            withCredentials: true,
+        });
 
-            setChartData(response.data);
-        } catch (error) {
-            console.error("API Error:", error);
-        }
+        setChartData(response.data);
+        console.log(response.data);
     };
 
-    // 지점별 예약 건수 가져오기
-    const getBranchReservations = async () => {
+    const getCarTypesReservations = async () => {
         try {
             const token = localStorage.getItem('accessToken');
-            await fetchBranchReservations(token);
+            await fetchCarTypesReservations(token);
         } catch (error) {
             if (error.response && error.response.status === 403) {
                 try {
                     const newToken = await refreshAccessToken();
-                    await fetchBranchReservations(newToken);
+                    await fetchCarTypesReservations(newToken);
                 } catch (refreshError) {
                     alert("인증이 만료되었습니다. 다시 로그인 해주세요.");
                     handleAdminLogout();
                 }
             } else {
-                console.error('There was an error fetching the chart reservations!', error);
+                console.error('There was an error fetching the branch reservations!', error);
             }
         }
     };
 
     useEffect(() => {
-        getBranchReservations();
+        getCarTypesReservations();
     }, [startDate, endDate]);
 
     const data = {
-        labels: chartData?.map(branch => branch.branch_name) || [],
+        labels: chartData.map(carsType => carsType.car_type_name) || [],  // 차종 이름
         datasets: [
             {
-                data: chartData?.map(branch => Number(branch.reservation_code) || 0) || [],
+                data: chartData?.map(reservations => Number(reservations.reservation_code) || 0),
                 backgroundColor: ['red', 'green', 'blue', 'yellow', 'purple'],
             },
         ],
@@ -307,7 +300,6 @@ const AllCarTypeReservation = ({ onClick }) => {
             },
         },
     };
-
     return (
         <div className='manager-branchs-reservation-chart-wrap'>
             <div className='manager-branchs-reservation-chart-chart-header-wrap'>
