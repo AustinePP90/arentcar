@@ -11,6 +11,7 @@ const ManageBranchs = ({ onClick }) => {
 
     const [branchs, setBranchs] = useState([]); // DB에서 읽어온 지점 데이터
     const [branchsTrigger, setbranchsTrigger] = useState(false); 
+    const [isSearched, setIsSearched] = useState(false); // 지점명 검색 여부 상태 추가
     const [isCreatePopUp, setIsCreatePopUp] = useState(false); // 지점 추가 팝업
     const [isUpdatePopup, setIsUpdatePopUp] = useState(false); // 지점 수정 팝업
     const [isDetailPopUp, setIsDetailPopUp] = useState(false); // 지점 상세 팝업
@@ -139,7 +140,6 @@ const ManageBranchs = ({ onClick }) => {
     };
 
     useEffect(() => {
-        console.log("useEffect 실행: branchs.length =", branchs.length);
         // 상태가 빈 배열이 되고, 검색어가 있는 경우에만 alert 실행
         if (branchs.length === 0 && searchName.trim() !== '') {
             setTimeout(() => {
@@ -200,14 +200,58 @@ const ManageBranchs = ({ onClick }) => {
 
     // 검색 버튼
     const handleSearchClick = async () => {
-        if (pageNumber === 1) {
-            setbranchsTrigger((prev) => !prev);
-        } else if (searchName.trim() === '') {
-            alert("지점명을 입력해주세요.");
+         // 검색어를 입력하지 않은 경우
+         if (!searchName || searchName.trim() === '') {
+            alert("검색할 지점명을 입력해주세요!");
+            return;
         }
-        pageingBranchs();
-        getTotalCount();
+
+        try {
+            const token = localStorage.getItem('accessToken');
+
+            // DB에서 검색 결과 가져오기
+            const response = await axios.get(`${process.env.REACT_APP_API_URL}/arentcar/manager/branchs/paged`, {
+                params: { branchName: searchName.trim() },
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                }
+            });
+
+            // 검색 결과가 없는 경우
+            if (response.data.length === 0) {
+                alert("존재하지 않는 지점명입니다. 다시 입력해주세요.");
+                return;
+            }
+
+            // 검색 결과가 있는 경우
+            pageingBranchs();
+            getTotalCount();
+            setBranchs(response.data);
+            setIsSearched(true); // 검색 후 상태 업데이트
+
+        } catch (error) {
+            console.error("Error during branch search:", error);
+            alert("검색 중 오류가 발생했습니다. 다시 시도해주세요.");
+        }
     };
+
+    // 검색어 초기화 함수
+    const handleSearchReset = () => {
+        setSearchName(''); // 검색어 초기화
+        setBranchs([]); // 검색 결과 초기화
+        setLoading(false); // 로딩 상태 초기화
+        setIsSearched(false); // 검색 여부 초기화
+    };
+
+    // `searchName`이 변경되었을 때 (지점명을 검색했을 때) 데이터 다시 로드
+    // 해당 useEffect가 없으면 방금 전 검색했던 지점명만 테이블에 표시 된다.
+    useEffect(() => {
+        if (searchName === '') {
+            pageingBranchs();
+            getTotalCount();
+        }
+    }, [searchName]);
+
 
     // 닫기 버튼
     const handleCloseClick = () => {
@@ -608,7 +652,6 @@ const ManageBranchs = ({ onClick }) => {
             headers: { Authorization: `Bearer ${token}` },
             withCredentials: true,
         });
-        console.log(response.data);
         setRegionNameMenuOptions(response.data);
     };
 
@@ -697,6 +740,12 @@ const ManageBranchs = ({ onClick }) => {
                     </div>
                     <div>
                         <button className='manager-button manager-button-insert' onClick={() => handleInsertClick("추가")}>추가</button>
+                        <button className='manager-button manager-button-reset' onClick={handleSearchReset} disabled={!isSearched}
+                            style={{
+                                color: isSearched ? 'rgb(38, 49, 155)' : '#AAAAAA', // 조건에 맞게 color 변경
+                                cursor: isSearched ? 'pointer' : 'not-allowed', // disabled일 때 커서 스타일 변경
+                            }}>초기화
+                        </button>
                         <button className='manager-button manager-button-close' onClick={() => handleCloseClick()}>닫기</button>
                     </div>
                 </div>
