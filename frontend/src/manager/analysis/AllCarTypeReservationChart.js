@@ -1,4 +1,4 @@
-// 전체 지점 예약 통계
+// 차종별 예약 통계
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { useSelector } from 'react-redux';
