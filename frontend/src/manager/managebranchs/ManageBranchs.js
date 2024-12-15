@@ -486,24 +486,16 @@ const ManageBranchs = ({ onClick }) => {
             newBranch.branch_code = response.data.branch_code;
             newBranch.branch_name = response.data.branch_name;
 
-            // // 지점 리스트에 새로 추가된 지점 등록
-            // setBranchs((prevBranch) => [...prevBranch, newBranch]);
-
             // 전체 지점 수 증가
             setTotalCount((prevCount) => {
                 const updatedCount = prevCount + 1;
 
                 // 페이지 번호를 마지막 페이지로 이동
-                const totalPages = Math.ceil(updatedCount / pageSize); // 새 데이터 포함한 총 페이지 수 계산
+                const totalPages = Math.ceil(updatedCount / pageSize); // 새로 추가한 지점 포함한 총 페이지 수 계산
 
                 setPageNumber(totalPages); // 마지막 페이지로 이동
                 return updatedCount; // 상태 업데이트 후 return
             });
-
-            // setPageNumber((prevPage) => {
-            //     const totalPages = Math.ceil((totalCount + 1 / pageSize)); // 새 데이터 포함한 총 페이지 수 계산
-            //     return totalPages; // 마지막 페이지로 이동
-            // });
             alert("지점이 추가 되었습니다.");
         } catch (error) {
             console.error("지점 추가 실패:", error);
