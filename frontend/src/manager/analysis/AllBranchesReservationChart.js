@@ -188,9 +188,14 @@ const AllBranchesReservationChart = ({ onClick }) => {
         }
 
         try {
+            const token = localStorage.getItem('accessToken')
+            
             // DB에서 검색 결과 가져오기
             const response = await axios.get(`${process.env.REACT_APP_API_URL}/arentcar/manager/branchs/paged`, {
                 params: { branchName: searchBranchName.trim() },
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                }
             });
 
             // 검색 결과가 없는 경우
