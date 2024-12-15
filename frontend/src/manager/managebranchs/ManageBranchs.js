@@ -359,6 +359,9 @@ const ManageBranchs = ({ onClick }) => {
             return;
         }
 
+        // 전화번호 포맷팅
+        const formattedPhoneNumber = formatPhoneNumber(branchPhoneNumber);
+
         let newBranch = {
             branch_code: branchCode,
             branch_name: branchName,
@@ -369,7 +372,7 @@ const ManageBranchs = ({ onClick }) => {
             post_code: postCode,
             branch_basic_address: branchBasicAddress,
             branch_detailed_address: branchDetailedAddress,
-            branch_phone_number: branchPhoneNumber,
+            branch_phone_number: formattedPhoneNumber,
             available_pickup_time: availablePickupTime,
             available_return_time: availableReturnTime,
         };
@@ -474,7 +477,6 @@ const ManageBranchs = ({ onClick }) => {
     // 지점 추가
     const createBranch = async (token, newBranch) => {
         try {
-            // 지점명, 지역코드, 상세주소, 전화번호 입력칸이 공란인지 검증
             const response = await axios.post(`${process.env.REACT_APP_API_URL}/arentcar/manager/branchs`,
                 newBranch,
                 {
@@ -656,44 +658,21 @@ const ManageBranchs = ({ onClick }) => {
 
 
     // 매장 전화번호 형식 변환 함수
-    const formatBranchPhoneNumber = (branchPhoneNumber) => {
-        if (!branchPhoneNumber) {
-            return "";
-        }
-
-        // phoneNumber 숫자 형식일 때 (예: 01011112222)
-        const phoneNumberStr = branchPhoneNumber.toString();
-
-
-        // 이미 '-'가 포함된 경우 그대로 반환
-        if (phoneNumberStr.includes('-')) {
-            return phoneNumberStr;
-        }
-
-        if (phoneNumberStr.length === 10) {
-            const phoneNumber1 = phoneNumberStr.slice(0, 3);
-            const phoneNumber2 = phoneNumberStr.slice(3, 6);
-            const phoneNumber3 = phoneNumberStr.slice(6, 10);
-
-            return `${phoneNumber1}-${phoneNumber2}-${phoneNumber3}`;
-        }
-        return "";
-    };
-
     const formatPhoneNumber = (branch_phone_number) => {
         if (branch_phone_number && branch_phone_number.length === 10) {
-            // '0311234567'
+            // '0311234567' -> '031-123-4567'
             return `${branch_phone_number.slice(0, 3)}-${branch_phone_number.slice(3, 6)}-${branch_phone_number.slice(6, 10)}`;
         }
-        // 기본값으로 원래 시간 반환
+        // 기본값으로 원래 전화번호 반환
         return branch_phone_number;
     };
 
+    // 지점 추가 및 수정의 전화번호 입력 칸에서 포맷팅
     const handlePhoneNumberChange = (e) => {
-        const input = e.target.value.replace(/[^0-9:]/g, ""); // 숫자와 ':'만 허용
-        const formatted = input.replace(":", ""); // ':' 제거한 값 (저장된 값이 09:00 이기 때문)
+        let input = e.target.value.replace(/[^0-9]/g, ""); // 숫자만 허용
 
-        setBranchPhoneNumber(formatted);
+        // 숫자만 저장
+        setBranchPhoneNumber(input); 
     }
 
     return (
@@ -907,7 +886,7 @@ const ManageBranchs = ({ onClick }) => {
                                 <label>지점명 : </label>
                                 <span>{branchDetails.branch_name}</span>
                                 <label>전화번호 : </label>
-                                <span>{formatBranchPhoneNumber(branchDetails.branch_phone_number)}</span>
+                                <span>{formatPhoneNumber(branchDetails.branch_phone_number)}</span>
                             </div>
                             <div className="manager-branch-popup-field-row">
                                 <label>기본주소 : </label>
