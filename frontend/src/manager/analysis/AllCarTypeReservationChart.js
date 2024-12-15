@@ -17,7 +17,6 @@ const AllCarTypeReservation = ({ onClick }) => {
     const [vehicles, setVehicles] = useState([]) // DB에서 읽어온 차종 데이터
     const [vehiclesTrigger, setVehiclesTrigger] = useState(false);
     const [searchName, setSearchName] = useState("");
-    const [searchCarType, setSearchCarType] = useState(""); // 차종명 검색
 
     const [startDate, setStartDate] = useState(() => {
         const date = new Date();
@@ -92,32 +91,32 @@ const AllCarTypeReservation = ({ onClick }) => {
 
     const getVehicles = async (token) => {
         const params = {
-            pageSize,
-            pageNumber,
+          pageSize, // 화면에 보여줄 차종 개수(10개의 데이터 고정)
+          pageNumber, // 현재 페이지 번호(기본 1페이지)
         };
-
+    
         if (searchName && searchName.trim() !== '') {
-            params.carTypeName = searchName;
+          params.carTypeName = searchName; // 검색어가 있으면 params에 carTypeName도 같이 넣어서 서버에 요청함
         }
-
-        const response = await axios.get(`${process.env.REACT_APP_API_URL}/arentcar/manager/cars/paged`,
-            {
-                params,
-                headers: {
-                    Authorization: `Bearer ${token}`
-                },
-                withCredentials: true,
-            });
-
-        if (response.data && response.data.length > 0) {  // 배열인 경우
+    
+        const response = await axios.get(`${process.env.REACT_APP_API_URL}/arentcar/manager/cars/paged`, 
+          {
+            params,
+            headers: {
+              Authorization: `Bearer ${token}`
+            },
+            withCredentials: true,
+          });
+    
+          if (response.data && response.data.length > 0) {  // 배열인 경우
             setVehicles(response.data);
-        } else if (response.data && Object.keys(response.data).length > 0) {  // 객체인 경우
+          } else if (response.data && Object.keys(response.data).length > 0) {  // 객체인 경우
             setVehicles(response.data);
-        } else {
+          } else {
             alert("조건에 맞는 차종명이 없습니다.");
             setVehicles(response.data);
-        }
-    };
+          }
+      };
 
     const getTotalCount = async () => {
         try {
@@ -183,45 +182,15 @@ const AllCarTypeReservation = ({ onClick }) => {
 
     // 검색 버튼
     const handleSearchClick = async () => {
-
-        // 검색어를 입력하지 않은 경우
-        if (!searchCarType || searchCarType.trim() === '') {
-            alert("검색할 지점명을 입력해주세요!");
-            return;
-        }
-
-        try {
-            const token = localStorage.getItem('accessToken')
-
-            // DB에서 검색 결과 가져오기
-            const response = await axios.get(`${process.env.REACT_APP_API_URL}/arentcar/manager/cars/paged`, {
-                params: { branchName: searchCarType.trim() },
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                }
-            });
-
-            // 검색 결과가 없는 경우
-            if (response.data.length === 0) {
-                alert("존재하지 않는 지점명입니다. 다시 입력해주세요.");
-                return;
-            }
-
-            // 검색 결과가 있는 경우
-            pageingVehicles();
-            getTotalCount();
-            setVehicles(response.data);
-            setIsSearched(true); // 검색 후 상태 업데이트
-
-        } catch (error) {
-            console.error("Error during branch search:", error);
-            alert("검색 중 오류가 발생했습니다. 다시 시도해주세요.");
-        }
-    };
+        console.log('Search Name:', searchName);
+        pageingVehicles();
+        getTotalCount();
+        setPageNumber(1);
+      };
 
     // 검색어 초기화 함수
     const handleSearchReset = () => {
-        setSearchCarType(''); // 검색어 초기화
+        setSearchName(''); // 검색어 초기화
         setVehicles([]); // 검색 결과 초기화
         setStartDate(''); // 예약 시작일 초기화
         setEndDate(''); // 예약 종료일 초기화
@@ -232,11 +201,11 @@ const AllCarTypeReservation = ({ onClick }) => {
     // `searchCarType`이 변경되었을 때 (차종명을 검색했을 때) 데이터 다시 로드
     // 해당 useEffect가 없으면 방금 전 검색했던 차종명만 테이블에 표시 된다.
     useEffect(() => {
-        if (searchCarType === '') {
+        if (searchName === '') {
             pageingVehicles();
             getTotalCount();
         }
-    }, [searchCarType]);
+    }, [searchName]);
 
     const fetchCarTypesReservations = async (token) => {
         if (!startDate || !endDate) return;
@@ -339,7 +308,7 @@ const AllCarTypeReservation = ({ onClick }) => {
                     {/* 차종명 검색 버튼 */}
                     <div className='flex-align-center'>
                         <label className='manager-label' htmlFor="">차종명</label>
-                        <input className='width200' type="text" value={searchCarType} onChange={(e) => (setSearchCarType(e.target.value))} />
+                        <input className='width200' type="text" value={searchName} onChange={(e) => (setSearchName(e.target.value))} />
 
                         {/* 예약 시작일 */}
                         <input
