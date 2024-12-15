@@ -498,6 +498,10 @@ const ManageBranchs = ({ onClick }) => {
                 setPageNumber(totalPages); // 마지막 페이지로 이동
                 return updatedCount; // 상태 업데이트 후 return
             });
+
+            // 새로 추가 된 지점을 상태에 추가
+            setBranchs((prevBranch) => [...prevBranch, newBranch]);
+            
             alert("지점이 추가 되었습니다.");
         } catch (error) {
             console.error("지점 추가 실패:", error);
