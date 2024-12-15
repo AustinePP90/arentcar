@@ -11,7 +11,7 @@ import './Charts.css';
 // 차트 라이브러리의 필요한 요소를 등록
 ChartJS.register(BarElement, CategoryScale, LinearScale, Tooltip, Legend, Title);
 
-const AllBranchesReservationChart = ({ onClick }) => {
+const AllCarTypeReservation = ({ onClick }) => {
     const isLoginState = useSelector((state) => state.adminState.loginState);
 
     const [vehicles, setVehicles] = useState([]) // DB에서 읽어온 차종 데이터
@@ -432,4 +432,4 @@ const AllBranchesReservationChart = ({ onClick }) => {
     );
 };
 
-export default AllBranchesReservationChart;
+export default AllCarTypeReservation;
