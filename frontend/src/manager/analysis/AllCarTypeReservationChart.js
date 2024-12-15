@@ -1,89 +1,284 @@
-// 차종별 예약 건수
+// 전체 지점 예약 통계
 import React, { useEffect, useState } from 'react';
+import axios from 'axios';
+import { useSelector } from 'react-redux';
+import { refreshAccessToken, handleLogout as handleAdminLogout, formatTime, isValidTimeFormat } from 'common/Common';
+import Loading from 'common/Loading';
 import { Chart as ChartJS, BarElement, CategoryScale, LinearScale, Tooltip, Legend, Title } from 'chart.js';
 import { Bar } from 'react-chartjs-2';
-import DatePicker from 'react-datepicker'; // 달력 라이브러리
-import { ko } from 'date-fns/locale'; // 달력을 한글로 바꾸기
-import 'react-datepicker/dist/react-datepicker.css';
-import './AllBranchesReservationChart.css';
-import 'index.css';
-import axios from 'axios';
-import { endOfMonth, startOfMonth } from 'date-fns';
-import { subDays } from 'date-fns';
-import { format } from 'date-fns';
-import { refreshAccessToken, handleLogout } from 'common/Common';
+import './Charts.css';
 
-ChartJS.register(BarElement, CategoryScale, LinearScale, Tooltip, Legend);
+// 차트 라이브러리의 필요한 요소를 등록
+ChartJS.register(BarElement, CategoryScale, LinearScale, Tooltip, Legend, Title);
 
-const AllCarTypeReservationChart = () => {
-    // 캘린더 시작 날짜와 종료 날짜
-    const [startDate, setStartDate] = useState(subDays(new Date(), 7)); // 오늘 기준 일주일 전
-    const [endDate, setEndDate] = useState(new Date()); // 오늘 날짜
-    const [chartData, setChartData] = useState([]);
-    // 선택된 일별 & 월별 필터 상태
-    const [filter, setFilter] = useState('daily');
+const AllBranchesReservationChart = ({ onClick }) => {
+    const isLoginState = useSelector((state) => state.adminState.loginState);
 
-    // 일별, 월별 텍스트 필터
-    const filterText = filter === 'daily' ? '일별 차종 예약 현황' : '월별 차종 예약 현황';
+    const [vehicles, setVehicles] = useState([]) // DB에서 읽어온 차종 데이터
+    const [vehiclesTrigger, setVehiclesTrigger] = useState(false);
+    const [searchName, setSearchName] = useState("");
+    const [searchCarType, setSearchCarType] = useState(""); // 차종명 검색
 
-    // 일별, 월별 선택용 핸들러
-    const handleFilterChange = (event) => {
-        setFilter(event.target.value); // 선택된 값을 차트 이름에 반영
-        setStartDate(null); //필터 변경 시 기존 날짜 초기화
-        setEndDate(null);
+    const [startDate, setStartDate] = useState(() => {
+        const date = new Date();
+        date.setDate(date.getDate() - 7); // 일주일 전
+        return date.toISOString().split('T')[0].replace(/-/g, ''); // "YYYYMMDD" 형식으로 변환
+    });
+    const [endDate, setEndDate] = useState(() => {
+        const date = new Date();
+        return date.toISOString().split('T')[0].replace(/-/g, ''); // "YYYYMMDD" 형식으로 변환
+    });
+
+    const formatDate = (dateStr) => {
+        return dateStr ? `${dateStr.slice(0, 4)}-${dateStr.slice(4, 6)}-${dateStr.slice(6, 8)}` : '';
     };
 
-    const fetchCarTypesReservations = async (token) => {
-        if (!startDate || !endDate) return;
 
-        let formattedStartDate, formattedEndDate;
+    const [loading, setLoading] = useState(false);
+    const [pageNumber, setPageNumber] = useState(1); // 페이지 번호
+    const [totalCount, setTotalCount] = useState(0); // 총 검색 건수
+    const [chartData, setChartData] = useState([]);
+    const [isSearched, setIsSearched] = useState(false); // 차종명 검색 여부 상태 추가
+    const pageSize = 10;
 
-        if (filter === 'daily') {
-            formattedStartDate = startDate.toISOString().slice(0, 10).replace(/-/g, '');
-            formattedEndDate = endDate.toISOString().slice(0, 10).replace(/-/g, '');
-        } else if (filter === 'monthly') {
-            formattedStartDate = format(startOfMonth(startDate), 'yyyyMMdd');
-            formattedEndDate = format(endOfMonth(endDate), 'yyyyMMdd');
+    const [columnDefs] = useState([
+        { headerName: '코드', field: 'car_type_code', width: 85, align: 'center' },
+        { headerName: '차종구분', field: 'car_type_category', width: 85, align: 'center' },
+        { headerName: '국산/수입', field: 'origin_type', width: 85, align: 'center' },
+        { headerName: '차종명', field: 'car_type_name', width: 150, align: 'center' },
+        { headerName: '인승', field: 'seating_capacity', width: 85, align: 'center' },
+        { headerName: '연료', field: 'fuel_type', width: 85, align: 'center' },
+        { headerName: '속도제한', field: 'speed_limit', width: 85, align: 'center' },
+        { headerName: '면허제한', field: 'license_restriction', width: 85, align: 'center' },
+        { headerName: '제조사', field: 'car_manufacturer', width: 85, align: 'center' },
+        { headerName: '년식', field: 'model_year', width: 85, align: 'center' },
+    ]);
+
+    useEffect(() => {
+        if (!isLoginState) {
+            alert("로그인이 필요합니다.");
+            return;
         }
 
-        const response = await axios.get(`${process.env.REACT_APP_API_URL}/arentcar/manager/rentalcars`, {
-            params: { startDate: formattedStartDate, endDate: formattedEndDate },
-            headers: { Authorization: `Bearer ${token}` },
-            withCredentials: true,
-        });
+        pageingVehicles();
+        getTotalCount();
+    }, [pageNumber, vehiclesTrigger]);
 
-        setChartData(response.data);
-        console.log(response.data);
-    };
-
-    const getCarTypesReservations = async () => {
+    const pageingVehicles = async () => {
         try {
             const token = localStorage.getItem('accessToken');
-            await fetchCarTypesReservations(token);
+            await getVehicles(token);
         } catch (error) {
             if (error.response && error.response.status === 403) {
                 try {
                     const newToken = await refreshAccessToken();
-                    await fetchCarTypesReservations(newToken);
-                } catch (refreshError) {
+                    await getVehicles(newToken);
+                } catch (error) {
                     alert("인증이 만료되었습니다. 다시 로그인 해주세요.");
-                    handleLogout();
+                    handleAdminLogout();
                 }
             } else {
-                console.error('There was an error fetching the branch reservations!', error);
+                console.error('There was an error fetching the vehicles pageing!', error);
+            }
+        }
+    };
+
+    const getVehicles = async (token) => {
+        const params = {
+            pageSize,
+            pageNumber,
+        };
+
+        if (searchName && searchName.trim() !== '') {
+            params.carTypeName = searchName;
+        }
+
+        const response = await axios.get(`${process.env.REACT_APP_API_URL}/arentcar/manager/cars/paged`,
+            {
+                params,
+                headers: {
+                    Authorization: `Bearer ${token}`
+                },
+                withCredentials: true,
+            });
+
+        if (response.data && response.data.length > 0) {  // 배열인 경우
+            setVehicles(response.data);
+        } else if (response.data && Object.keys(response.data).length > 0) {  // 객체인 경우
+            setVehicles(response.data);
+        } else {
+            alert("조건에 맞는 차종명이 없습니다.");
+            setVehicles(response.data);
+        }
+    };
+
+    const getTotalCount = async () => {
+        try {
+            const token = localStorage.getItem('accessToken');
+            await getCount(token);
+        } catch (error) {
+            if (error.response && error.response.status === 403) {
+                try {
+                    const newToken = await refreshAccessToken();
+                    await getCount(newToken);
+                } catch (error) {
+                    alert("인증이 만료되었습니다. 다시 로그인 해주세요.");
+                    handleAdminLogout();
+                }
+            } else {
+                console.error('There was an error fetching the vehicles count!', error);
+            }
+        }
+    };
+
+    const getCount = async (token) => {
+        const params = searchName ? { carTypeName: searchName } : {};
+
+        const response = await axios.get(`${process.env.REACT_APP_API_URL}/arentcar/manager/cars/count`,
+            {
+                params,
+                headers: {
+                    Authorization: `Bearer ${token}`
+                },
+                withCredentials: true,
+            });
+
+        if (typeof response.data === 'number') {
+            setTotalCount(response.data);
+        } else {
+            console.error('Unexpected response:', response.data);
+        }
+    };
+
+    // 테이블 컬럼 너비 합산 계산
+    const totalWidth = columnDefs.reduce((sum, columnDef) => {
+        // columnDef[]에 컬럼 너비가 명시되어 있으면 더하고, 없으면 기본 값(150)을 더함
+        return sum + (columnDef.width ? columnDef.width : 150);
+    }, 0);
+
+    // 변경된 현재 페이지 번호(-1씩 또는 +1씩 가감)
+    const handlePageChange = (newPageNumber) => {
+        setPageNumber(newPageNumber);
+    };
+
+    // 총 페이지 수 = 올림(전체 차종 수 / 화면에 보여줄 데이터 수(현재 페이지에서는 10개씩 보여줌))
+    let totalPages = Math.ceil(totalCount / pageSize);
+    if (totalPages < 1) {
+        totalPages = 1;
+    }
+
+    // 컴포넌트 닫기 버튼
+    const handleCloseClick = () => {
+        if (onClick) {
+            onClick();
+        }
+    };
+
+    // 검색 버튼
+    const handleSearchClick = async () => {
+
+        // 검색어를 입력하지 않은 경우
+        if (!searchCarType || searchCarType.trim() === '') {
+            alert("검색할 지점명을 입력해주세요!");
+            return;
+        }
+
+        try {
+            const token = localStorage.getItem('accessToken')
+
+            // DB에서 검색 결과 가져오기
+            const response = await axios.get(`${process.env.REACT_APP_API_URL}/arentcar/manager/cars/paged`, {
+                params: { branchName: searchCarType.trim() },
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                }
+            });
+
+            // 검색 결과가 없는 경우
+            if (response.data.length === 0) {
+                alert("존재하지 않는 지점명입니다. 다시 입력해주세요.");
+                return;
+            }
+
+            // 검색 결과가 있는 경우
+            pageingVehicles();
+            getTotalCount();
+            setVehicles(response.data);
+            setIsSearched(true); // 검색 후 상태 업데이트
+
+        } catch (error) {
+            console.error("Error during branch search:", error);
+            alert("검색 중 오류가 발생했습니다. 다시 시도해주세요.");
+        }
+    };
+
+    // 검색어 초기화 함수
+    const handleSearchReset = () => {
+        setSearchCarType(''); // 검색어 초기화
+        setVehicles([]); // 검색 결과 초기화
+        setStartDate(''); // 예약 시작일 초기화
+        setEndDate(''); // 예약 종료일 초기화
+        setLoading(false); // 로딩 상태 초기화
+        setIsSearched(false); // 검색 여부 초기화
+    };
+
+    // `searchCarType`이 변경되었을 때 (차종명을 검색했을 때) 데이터 다시 로드
+    // 해당 useEffect가 없으면 방금 전 검색했던 차종명만 테이블에 표시 된다.
+    useEffect(() => {
+        if (searchCarType === '') {
+            pageingVehicles();
+            getTotalCount();
+        }
+    }, [searchCarType]);
+
+    //  API 응답 데이터 확인
+    const fetchBranchReservations = async (token) => {
+        if (!startDate || !endDate) {
+            return;
+        }
+
+        try {
+            const response = await axios.get(`${process.env.REACT_APP_API_URL}/arentcar/manager/branchs/reservation`, {
+                headers: { Authorization: `Bearer ${token}` },
+                params: { startDate, endDate },
+                withCredentials: true,
+            });
+
+            setChartData(response.data);
+        } catch (error) {
+            console.error("API Error:", error);
+        }
+    };
+
+    // 지점별 예약 건수 가져오기
+    const getBranchReservations = async () => {
+        try {
+            const token = localStorage.getItem('accessToken');
+            await fetchBranchReservations(token);
+        } catch (error) {
+            if (error.response && error.response.status === 403) {
+                try {
+                    const newToken = await refreshAccessToken();
+                    await fetchBranchReservations(newToken);
+                } catch (refreshError) {
+                    alert("인증이 만료되었습니다. 다시 로그인 해주세요.");
+                    handleAdminLogout();
+                }
+            } else {
+                console.error('There was an error fetching the chart reservations!', error);
             }
         }
     };
 
     useEffect(() => {
-        getCarTypesReservations();
-    }, [startDate, endDate, filter]);
+        getBranchReservations();
+    }, [startDate, endDate]);
 
     const data = {
-        labels: chartData.map(carsType => carsType.car_type_name) || [],  // 차종 이름
+        labels: chartData?.map(branch => branch.branch_name) || [],
         datasets: [
             {
-                data: chartData?.map(reservations => Number(reservations.reservation_code) || 0),
+                data: chartData?.map(branch => Number(branch.reservation_code) || 0) || [],
                 backgroundColor: ['red', 'green', 'blue', 'yellow', 'purple'],
             },
         ],
@@ -114,56 +309,127 @@ const AllCarTypeReservationChart = () => {
     };
 
     return (
-        <div className="reservation-statistics-list">
-            <div className="daily-and-monthly-filter-head">
-                <div>● 차종별 예약 통계 </div>
+        <div className='manager-branchs-reservation-chart-wrap'>
+            <div className='manager-branchs-reservation-chart-chart-header-wrap'>
+
+                {/* 헤더 */}
+                <div className='manager-branchs-reservation-chart-title-wrap'>
+                    <div className='manager-title'>● 차종별 예약 통계</div>
+                </div>
+
+                {/* 테이블 크기 일괄 조정 */}
+                <div
+                    className='manager-branchs-reservation-chart-table-button-wrap'
+                    style={{ width: `${totalWidth}px` }}
+                >
+
+                    {/* 차종명 검색 버튼 */}
+                    <div className='flex-align-center'>
+                        <label className='manager-label' htmlFor="">차종명</label>
+                        <input className='width200' type="text" value={searchCarType} onChange={(e) => (setSearchCarType(e.target.value))} />
+
+                        {/* 예약 시작일 */}
+                        <input
+                            type="date"
+                            value={formatDate(startDate)}
+                            onChange={(e) => setStartDate(e.target.value.replace(/-/g, ''))} // "YYYYMMDD" 형식으로 저장
+                            max={new Date().toISOString().slice(0, 10)}
+                        />
+
+                        {/* 예약 종료일 */}
+                        <input
+                            type="date"
+                            value={formatDate(endDate)}
+                            onChange={(e) => setEndDate(e.target.value.replace(/-/g, ''))} // "YYYYMMDD" 형식으로 저장
+                            min={startDate}
+                            max={new Date().toISOString().slice(0, 10)}
+                        />
+
+                        {/* 검색 버튼 */}
+                        <button className='manager-button manager-button-search' onClick={() => handleSearchClick()}>검색</button>
+                        <span>[검색건수 : {totalCount}건]</span>
+                    </div>
+
+                    {/* 컴포넌트 초기화 및 닫기 */}
+                    <div>
+                        <button className='manager-button manager-button-reset'
+                            onClick={handleSearchReset}
+                            disabled={!isSearched}
+                            style={{
+                                color: isSearched ? 'rgb(38, 49, 155)' : '#AAAAAA', // 조건에 맞게 color 변경
+                                cursor: isSearched ? 'pointer' : 'not-allowed', // disabled일 때 커서 스타일 변경
+                            }}>초기화
+                        </button>
+                        <button className='manager-button manager-button-close' onClick={() => handleCloseClick()}>닫기</button>
+                    </div>
+                </div>
             </div>
 
-            {/* 일별, 월별 필터 */}
-            <div className="daily-and-monthly-filter-row">
-                <select className="manager-row-column h6" value={filter} onChange={handleFilterChange}>
-                    <option className="option-dropdown" value="daily">일별</option>
-                    <option className="option-dropdown" value="monthly">월별</option>
-                </select>
-                <div className="date-picker-container">
-                    <label className="manager-label">시작일: </label>
-                    <DatePicker
-                        locale={ko}
-                        dateFormat={filter === 'daily' ? "yyyy년 MM월 dd일" : "yyyy년 MM월"}
-                        dateFormatCalendar={filter === 'daily' ? "yyyy년 MM월" : "yyyy년"}
-                        showMonthYearPicker={filter === 'monthly'}
-                        selected={startDate}
-                        onChange={(date) => setStartDate(date)}
-                        selectsStart
-                        placeholderText={filter === 'daily' ? "시작 날짜 선택" : "시작 월 선택"}
-                        startDate={startDate}
-                        endDate={endDate}
-                        maxDate={new Date()}
-                    />
-                </div>
-                <div className="date-picker-container">
-                    <label className="manager-label">종료일: </label>
-                    <DatePicker
-                        locale={ko}
-                        dateFormat={filter === 'daily' ? "yyyy년 MM월 dd일" : "yyyy년 MM월"}
-                        dateFormatCalendar={filter === 'daily' ? "yyyy년 MM월" : "yyyy년"}
-                        showMonthYearPicker={filter === 'monthly'}
-                        selected={endDate}
-                        onChange={(date) => setEndDate(date)}
-                        placeholderText={filter === 'daily' ? "종료 날짜 선택" : "종료 월 선택"}
-                        selectsEnd
-                        startDate={startDate}
-                        endDate={endDate}
-                        minDate={startDate}
-                        maxDate={new Date()}
-                    />
-                </div>
-            </div>
+            {/* 차트 표시 */}
             <div className="chart-container">
-                <h3>{filterText}</h3>
-                <Bar data={data} options={options} />
+                {chartData.length > 0 ? (
+                    <Bar data={data} options={options} />
+                ) : (
+                    <p>데이터를 불러오는 중입니다...</p>
+                )}
             </div>
+
+
+            {/* 테이블에 cartypes 데이터 출력 */}
+            <div className='manager-branchs-reservation-chart-content-wrap'>
+
+                {/* 테이블 헤더 */}
+                <div className='manager-branchs-reservation-chart-content-header'>
+                    {columnDefs.map((title, index) => (
+                        <div key={index} className='manager-head-column' style={{ width: `${title.width}px`, textAlign: `center` }}>{title.headerName}</div>
+                    ))}
+                </div>
+
+                {/* 테이블 내용 */}
+                <div className='manager-branchs-reservation-chart-table-content-wrap'>
+                    {vehicles.map((row, index) => (
+                        <div key={index} className='manager-branchs-reservation-chart-content-row'>
+                            {columnDefs.map((title, index) => (
+                                <div
+                                    key={index} className='manager-row-column'
+                                    style={{
+                                        ...(title.field === '' ? { display: 'flex' } : ''),
+                                        ...(title.field === '' ? { alignItems: 'center' } : ''),
+                                        ...(title.field === '' ? { justifyContent: 'center' } : ''),
+                                        width: `${title.width}px`,
+                                        textAlign: `${title.align}`
+                                    }}
+                                > {row[title.field]}
+                                </div>
+                            ))}
+                        </div>
+                    ))}
+                </div>
+
+                {/* 다음, 이전 버튼 */}
+                <div className='manager-branchs-reservation-chart-info-pageing-wrap flex-align-center'>
+                    <button
+                        className='manager-button'
+                        style={{ color: pageNumber === 1 ? '#aaa' : 'rgb(38, 49, 155)' }}
+                        onClick={() => handlePageChange(pageNumber - 1)}
+                        disabled={pageNumber === 1}
+                    >이전</button>
+                    <div className='manager-branchs-reservation-chart-info-pageing-display'>{pageNumber} / {totalPages}</div> {/* 현재 페이지 / 전체 페이지 */}
+                    <button
+                        className='manager-button'
+                        style={{ color: pageNumber === totalPages ? '#aaa' : 'rgb(38, 49, 155)' }}
+                        onClick={() => handlePageChange(pageNumber + 1)}
+                        disabled={pageNumber === totalPages}
+                    >다음</button>
+                </div>
+            </div>
+
+            {/* 로딩 모달 */}
+            {loading && (
+                <Loading />
+            )}
         </div>
     );
 };
-export default AllCarTypeReservationChart
+
+export default AllBranchesReservationChart;
