@@ -5,7 +5,6 @@ import { Bar } from 'react-chartjs-2';
 import DatePicker from 'react-datepicker';
 import { ko } from 'date-fns/locale';
 import 'react-datepicker/dist/react-datepicker.css';
-import './AllBranchesReservationChart.css';
 import './Charts.css';
 import 'index.css';
 import axios from 'axios';
