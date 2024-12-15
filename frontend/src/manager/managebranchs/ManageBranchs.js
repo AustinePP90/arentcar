@@ -1,10 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { refreshAccessToken, handleAdminLogout, formatTime, isValidTimeFormat } from 'common/Common';
+import { useSelector } from 'react-redux';
 import Loading from 'common/Loading';
 import "manager/managebranchs/ManageBranchs.css";
 
 const ManageBranchs = ({ onClick }) => {
+    // 로그인하지 않은 사용자가 기능 실행하지 못하도록 관리
+    const isLoginState = useSelector((state) => state.adminState.loginState);
+
     const [branchs, setBranchs] = useState([]); // DB에서 읽어온 지점 데이터
     const [branchsTrigger, setbranchsTrigger] = useState(false); 
     const [isCreatePopUp, setIsCreatePopUp] = useState(false); // 지점 추가 팝업
@@ -42,6 +46,16 @@ const ManageBranchs = ({ onClick }) => {
     const [branchPhoneNumber, setBranchPhoneNumber] = useState("");
     const [availablePickupTime, setAvailablePickupTime] = useState("");
     const [availableReturnTime, setAvailableReturnTime] = useState("");
+
+    useEffect(() => {
+        if (!isLoginState) {
+            alert("로그인이 필요합니다.");
+            return;
+        }
+
+        pageingBranchs();
+        getTotalCount();
+    }, [pageNumber, branchsTrigger]) // pageNumber 변경 시 지점 데이터 페이징, 총 지점 수 함수 호출
 
     // 지점 데이터 페이징 처리
     const pageingBranchs = async () => {
