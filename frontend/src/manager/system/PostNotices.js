@@ -491,7 +491,7 @@ const PostNotices = ({ onClick }) => {
                 </div>
                 <div className='manager-post-notice-popup-line'>
                   <label className='manager-post-notice-popup-line-label'>게시물 코드</label>
-                  <input className='width30 word-center' type="text" value={postCode} disabled/>
+                  <input className='width50 word-center' type="text" value={postCode} disabled/>
                 </div>
                 <div className='manager-post-notice-popup-line'>
                   <label className='manager-post-notice-popup-line-label'>게시물 유형</label>
