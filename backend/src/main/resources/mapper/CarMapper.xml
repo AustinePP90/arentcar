@@ -122,6 +122,14 @@
         SELECT b.branch_name
         FROM regions r
         JOIN branchs b ON r.region_code = b.region_code
+        ORDER BY region_name
+        ASC
+    </select>
+
+    <select id="getSelectedRegionBranchs" resultType="com.apple.arentcar.dto.BranchsDTO">
+        SELECT b.branch_name
+        FROM regions r
+        JOIN branchs b ON r.region_code = b.region_code
         WHERE r.region_name =#{region}
         ORDER BY region_name
         ASC

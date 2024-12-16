@@ -160,7 +160,7 @@ function calculateRentalPeriod(rentalDate, returnDate) {
   useEffect(() => {
     const fetchBranchs = async () => {
       try {
-        const response = await axios.get(`${process.env.REACT_APP_API_URL}/arentcar/user/cars/branchs`, {
+        const response = await axios.get(`${process.env.REACT_APP_API_URL}/arentcar/user/cars/selected/region/branchs`, {
           params: { region: selectRegion },
         });
         if (response.data) {

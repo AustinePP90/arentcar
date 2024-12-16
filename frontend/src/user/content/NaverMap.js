@@ -45,10 +45,6 @@ const NaverMap = ({handleMapCloseClick , branchLocation, car}) => {
         };
     }, []); // 컴포넌트 마운트 시 한 번 실행
 
-    useEffect(()=>{
-        console.log(car);
-    },[car])
-
     return (
         <div className='naver-map-wrap'>
             <div className='naver-map'>

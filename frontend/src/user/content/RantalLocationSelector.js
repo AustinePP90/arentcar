@@ -38,9 +38,6 @@ const RantalLocationSelector = () => {
         fetchRegions();
         fetchCarTypeCategory();
     }, []);
-    useEffect(() => {
-        console.log(carTypeCategory);
-    }, [carTypeCategory])
 
     const handleRegionClick = async (regionName) => {
         if (expandedRegion === regionName) {

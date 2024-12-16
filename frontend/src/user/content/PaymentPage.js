@@ -1,16 +1,16 @@
 import axios from 'axios';
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import 'user/content/PaymentPage.css';
 import * as PortOne from "@portone/browser-sdk/v2";
 import { useSelector } from 'react-redux';
+import { v4 as uuidv4 } from 'uuid';
 
 const PaymentPage = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const reservationInfo = location.state;
   const isUserName = useSelector((state) => state.userState.userName);
-  const isUserPhoneNumber = useSelector((state) => state.userState.userPhoneNumber);
   const currentDate = new Date();
 
   const params = {
@@ -30,43 +30,69 @@ const PaymentPage = () => {
     paymentDate: currentDate.getFullYear().toString()+(currentDate.getMonth()+1).toString().padStart(2,"0")+currentDate.getDate().toString().padStart(2,"0")
   }
 
-   const  requestPayment = async () => {
-    const response = await PortOne.requestPayment(
-      {
-        storeId: `${process.env.REACT_APP_PORT_ONE_STORE_ID}`, // Store ID
-        paymentId: `payment-${crypto.randomUUID()}`, // 고유 결제 ID
-        orderName: reservationInfo.car_type_name, // 결제 상품명S
-        totalAmount: 100, // 결제 금액
-        currency: "KRW", // 올바른 통화 코드
-        channelKey: `${process.env.REACT_APP_PORT_ONE_CHANNEL_KEY}`, // 채널 키
-        payMethod: "CARD", // 결제 방식
+  const requestPayment = async () => {
+    // UUID 생성: crypto.randomUUID가 있으면 사용하고, 없으면 uuidv4를 사용
+    const generateUUID = () =>
+      (typeof crypto !== "undefined" && typeof crypto.randomUUID === "function")
+        ? crypto.randomUUID()
+        : uuidv4();
+  
+    const paymentId = `payment-${generateUUID()}`;
+  
+    const response = await PortOne.requestPayment({
+      storeId: "store-56b88bd8-5068-4c9b-a6d7-7144ba4155ce", // Store ID
+      paymentId, // 고유 결제 ID
+      orderName: reservationInfo.car_type_name, // 결제 상품명
+      totalAmount: 100, // 결제 금액
+      currency: "KRW", // 올바른 통화 코드
+      channelKey: "channel-key-7c932c01-1547-4919-b86d-e0542a9b0b8b", // 채널 키
+      payMethod: "CARD", // 결제 방식
+    });
+  
+    if (response.code !== undefined) {
+      return alert(response.message);
+    } else {
+      InsertUserReservation();
+      updateCarStatus();
+      navigate('/PaymentCompletedPage', {
+        state: { ...reservationInfo },
       });
-      if (response.code !== undefined) {
-        return alert(response.message);
-      }else{
-        console.log("결제 성공 데이터:", response);
-          InsertUserReservation();
-          updateCarStatus();
-          alert("결제가 성공적으로 완료되었습니다!");
-          navigate('/PaymentCompletedPage',{
-            state: {...reservationInfo}
-          });
-      }
+    }
   };
+
+  //  const  requestPayment = async () => {
+  //   const response = await PortOne.requestPayment(
+  //     {
+  //       storeId: "store-56b88bd8-5068-4c9b-a6d7-7144ba4155ce", // Store ID
+  //       paymentId: `payment-${crypto.randomUUID()}`, // 고유 결제 ID
+  //       orderName: reservationInfo.car_type_name, // 결제 상품명
+  //       totalAmount: 100, // 결제 금액
+  //       currency: "KRW", // 올바른 통화 코드
+  //       channelKey: "channel-key-7c932c01-1547-4919-b86d-e0542a9b0b8b", // 채널 키
+  //       payMethod: "CARD", // 결제 방식
+  //     });
+  //     if (response.code !== undefined) {
+  //       return alert(response.message);
+  //     }else{
+  //       console.log("결제 성공 데이터:", response);
+  //         InsertUserReservation();
+  //         updateCarStatus();
+  //         alert("결제가 성공적으로 완료되었습니다!");
+  //         navigate('/PaymentCompletedPage',{
+  //           state: {...reservationInfo}
+  //         });
+  //     }
+  // };
   
 
   const InsertUserReservation = async () => {
     try {
-      const response = await axios.post(
+      await axios.post(
         `${process.env.REACT_APP_API_URL}/arentcar/user/cars/reservation`,
         null,
         { params: params }
 
       );
-      if (response.data) {
-        alert('예약 성공');
-        console.log(response.data);
-      }
     } catch (error) {
       if (axios.isCancel(error)) {
         console.log('Request canceled:', error.message);
@@ -77,7 +103,7 @@ const PaymentPage = () => {
   };
   const updateCarStatus = async () => {
     try {
-      const response = await axios.put(
+      await axios.put(
         `${process.env.REACT_APP_API_URL}/arentcar/user/cars/reservation/updatecar/status`,
         { car_code: reservationInfo.car_code },
         {
@@ -86,7 +112,6 @@ const PaymentPage = () => {
           },
         }
       );
-      alert('차량 렌탈 중으로 변경 완료');
     } catch (error) {
       if (error.response) {
         console.error('Response data:', error.response.data);
