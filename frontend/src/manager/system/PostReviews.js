@@ -371,7 +371,7 @@ const PostReviews = ({ onClick }) => {
                   <div className='manager-post-review-popup-line-statistics'>
                     {/* <차트> $ npm install recharts */}
                     <AvgCharts stats={stats}/>
-                    <div className='manager-post-review-popup-bold'>평균</div>
+                    <div className='manager-post-review-popup-bold'>평균점수</div>
                   </div>
                 </div>
               </div>
