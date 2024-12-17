@@ -285,6 +285,7 @@ const RentalRates = ({ onClick }) => {
             >
               검색
             </button>
+            <span>[검색건수 : {totalCount}건]</span>
           </div>
           <div className='manage-payment-search-close'>
               <button

@@ -1,20 +1,24 @@
 
 .mypage-detail-update-wrap {
+  position: fixed;
+  top: 40%;
+  left: 50%;
+  transform: translate(-50%, -50%); /* 화면 중앙에 위치 */
   display: flex;
   justify-content: center;
-  align-items: center;  
-  /* background-color: #f7f7f9; */
-  /* letter-spacing: 5px; */
+  align-items: center;
   font-size: 14px;
-  width: 500px;
-  height: 500px;
+  width: 440px;
+  height: 520px;
   margin: 100px auto;
+  padding: 20px;
 }
 
 .mypage-detail-update-contents-wrap {
-  width: 400px;
+  width: 500px;
   background-color: #fff;
   z-index: 999;
+  border-radius: 8px;
 }
 
 .mypage-detail-update-title {
@@ -32,12 +36,14 @@
 
 .mypage-detail-update-basic-info-wrap,
 .mypage-detail-update-sub-info-box {
+  width: 320px;
   border: solid 2px #50555C;;
   background-color: #fff;
   box-shadow: 0px 8px 8px rgba(0, 0, 0, 0.12);
   border-radius: 8px;
   /* letter-spacing: 5px; */
   padding: 15px;
+  margin: 0 auto;
 }
 
 .mypage-detail-update-title,
@@ -45,7 +51,9 @@
   font-size: 20px;
   font-weight: bold;
   margin: 10px;
-  padding-top: 20px;
+  padding-top: 40px;
+  padding-left: 30px;
+  padding-right: 20px;
 }
 
 .mypage-detail-update-signout {
@@ -81,6 +89,9 @@
 margin: 0 10px;
 display: flex;
 justify-content: space-between;
+padding-left: 30px;
+padding-right: 30px;
+padding-bottom: 10px;
 }
 
 .mypage-detail-popup-save-wrap {
@@ -97,6 +108,7 @@ padding-right: 5pxS;
 .mypage-detail-update-sub-info-save-box {
   display: flex;
   justify-content: space-between;
+  padding-right: 30px;
 }
 
 .mypage-detail-button {
@@ -125,7 +137,7 @@ padding-right: 5pxS;
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: rgba(0, 0, 0, 0.3);
+  /* background-color: rgba(0, 0, 0, 0.3); */
   display: flex;
   justify-content: center;
   align-items: center;
@@ -135,10 +147,11 @@ padding-right: 5pxS;
 
 .mypage-detail-content-popup-wrap {
   width: 400px;
+  height: 490px;
   background-color: #fff;
   padding: 20px;
   border-radius: 8px;
-  box-shadow: 0px 8px 8px rgba(0, 0, 0, 0.12);
+  /* box-shadow: 0px 8px 8px rgba(0, 0, 0, 0.12); */
 }
 
 .mypage-detail-content-popup-close {
@@ -146,10 +159,18 @@ padding-right: 5pxS;
   justify-content: space-between;
   align-items: center;
   margin-bottom: 15px;
+  margin-top: 60px;
+  padding-left: 20px;
+  padding-right: 20px;
+}
+
+.mypage-detail-popup-save-wrap {
+  padding-left: 20px;
+  padding-right: 20px;
 }
 
 .mypage-detail-popup-line {
-  margin: 10px 0px;
+  margin: 15px 0px;
 }
 
 .mypage-detail-popup-line label {

@@ -394,7 +394,7 @@ const MyPageDetail = ({ onClick }) => {
 
 			{/* 팝업 */}
 			{isPopUp &&
-				<div className='mypage-detail-popup-wrap manager-popup'>
+				<div className='mypage-detail-popup-wrap'>
 					<div className='mypage-detail-content-popup-wrap'>
 						<div className='mypage-detail-content-popup-close'>
 							<div className='mypage-detail-content-popup-title'>
