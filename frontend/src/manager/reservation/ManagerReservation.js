@@ -2,8 +2,10 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import "manager/reservation/ManagerReservation.css";
 import { refreshAccessToken, handleAdminLogout, formatDate, formatTime, formatPhone } from "common/Common";
+import { useSelector } from "react-redux";
 
 const ManagerReservation = ({ onClick }) => {
+  const isLoginState = useSelector((state) => state.adminState.loginState);
   const [branchNames, setBranchNames] = useState([]);
   const [selectedBranch, setSelectedBranch] = useState("");
   const [reservationDate, setReservationDate] = useState("");
@@ -18,12 +20,38 @@ const ManagerReservation = ({ onClick }) => {
     { titlename: "예약 ID", field: "reservation_code", width: 100, align: "center" },
     { titlename: "성함", field: "user_name", width: 100, align: "center" },
     { titlename: "차량번호", field: "car_number", width: 100, align: "center" },
-    { titlename: "차량명", field: "car_type_name", width: 200, align: "center" },
+    { titlename: "차량명", field: "car_type_name", width: 190, align: "center" },
     { titlename: "대여지점", field: "rental_location_name", width: 100, align: "center" },
-    { titlename: "대여일", field: "rental_date", width: 150, align: "center" },
-    { titlename: "반납일", field: "return_date", width: 150, align: "center" },
+    { titlename: "대여일", field: "rental_date", width: 120, align: "center" },
+    { titlename: "반납일", field: "return_date", width: 120, align: "center" },
+    { titlename: "차량상태", field: "car_status", width: 100, align: "center" },
     { titlename: "상세", field: "", width: 100, align: "center" },
   ]);
+  // 렌더링
+  useEffect(() => {
+    handleFetchBranchNames();
+  },[]);
+  useEffect(() => {
+    pageingReservations();
+    getTotalCount();
+  }, [pageNumber, pageSize]);
+
+  // 렌더링
+  useEffect(() => {
+    if (!isLoginState) {
+      alert("로그인이 필요합니다.");
+      return;
+    }
+    pageingReservations();
+    getTotalCount();
+  }, [pageNumber,reservationDetails]);
+
+  useEffect(() => {
+    if (!isLoginState) {
+      return;
+    }
+    handleFetchBranchNames();
+  },[]);
 
   // YYYY-MM-DD → YYYYMMDD 변환 함수
   const formatDateToCompact = (date) => {
@@ -134,15 +162,6 @@ const ManagerReservation = ({ onClick }) => {
       console.error('Unexpected response:', response.data);
     }
   };
-  // 렌더링
-  useEffect(() => {
-    handleFetchBranchNames();
-  },[]);
-  useEffect(() => {
-    pageingReservations();
-    getTotalCount();
-  }, [pageNumber, pageSize]);
-
 
   // 지점명 데이터 가져오기
   const handleFetchBranchNames = async () => {
@@ -155,8 +174,6 @@ const ManagerReservation = ({ onClick }) => {
       console.error("There was an error fetching the branches", error);
     }
   };
-
-
 
   const fetchReservationDetail = async (reservationCode) => {
     try {
@@ -204,8 +221,6 @@ const ManagerReservation = ({ onClick }) => {
     fetchReservationDetail(reservationCode);
   };
 
-
-
   const handlePopupCloseClick = () => {
     setIsPopUp(false);
     setReservationDetails([]);
@@ -221,57 +236,73 @@ const ManagerReservation = ({ onClick }) => {
     setPageNumber(newPageNumber);
   };
 
-  const handleReservationCancel = async (reservationCode) => {
-    // 예약 취소 여부 확인
-    const reservationCancelConfirmed = window.confirm("예약을 취소하시겠습니까?");
-    if (!reservationCancelConfirmed) {
-      alert("예약 취소가 취소되었습니다.");
-      return;
-    }
-
-    try {
-      const token = localStorage.getItem("accessToken"); // 토큰 가져오기
-      const requestBody = { 
-        reservationStatus: "2", // 예약 상태: '취소'
-        paymentStatus: "2",     // 결제 상태: '취소' 
-        carStatus: "01"          // 차량 상태: '렌탈가능'
-    };
-
-      // 예약 상태 업데이트 API 호출
-      await axios.put(
-        `${process.env.REACT_APP_API_URL}/arentcar/manager/reservations/cancel/${reservationCode}`,
-        requestBody,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`, // 인증 헤더
-          },
-          withCredentials: true, // 쿠키 포함
+      const handleReservationCancel = async (reservationCode) => {
+        // 예약 취소 여부 확인
+        const reservationCancelConfirmed = window.confirm("예약을 취소하시겠습니까?");
+        if (!reservationCancelConfirmed) {
+          alert("예약 취소가 취소되었습니다.");
+          return;
         }
-      );
 
-      alert("예약이 취소되었습니다."); // 성공 메시지
-      // 예약 목록 새로고침 (필요시 구현)
-      await fetchReservationDetail(reservationCode);
-    } catch (error) {
-      if (error.response && error.response.status === 403) {
         try {
-          // 토큰 갱신 처리
-          const newToken = await refreshAccessToken();
-          localStorage.setItem("accessToken", newToken); // 갱신된 토큰 저장
-          // 갱신된 토큰으로 재시도
-          await handleReservationCancel(reservationCode);
+          // reservationDetails에서 현재 예약 상태와 차량 상태 확인
+          if (
+            reservationDetails.reservation_code === reservationCode &&
+            reservationDetails.reservation_status === "이용완료" && // 예약 상태가 '이용완료'
+            reservationDetails.car_status === "정비중"             // 차량 상태가 '정비중'
+          ) {
+            alert("이미 이용 완료된 예약내역입니다.");
+            return;
+          } else if (
+            reservationDetails.reservation_code === reservationCode &&
+            reservationDetails.reservation_status === "예약취소" && // 예약 상태가 '예약취소'
+            reservationDetails.payment_status === "결제취소" &&     // 결제 상태가 '결제취소'
+            reservationDetails.car_status === "렌탈가능"           // 차량 상태가 '렌탈가능'
+          ) {
+            alert("이미 예약 취소된 예약내역입니다.");
+            return;
+          }
+          const token = localStorage.getItem("accessToken"); // 토큰 가져오기
+          const requestBody = { 
+            reservationStatus: "2", // 예약 상태: '취소'
+            paymentStatus: "2",     // 결제 상태: '취소' 
+            carStatus: "01"          // 차량 상태: '렌탈가능'
+        };
+
+          // 예약 상태 업데이트 API 호출
+          await axios.put(
+            `${process.env.REACT_APP_API_URL}/arentcar/manager/reservations/cancel/${reservationCode}`,
+            requestBody,
+            {
+              headers: {
+                Authorization: `Bearer ${token}`, // 인증 헤더
+              },
+              withCredentials: true, // 쿠키 포함
+            }
+          );
+
+          alert("예약이 취소되었습니다."); // 성공 메시지
+          // 예약 목록 새로고침 (필요시 구현)
+          await fetchReservationDetail(reservationCode);
         } catch (error) {
-          alert("인증이 만료되었습니다. 다시 로그인 해주세요."); // 인증 만료 알림
-          handleAdminLogout(); // 로그아웃 처리
+          if (error.response && error.response.status === 403) {
+            try {
+              // 토큰 갱신 처리
+              const newToken = await refreshAccessToken();
+              localStorage.setItem("accessToken", newToken); // 갱신된 토큰 저장
+              // 갱신된 토큰으로 재시도
+              await handleReservationCancel(reservationCode);
+            } catch (error) {
+              alert("인증이 만료되었습니다. 다시 로그인 해주세요."); // 인증 만료 알림
+              handleAdminLogout(); // 로그아웃 처리
+            }
+          } else {
+            alert("예약 취소에 실패했습니다."); // 사용자 알림
+          }
         }
-      } else {
-        alert("예약 취소에 실패했습니다."); // 사용자 알림
-      }
-    }
-  };
+      };
 
-
-  const handleCarReturn = async (carNumber) => {
+  const handleCarReturn = async (reservationCode) => {
     // 반납 여부 확인
     const carReturnConfirmed = window.confirm("차량을 반납 처리 하겠습니까?");
     if (!carReturnConfirmed) {
@@ -280,11 +311,30 @@ const ManagerReservation = ({ onClick }) => {
     }
 
     try {
+      if (
+      reservationDetails.reservation_code === reservationCode &&
+      reservationDetails.reservation_status === "이용완료" && // 예약 상태가 '이용완료'
+      reservationDetails.car_status === "정비중"             // 차량 상태가 '정비중'
+    ) {
+      alert("이미 반납 처리된 차량입니다.");
+      return;
+    } else if (
+      reservationDetails.reservation_code === reservationCode &&
+      reservationDetails.reservation_status === "예약취소" && // 예약 상태가 '예약취소'
+      reservationDetails.payment_status === "결제취소" &&     // 결제 상태가 '결제취소'
+      reservationDetails.car_status === "렌탈가능"           // 차량 상태가 '렌탈가능'
+    ) {
+      alert("예약이 취소된 차량입니다.");
+      return;
+    }
       const token = localStorage.getItem("accessToken"); // 토큰 가져오기
-      const requestBody = { carStatus: "03" }; // 상태: '정비중'
+      const requestBody = { 
+        carStatus: "03",       // 차량 상태: '정비중'
+        reservationStatus: "3" // 예약 상태: '이용완료'
+      }; 
 
       // 차량 상태 업데이트 API 호출
-      await axios.put(`${process.env.REACT_APP_API_URL}/arentcar/manager/reservations/carreturn/${carNumber}`,
+      await axios.put(`${process.env.REACT_APP_API_URL}/arentcar/manager/reservations/carreturn/${reservationCode}`,
         requestBody,
         {
           headers: {
@@ -294,8 +344,7 @@ const ManagerReservation = ({ onClick }) => {
         }
       );
       alert("차량 상태가 '정비중'으로 업데이트되었습니다."); // 성공 메시지
-
-      await fetchReservationDetail(carNumber); // 예약 목록 새로고침
+      await fetchReservationDetail(reservationCode); // 새로고침
     } catch (error) {
       if (error.response && error.response.status === 403) {
         try {
@@ -304,7 +353,7 @@ const ManagerReservation = ({ onClick }) => {
           localStorage.setItem("accessToken", newToken); // 갱신된 토큰 저장
 
           // 갱신된 토큰으로 재시도
-          await handleCarReturn(carNumber);
+          await handleCarReturn(reservationCode);
         } catch (error) {
           alert("인증이 만료되었습니다. 다시 로그인 해주세요."); // 인증 만료 알림
           handleAdminLogout(); // 로그아웃 처리
@@ -496,11 +545,9 @@ const ManagerReservation = ({ onClick }) => {
                 <span>{reservationDetails.user_email}</span>
               </div>
               <div className="manager-reservation-popup-field-row">
-                <label>면허발급일 : </label>
-                <span>{formatDate(reservationDetails.license_issue_date)}</span>
-                <label>면허갱신일 : </label>
-                <span>{formatDate(reservationDetails.license_expiry_date)}</span>
-              </div>
+                <label>운전면허증 : </label>
+                <span>{reservationDetails.driver_license_number || "면허정보 없음"}</span>
+                </div>
             </div>
 
             {/* 예약정보 */}
@@ -510,10 +557,10 @@ const ManagerReservation = ({ onClick }) => {
                 <label>예약ID : </label>
                 <span>{reservationDetails.reservation_code}</span>
                 <label>예약일 : </label>
-                <span>{reservationDetails?.reservation_date || "예약일 없음"}</span>
+                <span>{formatDate(reservationDetails?.reservation_date)}</span>
               </div>
               <div className="manager-reservation-popup-field-row">
-                <label>차량번호 :{' '}</label>
+                <label>차량번호 : </label>
                 <span>{reservationDetails.car_number}</span>
                 <label>차량명 : </label>
                 <span>{reservationDetails.car_type_name}</span>
@@ -522,7 +569,7 @@ const ManagerReservation = ({ onClick }) => {
                 <label>연식 : </label>
                 <span>{reservationDetails.model_year}</span>
                 <label>연료 : </label>
-                <span>{reservationDetails.fuel_type_name}</span>
+                <span>{reservationDetails.fuel_type}</span>
               </div>
               <div className="manager-reservation-popup-field-row">
                 <label>대여일시 : </label>
@@ -543,6 +590,8 @@ const ManagerReservation = ({ onClick }) => {
               <div className="manager-reservation-popup-field-row">
                 <label>예약상태 : </label>
                 <span>{reservationDetails.reservation_status}</span>
+                <label>차량상태 : </label>
+                <span>{reservationDetails.car_status}</span>
               </div>
             </div>
             {/* 결제정보 */}
@@ -550,9 +599,9 @@ const ManagerReservation = ({ onClick }) => {
               <div className="manager-reservation-popup-section-title">결제정보</div>
               <div className="manager-reservation-popup-field-row">
                 <label>결제방식 : </label>
-                <span>{reservationDetails.payment_category_name}</span>
+                <span>{reservationDetails.payment_category}</span>
                 <label>결제수단 : </label>
-                <span>{reservationDetails.payment_type_name}</span>
+                <span>{reservationDetails.payment_type}</span>
               </div>
               <div className="manager-reservation-popup-field-row">
                 <label>결제금액 : </label>
@@ -572,7 +621,7 @@ const ManagerReservation = ({ onClick }) => {
               <button className="manager-reservation-content-popup-footer-cancel manager-button" onClick={() => handleReservationCancel(reservationDetails.reservation_code)}>예약 취소</button>
               <button
                 className="manager-reservation-content-popup-footer-return manager-button"
-                onClick={() => { handleCarReturn(reservationDetails.car_number); }}>
+                onClick={() => { handleCarReturn(reservationDetails.reservation_code); }}>
                 차량 반납
               </button>
             </div>

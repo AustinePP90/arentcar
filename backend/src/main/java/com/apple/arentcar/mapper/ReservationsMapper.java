@@ -16,7 +16,10 @@ public interface ReservationsMapper {
 
     ReservationDetailDTO getReservationsDetailById(@Param("reservationCode") String reservationCode);
 
-    void updateCarStatus(@Param("carNumber") String carNumber, @Param("carStatus") String carStatus);
+        void updateCarStatus(@Param("reservationCode") String reservationCode,
+                             @Param("carStatus") String carStatus);
+        void ReservationStatusUpdate(@Param("reservationCode")String reservationCode,
+                               @Param("reservationStatus")String reservationStatus);
 
     void updateReservationStatus(@Param("reservationCode") String reservationCode,
                                  @Param("reservationStatus") String reservationStatus,

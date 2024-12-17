@@ -14,6 +14,7 @@ public class MyReservationsDetailResponseDTO {
     private String reservationDate;          // 예약일
     private String userName;                 // 예약자 성함
     private String userPhoneNumber;          // 연락처
+    private String reservationStatus;        // 예약 상태
     private String carTypeName;              // 차량명
     private String modelYear;                // 연식
     private String seatingCapacity;          // 인승

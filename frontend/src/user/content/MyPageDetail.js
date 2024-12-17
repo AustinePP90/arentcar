@@ -276,10 +276,10 @@ const MyPageDetail = ({ onClick }) => {
 	};
 
 	const handleCloseClick = () => {
-		if (onClick) {
-			onClick();
-		}
-	};
+    if (onClick) {
+      onClick();
+    }
+  };
 
 	const handlePopupCloseClick = () => {
 		setIsPopUp(false);
