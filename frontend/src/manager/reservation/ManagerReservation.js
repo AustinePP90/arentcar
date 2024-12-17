@@ -147,7 +147,7 @@ const ManagerReservation = ({ onClick }) => {
   // 지점명 데이터 가져오기
   const handleFetchBranchNames = async () => {
     try {
-      const response = await axios.get(`${process.env.REACT_APP_API_URL}/arentcar/user/branches`);
+      const response = await axios.get(`${process.env.REACT_APP_API_URL}/arentcar/user/branchs`);
       if (response.data) {
         setBranchNames(response.data.map((branch) => branch.branch_name));
       }
