@@ -25,7 +25,7 @@
         AND cc_car_status.common_kind_code = 'car_status'
         WHERE 1=1
         <if test="rentalLocationName != null and rentalLocationName != ''">
-            AND rental_location_name = #{rentalLocationName}
+            AND rl.branch_name = #{rentalLocationName}
         </if>
         <if test="rentalDate != null and rentalDate != ''">
             AND rental_date = #{rentalDate}

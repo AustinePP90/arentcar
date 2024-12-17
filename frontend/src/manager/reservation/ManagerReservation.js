@@ -27,14 +27,6 @@ const ManagerReservation = ({ onClick }) => {
     { titlename: "차량상태", field: "car_status", width: 100, align: "center" },
     { titlename: "상세", field: "", width: 100, align: "center" },
   ]);
-  // 렌더링
-  useEffect(() => {
-    handleFetchBranchNames();
-  },[]);
-  useEffect(() => {
-    pageingReservations();
-    getTotalCount();
-  }, [pageNumber, pageSize]);
 
   // 렌더링
   useEffect(() => {
