@@ -22,6 +22,7 @@ const MyPageDetail = ({ onClick }) => {
 	const [licenseExpiryDate, setLicenseExpiryDate] = useState("");
 	const [userCategory, setUserCategory] = useState("");
 	const [usageStatus, setUsageStatus] = useState("");
+	const [editedUser, setEditedUser] = useState(null); // 팝업에서 수정된 user 정보를 저장할 state
 
 
 	useEffect(() => {
@@ -96,9 +97,12 @@ const MyPageDetail = ({ onClick }) => {
 		}
 		setIsPopUp(true);
 		setUpdateMode("수정"); // 수정 모드 설정
+		setEditedUser({ ...user }); // 팝업 열 때 user 데이터 복사
 	};
 
 	const handleDataSaveClick = async () => {
+		if (!editedUser) return;
+
 		if (!validateInputs()) {
 			return;
 		}
@@ -279,6 +283,7 @@ const MyPageDetail = ({ onClick }) => {
 
 	const handlePopupCloseClick = () => {
 		setIsPopUp(false);
+		setEditedUser(null);
 	};
 
 
@@ -421,50 +426,50 @@ const MyPageDetail = ({ onClick }) => {
 							<input
 								className='width200 word-left'
 								name="user_birth_date"
-								value={userBirthDate || ""}
+								value={editedUser.user_birth_date || ""}
 								type="text"
 								maxLength={8}
-								onChange={(e) => setUserBirthDate(e.target.value)} />
+								onChange={(e) => setEditedUser({ ...editedUser, user_birth_date : e.target.value})} />
 						</div>
 						<div className='mypage-detail-popup-line'>
 							<label className='width150 word-right' htmlFor="">휴대폰 번호</label>
 							<input
 								className='width200 word-left'
 								name="user_phone_number"
-								value={userPhoneNumber || ""}
+								value={editedUser.user_phone_number || ""}
 								type="text"
 								maxLength={11}
-								onChange={(e) => setUserPhoneNumber(e.target.value)} />
+								onChange={(e) => setEditedUser({ ...editedUser, user_phone_number : e.target.value})} />
 						</div>
 						<div className='mypage-detail-popup-line'>
 							<label className='width150 word-right' htmlFor="">운전면허 번호</label>
 							<input
 								className='width200 word-left'
 								name="driver_license_number"
-								value={driverLicenseNumber || ""}
+								value={editedUser.driver_license_number || ""}
 								type="text"
 								maxLength={11}
-								onChange={(e) => setDriverLicenseNumber(e.target.value)} />
+								onChange={(e) => setEditedUser({ ... editedUser, driver_license_number : e.target.value})} />
 						</div>
 						<div className='mypage-detail-popup-line'>
 							<label className='width150 word-right' htmlFor="">운전면허 발급일</label>
 							<input
 								className='width200 word-left'
 								name="license_issue_date"
-								value={licenseIssueDate || ""}
+								value={editedUser.license_issue_date || ""}
 								type="text"
 								maxLength={11}
-								onChange={(e) => setLicenseIssueDate(e.target.value)} />
+								onChange={(e) => setEditedUser({ ... editedUser, license_issue_date : e.target.value})} />
 						</div>
 						<div className='mypage-detail-popup-line'>
 							<label className='width150 word-right' htmlFor="">운전면허 갱신일</label>
 							<input
 								className='width200 word-left'
 								name="license_expiry_date"
-								value={licenseExpiryDate || ""}
+								value={editedUser.license_expiry_date || ""}
 								type="text"
 								maxLength={11}
-								onChange={(e) => setLicenseExpiryDate(e.target.value)} />
+								onChange={(e) => setEditedUser({ ...editedUser, license_expiry_date : e.target.value})} />
 						</div>
 						<div className='mypage-detail-popup-save-wrap'>
 							<div className='mypage-detail-popup-save'>
