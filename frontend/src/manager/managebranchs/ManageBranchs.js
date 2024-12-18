@@ -1,11 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { refreshAccessToken, handleAdminLogout, formatTime, isValidTimeFormat } from 'common/Common';
+import { useSelector } from 'react-redux';
 import Loading from 'common/Loading';
 import "manager/managebranchs/ManageBranchs.css";
 
 const ManageBranchs = ({ onClick }) => {
+    // 로그인하지 않은 사용자가 기능 실행하지 못하도록 관리
+    const isLoginState = useSelector((state) => state.adminState.loginState);
+
     const [branchs, setBranchs] = useState([]); // DB에서 읽어온 지점 데이터
+    const [branchsTrigger, setbranchsTrigger] = useState(false); 
+    const [isSearched, setIsSearched] = useState(false); // 지점명 검색 여부 상태 추가
     const [isCreatePopUp, setIsCreatePopUp] = useState(false); // 지점 추가 팝업
     const [isUpdatePopup, setIsUpdatePopUp] = useState(false); // 지점 수정 팝업
     const [isDetailPopUp, setIsDetailPopUp] = useState(false); // 지점 상세 팝업
@@ -41,6 +47,16 @@ const ManageBranchs = ({ onClick }) => {
     const [branchPhoneNumber, setBranchPhoneNumber] = useState("");
     const [availablePickupTime, setAvailablePickupTime] = useState("");
     const [availableReturnTime, setAvailableReturnTime] = useState("");
+
+    useEffect(() => {
+        if (!isLoginState) {
+            alert("로그인이 필요합니다.");
+            return;
+        }
+
+        pageingBranchs();
+        getTotalCount();
+    }, [pageNumber, branchsTrigger]) // pageNumber 변경 시 지점 데이터 페이징, 총 지점 수 함수 호출
 
     // 지점 데이터 페이징 처리
     const pageingBranchs = async () => {
@@ -78,20 +94,27 @@ const ManageBranchs = ({ onClick }) => {
             params.branchName = searchName;
         }
 
-        // API 요청: 지점 데이터 가져오기
-        const response = await axios.get(`${process.env.REACT_APP_API_URL}/arentcar/manager/branchs/paged`,
-            {
-                params, // 위에서 정의한 페이징과 검색 조건
+        try {
+            const response = await axios.get(`${process.env.REACT_APP_API_URL}/arentcar/manager/branchs/paged`, {
+                params,
                 headers: {
-                    Authorization: `Bearer ${token}` // 인증 토큰 헤더에 추가
+                    Authorization: `Bearer ${token}`,
                 },
-                withCredentials: true, // 쿠키 전송 활성화
+                withCredentials: true,
             });
 
-        // 만약 응답 데이터가 있다면 상태로 업데이트
-        if (response.data) {
-            // 지점 데이터를 상태로 저장
-            setBranchs(response.data);
+            if (response.data && response.data.length === 0) {
+                if (branchs.length !== 0) { 
+                    setBranchs([]); // 상태가 이미 빈 배열이면 업데이트하지 않음
+                }
+                setPageNumber(1); 
+                return;
+            } else {
+                setBranchs(response.data); // 응답이 있다면 지점 데이터 상태에 저장
+                getTotalCount(); // 검색 결과에 맞는 총 개수 다시 가져오기
+            }
+        } catch (error) {
+            console.error('Error fetching branches:', error);
         }
     };
 
@@ -116,28 +139,37 @@ const ManageBranchs = ({ onClick }) => {
         }
     };
 
+    useEffect(() => {
+        // 상태가 빈 배열이 되고, 검색어가 있는 경우에만 alert 실행
+        if (branchs.length === 0 && searchName.trim() !== '') {
+            setTimeout(() => {
+                alert("존재하지 않는 지점명입니다. 다시 입력해주세요.");
+            }, 0); // 비동기적으로 alert 호출
+        }
+    }, [branchs]); // branchs 상태 변경 감지
+    
+
     // 총 지점 수 요청
     const getCount = async (token) => {
         // 검색어(searchName)이 있다면 params에 추가
         const params = searchName ? { branchName: searchName } : {};
 
-        // API 요청: 지점 수 가져오기
-        const response = await axios.get(`${process.env.REACT_APP_API_URL}/arentcar/manager/branchs/count`,
-            {
-                params,
-                headers: {
-                    Authorization: `Bearer ${token}`
-                },
-                withCredentials: true,
-            });
+        try {
+            // API 요청: 지점 수 가져오기
+            const response = await axios.get(`${process.env.REACT_APP_API_URL}/arentcar/manager/branchs/count`,
+                {
+                    params,
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    },
+                    withCredentials: true,
+                });
 
-        console.log('Branch count response:', response.data);
-
-        // 응답 데이터가 숫자라면 상태로 저장
-        if (typeof response.data === 'number') {
-            setTotalCount(response.data);
-        } else {
-            console.error('Unexpected response:', response.data);
+            if (typeof response.data === 'number') {
+                setTotalCount(response.data);
+            }
+        } catch (error) {
+            console.error('총 지점 수를 가져오는데 실패했습니다:', error);
         }
     };
 
@@ -168,9 +200,58 @@ const ManageBranchs = ({ onClick }) => {
 
     // 검색 버튼
     const handleSearchClick = async () => {
-        pageingBranchs();
-        getTotalCount();
+         // 검색어를 입력하지 않은 경우
+         if (!searchName || searchName.trim() === '') {
+            alert("검색할 지점명을 입력해주세요!");
+            return;
+        }
+
+        try {
+            const token = localStorage.getItem('accessToken');
+
+            // DB에서 검색 결과 가져오기
+            const response = await axios.get(`${process.env.REACT_APP_API_URL}/arentcar/manager/branchs/paged`, {
+                params: { branchName: searchName.trim() },
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                }
+            });
+
+            // 검색 결과가 없는 경우
+            if (response.data.length === 0) {
+                alert("존재하지 않는 지점명입니다. 다시 입력해주세요.");
+                return;
+            }
+
+            // 검색 결과가 있는 경우
+            pageingBranchs();
+            getTotalCount();
+            setBranchs(response.data);
+            setIsSearched(true); // 검색 후 상태 업데이트
+
+        } catch (error) {
+            console.error("Error during branch search:", error);
+            alert("검색 중 오류가 발생했습니다. 다시 시도해주세요.");
+        }
     };
+
+    // 검색어 초기화 함수
+    const handleSearchReset = () => {
+        setSearchName(''); // 검색어 초기화
+        setBranchs([]); // 검색 결과 초기화
+        setLoading(false); // 로딩 상태 초기화
+        setIsSearched(false); // 검색 여부 초기화
+    };
+
+    // `searchName`이 변경되었을 때 (지점명을 검색했을 때) 데이터 다시 로드
+    // 해당 useEffect가 없으면 방금 전 검색했던 지점명만 테이블에 표시 된다.
+    useEffect(() => {
+        if (searchName === '') {
+            pageingBranchs();
+            getTotalCount();
+        }
+    }, [searchName]);
+
 
     // 닫기 버튼
     const handleCloseClick = () => {
@@ -238,7 +319,6 @@ const ManageBranchs = ({ onClick }) => {
 
     // 수정 버튼 클릭
     const handleUpdateClick = (findCode, workMode) => {
-        console.log("수정 버튼 눌렸어용")
         setBranchCode(findCode.branch_code);
         setBranchName(findCode.branch_name);
         setIsUpdatePopUp(true);
@@ -323,6 +403,9 @@ const ManageBranchs = ({ onClick }) => {
             return;
         }
 
+        // 전화번호 포맷팅
+        const formattedPhoneNumber = formatPhoneNumber(branchPhoneNumber);
+
         let newBranch = {
             branch_code: branchCode,
             branch_name: branchName,
@@ -333,7 +416,7 @@ const ManageBranchs = ({ onClick }) => {
             post_code: postCode,
             branch_basic_address: branchBasicAddress,
             branch_detailed_address: branchDetailedAddress,
-            branch_phone_number: branchPhoneNumber,
+            branch_phone_number: formattedPhoneNumber,
             available_pickup_time: availablePickupTime,
             available_return_time: availableReturnTime,
         };
@@ -437,24 +520,37 @@ const ManageBranchs = ({ onClick }) => {
 
     // 지점 추가
     const createBranch = async (token, newBranch) => {
-        // 지점명, 지역코드, 상세주소, 전화번호 입력칸이 공란인지 검증
-        const response = await axios.post(`${process.env.REACT_APP_API_URL}/arentcar/manager/branchs`,
-            newBranch,
-            {
-                headers: {
-                    Authorization: `Bearer ${token}`
-                },
-                withCredentials: true,
+        try {
+            const response = await axios.post(`${process.env.REACT_APP_API_URL}/arentcar/manager/branchs`,
+                newBranch,
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    },
+                    withCredentials: true,
+                });
+            newBranch.branch_code = response.data.branch_code;
+            newBranch.branch_name = response.data.branch_name;
+
+            // 전체 지점 수 증가
+            setTotalCount((prevCount) => {
+                const updatedCount = prevCount + 1;
+
+                // 페이지 번호를 마지막 페이지로 이동
+                const totalPages = Math.ceil(updatedCount / pageSize); // 새로 추가한 지점 포함한 총 페이지 수 계산
+
+                setPageNumber(totalPages); // 마지막 페이지로 이동
+                return updatedCount; // 상태 업데이트 후 return
             });
-        newBranch.branch_code = response.data.branch_code;
-        newBranch.branch_name = response.data.branch_name;
 
-        // 지점 리스트에 새로 추가된 지점 등록
-        setBranchs((prevBranch) => [...prevBranch, newBranch]);
-
-        // 전체 지점 수 증가
-        setTotalCount((prevCount) => prevCount + 1);
-        alert("지점이 추가 되었습니다.");
+            // 새로 추가 된 지점을 상태에 추가
+            setBranchs((prevBranch) => [...prevBranch, newBranch]);
+            
+            alert("지점이 추가 되었습니다.");
+        } catch (error) {
+            console.error("지점 추가 실패:", error);
+            throw error;
+        }
     };
 
     // 지점 상세 팝업창 열기
@@ -556,7 +652,6 @@ const ManageBranchs = ({ onClick }) => {
             headers: { Authorization: `Bearer ${token}` },
             withCredentials: true,
         });
-        console.log(response.data);
         setRegionNameMenuOptions(response.data);
     };
 
@@ -610,44 +705,21 @@ const ManageBranchs = ({ onClick }) => {
 
 
     // 매장 전화번호 형식 변환 함수
-    const formatBranchPhoneNumber = (branchPhoneNumber) => {
-        if (!branchPhoneNumber) {
-            return "";
-        }
-
-        // phoneNumber 숫자 형식일 때 (예: 01011112222)
-        const phoneNumberStr = branchPhoneNumber.toString();
-
-
-        // 이미 '-'가 포함된 경우 그대로 반환
-        if (phoneNumberStr.includes('-')) {
-            return phoneNumberStr;
-        }
-
-        if (phoneNumberStr.length === 10) {
-            const phoneNumber1 = phoneNumberStr.slice(0, 3);
-            const phoneNumber2 = phoneNumberStr.slice(3, 6);
-            const phoneNumber3 = phoneNumberStr.slice(6, 10);
-
-            return `${phoneNumber1}-${phoneNumber2}-${phoneNumber3}`;
-        }
-        return "";
-    };
-
     const formatPhoneNumber = (branch_phone_number) => {
         if (branch_phone_number && branch_phone_number.length === 10) {
-            // '0311234567'
+            // '0311234567' -> '031-123-4567'
             return `${branch_phone_number.slice(0, 3)}-${branch_phone_number.slice(3, 6)}-${branch_phone_number.slice(6, 10)}`;
         }
-        // 기본값으로 원래 시간 반환
+        // 기본값으로 원래 전화번호 반환
         return branch_phone_number;
     };
 
+    // 지점 추가 및 수정의 전화번호 입력 칸에서 포맷팅
     const handlePhoneNumberChange = (e) => {
-        const input = e.target.value.replace(/[^0-9:]/g, ""); // 숫자와 ':'만 허용
-        const formatted = input.replace(":", ""); // ':' 제거한 값 (저장된 값이 09:00 이기 때문)
+        let input = e.target.value.replace(/[^0-9]/g, ""); // 숫자만 허용
 
-        setBranchPhoneNumber(formatted);
+        // 숫자만 저장
+        setBranchPhoneNumber(input); 
     }
 
     return (
@@ -668,6 +740,12 @@ const ManageBranchs = ({ onClick }) => {
                     </div>
                     <div>
                         <button className='manager-button manager-button-insert' onClick={() => handleInsertClick("추가")}>추가</button>
+                        <button className='manager-button manager-button-reset' onClick={handleSearchReset} disabled={!isSearched}
+                            style={{
+                                color: isSearched ? 'rgb(38, 49, 155)' : '#AAAAAA', // 조건에 맞게 color 변경
+                                cursor: isSearched ? 'pointer' : 'not-allowed', // disabled일 때 커서 스타일 변경
+                            }}>초기화
+                        </button>
                         <button className='manager-button manager-button-close' onClick={() => handleCloseClick()}>닫기</button>
                     </div>
                 </div>
@@ -682,7 +760,6 @@ const ManageBranchs = ({ onClick }) => {
 
             {/* 지점 추가 팝업 */}
             {isCreatePopUp &&
-                // TODO: manager 앞에 register 붙여야 함
                 <div className='manager-branch-create-popup manager-popup'>
                     <div className='register-branch-content-popup-wrap'>
                         <div className='register-branch-content-popup-close'>
@@ -862,7 +939,7 @@ const ManageBranchs = ({ onClick }) => {
                                 <label>지점명 : </label>
                                 <span>{branchDetails.branch_name}</span>
                                 <label>전화번호 : </label>
-                                <span>{formatBranchPhoneNumber(branchDetails.branch_phone_number)}</span>
+                                <span>{formatPhoneNumber(branchDetails.branch_phone_number)}</span>
                             </div>
                             <div className="manager-branch-popup-field-row">
                                 <label>기본주소 : </label>
@@ -928,20 +1005,22 @@ const ManageBranchs = ({ onClick }) => {
                             >
                                 {title.field === '' ? (
                                     <>
-                                        <button className='manager-button manager-branch-button-detail' onClick={() => handleDetailClick(row, "상세")}>상세</button>
                                         <button className='manager-button manager-branch-button-update' onClick={() => handleUpdateClick(row, "수정")}>수정</button>
                                         <button className='manager-button manager-branch-button-delete' onClick={() => handleDeleteClick(row.branch_code)}>삭제</button>
+                                        <button className='manager-button manager-branch-button-detail' onClick={() => handleDetailClick(row, "상세")}>상세</button>
+                                        
+                                        
                                     </>
                                 ) : (
                                     <div>
-                                    {(title.field === 'available_pickup_time' || title.field === 'available_return_time') ? (
-                                        formatTime(row[title.field]) // 시간 필드만 09:00 형식으로 표시되게 포맷
-                                    ) : title.field === 'branch_phone_number' ? (
-                                        formatPhoneNumber(row[title.field]) // 전화번호 필드 포맷
-                                    ) : (
-                                        row[title.field] // 다른 필드는 그대로 출력
-                                    )}
-                                </div>
+                                        {(title.field === 'available_pickup_time' || title.field === 'available_return_time') ? (
+                                            formatTime(row[title.field]) // 시간 필드만 09:00 형식으로 표시되게 포맷
+                                        ) : title.field === 'branch_phone_number' ? (
+                                            formatPhoneNumber(row[title.field]) // 전화번호 필드 포맷
+                                        ) : (
+                                            row[title.field] // 다른 필드는 그대로 출력
+                                        )}
+                                    </div>
                                 )}
                             </div>
                         ))}
