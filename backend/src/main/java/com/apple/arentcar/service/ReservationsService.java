@@ -30,11 +30,13 @@ public class ReservationsService {
     public ReservationDetailDTO getReservationDetailById(String reservationCode) {
         return reservationsMapper.getReservationsDetailById(reservationCode);
     }
-    public void updateCarStatus(String carNumber, Map<String, Object> carReturnRequest) {
+    public void updateCarStatusAndReservationStatus(String reservationCode, Map<String, Object> carReturnRequest) {
 
         String carStatus = (String) carReturnRequest.get("carStatus");
+        String reservationStatus = (String) carReturnRequest.get("reservationStatus");
 
-        reservationsMapper.updateCarStatus(carNumber, carStatus);
+        reservationsMapper.updateCarStatus(reservationCode, carStatus);
+        reservationsMapper.ReservationStatusUpdate(reservationCode,reservationStatus);
     }
 
     public void updateReservationAndCarStatus(String reservationCode, Map<String, Object> reservationStatusRequest) {

@@ -97,6 +97,7 @@ const RentalRates = ({ onClick }) => {
       }
     } catch (error) {
       console.error('오류 발생 확인 하세요:', error);
+      setManagePayment([]);
     }
   };
 
@@ -139,39 +140,28 @@ const RentalRates = ({ onClick }) => {
       setTotalCount(response.data);
     } else {
       console.error('Unexpected response:', response.data);
+      setTotalCount(0);
     }
   };
+
+  useEffect(() => {
+    handleFetchBranchNames();
+  }, []);
+
+  useEffect(() => {
+    pageingManagePayment();
+    getTotalCount();
+  }, [pageNumber, pageSize]);
 
   // 지점명 가져오기
   const handleFetchBranchNames = async () => {
-    let token = localStorage.getItem("accessToken");
-    
     try {
-      await fetchBranchNamesData(token); // 기존 토큰으로 데이터 요청
-    } catch (error) {
-      if (error.response && error.response.status === 403) {
-        try {
-          token = await refreshAccessToken(); // 새 토큰 발급
-          await fetchBranchNamesData(token); // 새 토큰으로 데이터 요청
-        } catch (refreshError) {
-          console.error(error.response);
-          alert("인증이 만료되었습니다. 다시 로그인 해주세요.");
-          handleAdminLogout(); // 로그아웃 처리
-        }
-      } else {
-        console.error("지점명 데이터를 가져오는 중 오류가 발생했습니다.", error);
+      const response = await axios.get(`${process.env.REACT_APP_API_URL}/arentcar/user/branchs`);
+      if (response.data) {
+        setBranchNames(response.data.map((branch) => branch.branch_name));
       }
-    }
-  };
-
-  const fetchBranchNamesData = async (token) => {
-    const response = await axios.get(`${process.env.REACT_APP_API_URL}/arentcar/user/branchs`, {
-      headers: { Authorization: `Bearer ${token}` },
-      withCredentials: true,
-    });
-
-    if (response.data) {
-      setBranchNames(response.data.map((branch) => branch.branch_name)); // 데이터 설정
+    } catch (error) {
+      console.error("There was an error fetching the branches", error);
     }
   };
 
@@ -222,16 +212,6 @@ const RentalRates = ({ onClick }) => {
       fetchManagePaymentDetail(reservationCode);
     };
     
-  useEffect(() => {
-    handleFetchBranchNames();
-  }, []);
-
-  useEffect(() => {
-    pageingManagePayment();
-    getTotalCount();
-  }, [pageNumber, pageSize]);
-
-
   // 팝업창닫기
   const handlePopupCloseClick = () => {
     setIsPopUp(false);
@@ -305,6 +285,7 @@ const RentalRates = ({ onClick }) => {
             >
               검색
             </button>
+            <span>[검색건수 : {totalCount}건]</span>
           </div>
           <div className='manage-payment-search-close'>
               <button
@@ -355,20 +336,22 @@ const RentalRates = ({ onClick }) => {
                         상세
                       </button>
                     ) : (
-                      col.field === 'rental_date' || col.field === 'return_date' ? (
+                      col.field === 'rental_date' ? (
+                        formatDate(row[col.field])
+                    ) : col.field === 'rental_date' ? (
                         formatDate(row[col.field])
                     ) : col.field === 'payment_amount' ? (
                       formatNumberWithCommas(row[col.field]) // 결제 금액 형식 지정
                     ) : (
                       row[col.field]
                     )
-                    )}
+                   )}
                   </div>
                 ))}
               </div>
             ))
           ) : (
-            <div className="manage-payment-content-no-data">표시할 데이터가 없습니다.</div>
+            <div className="manage-payment-content-no-data">조건에 맞는 데이터가 없습니다.</div>
           )}
         </div>
       </div>

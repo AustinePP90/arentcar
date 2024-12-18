@@ -71,12 +71,12 @@ public class ReservationsController {
         return reservationsService.getReservationDetailById(reservationCode);
     }
 
-    @PutMapping("/manager/reservations/carreturn/{carNumber}")
-    public ResponseEntity<Void> updateCarStatus(
-            @PathVariable String carNumber,
+    @PutMapping("/manager/reservations/carreturn/{reservationCode}")
+    public ResponseEntity<Void> updateCarStatusAndReservationStatus(
+            @PathVariable String reservationCode,
             @RequestBody Map<String, Object> carReturnRequest) {
 
-        reservationsService.updateCarStatus(carNumber, carReturnRequest);
+        reservationsService.updateCarStatusAndReservationStatus(reservationCode, carReturnRequest);
 
         return ResponseEntity.noContent().build();
     }

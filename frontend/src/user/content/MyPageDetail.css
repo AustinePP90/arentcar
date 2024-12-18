@@ -1,17 +1,24 @@
 
 .mypage-detail-update-wrap {
+  position: fixed;
+  top: 40%;
+  left: 50%;
+  transform: translate(-50%, -50%); /* 화면 중앙에 위치 */
   display: flex;
   justify-content: center;
-  align-items: center;  
-  background-color: #f7f7f9;
-  /* letter-spacing: 5px; */
+  align-items: center;
   font-size: 14px;
-  width: 100%;
+  width: 420px;
+  height: 520px;
+  margin: 100px auto;
+  padding: 20px;
 }
 
 .mypage-detail-update-contents-wrap {
-  width: 600px;
-  height: 500px;
+  width: 450px;
+  background-color: #fff;
+  z-index: 999;
+  border-radius: 8px;
 }
 
 .mypage-detail-update-title {
@@ -29,12 +36,16 @@
 
 .mypage-detail-update-basic-info-wrap,
 .mypage-detail-update-sub-info-box {
-  border: solid 2px #50555C;;
+  width: 400px;
+  border: solid 1px #50555C;;
   background-color: #fff;
   box-shadow: 0px 8px 8px rgba(0, 0, 0, 0.12);
   border-radius: 8px;
-  /* letter-spacing: 5px; */
-  padding: 15px;
+  margin: 10px 20px;
+}
+
+.mypage-detail-update-sub-info-box {
+  padding: 10px;
 }
 
 .mypage-detail-update-title,
@@ -42,7 +53,9 @@
   font-size: 20px;
   font-weight: bold;
   margin: 10px;
-  padding-top: 50px;
+  padding-top: 40px;
+  padding-left: 30px;
+  padding-right: 20px;
 }
 
 .mypage-detail-update-signout {
@@ -61,10 +74,9 @@
   padding: 0 5px;
 }
 
-/* .mypage-detail-update-basic-info-name,
-.mypage-detail-update-basic-info-data {
-  
-} */
+.mypage-detail-update-info-name {
+  padding-right: 20px;
+}
 
 .mypage-detail-update-basic-info-wrap {
   padding: 10px 20px;
@@ -79,6 +91,15 @@
 margin: 0 10px;
 display: flex;
 justify-content: space-between;
+padding-left: 30px;
+padding-right: 30px;
+padding-bottom: 10px;
+}
+
+.mypage-detail-popup-save-wrap {
+  display: flex;          /* flex 컨테이너로 설정 */
+  justify-content: flex-end; /* 오른쪽 정렬 */
+  /* 다른 스타일 속성들... */
 }
 
 .mypage-detail-update-signout-box {
@@ -89,14 +110,80 @@ padding-right: 5pxS;
 .mypage-detail-update-sub-info-save-box {
   display: flex;
   justify-content: space-between;
+  padding-right: 30px;
 }
 
 .mypage-detail-button {
   background: none;
-}
-
-.mypage-detail-button:hover {
   background-color: #ff7916;
   color: white;
   border-radius: 5px;
+  width: 50px;
+  height: 24px;
+  font-size: 12px;
+}
+
+.mypage-detail-signout-button {
+  background: none;
+  background-color: #ff7916;
+  color: white;
+  border-radius: 5px;
+  width: 100px;
+  height: 24px;
+  font-size: 12px;
+}
+
+.mypage-detail-popup-wrap {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  /* background-color: rgba(0, 0, 0, 0.3); */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000; /* 팝업이 다른 요소 위에 나타나도록 설정 */
+  
+}
+
+.mypage-detail-content-popup-wrap {
+  width: 450px;
+  height: 490px;
+  background-color: #fff;
+  padding: 20px;
+  border-radius: 8px;
+  /* box-shadow: 0px 8px 8px rgba(0, 0, 0, 0.12); */
+}
+
+.mypage-detail-content-popup-title {
+  font-size: 16px;
+  font-weight: bold;
+}
+
+.mypage-detail-content-popup-close {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 40px;
+  margin-top: 40px;
+  padding-left: 20px;
+  padding-right: 20px;
+}
+
+.mypage-detail-popup-save-wrap {
+  padding-left: 10px;
+  padding-right: 10px;
+}
+
+.mypage-detail-popup-line {
+  margin: 15px 0px;
+}
+
+.mypage-detail-popup-line label {
+  padding-right: 10px;
+}
+
+.mypage-detail-popup-line input {
+  padding-left: 10px;
 }
