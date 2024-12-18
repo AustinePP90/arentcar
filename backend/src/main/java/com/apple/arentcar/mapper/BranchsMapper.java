@@ -14,7 +14,6 @@ import java.util.List;
 public interface BranchsMapper {
 
     // 유저 입장에서 모든 지점 조회
-    @Select("SELECT * FROM branchs")
     List<Branchs> findAllBranches();
 
     List<Branchs> findBranchsByBranchName(@Param("branchname") String branchName);

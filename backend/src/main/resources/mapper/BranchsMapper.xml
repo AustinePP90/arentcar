@@ -72,40 +72,10 @@
             b.available_return_time,
             b.created_at,
             b.updated_at,
-            r.region_name -- regions 테이블에서 region_name도 조회
+            r.region_name
         FROM branchs b
                  LEFT JOIN regions r ON b.region_code = r.region_code
         WHERE b.branch_code = #{branchCode}
-    </select>
-
-    <!-- 전체 지점 수 조회 -->
-    <select id="countAllBranchs" resultType="int">
-        SELECT COUNT(*) FROM branchs;
-    </select>
-
-    <!-- 검색조건에 맞게 전체 지점 수 조회 -->
-    <select id="countBranchByName" resultType="int">
-        SELECT COUNT(*) FROM branchs
-        WHERE branch_name LIKE CONCAT('%', #{branchName}, '%')
-    </select>
-
-    <!-- 지점 조회 및 페이지네이션 -->
-    <select id="getBranchsWithPaging" resultType="com.apple.arentcar.dto.BranchsSearchDTO">
-        SELECT b.*, r.region_name
-        FROM branchs b
-        LEFT JOIN regions r ON b.region_code = r.region_code  <!-- branchs 테이블의 region_code와 regions 테이블의 region_code를 JOIN -->
-        ORDER BY b.branch_code
-        LIMIT #{pageSize} OFFSET #{offset}
-    </select>
-
-    <!-- 지점 조회 및 페이지네이션(검색 기능 포함) -->
-    <select id="getBranchsNameWithPaging" resultType="com.apple.arentcar.dto.BranchsSearchDTO">
-        SELECT *
-        FROM branchs b
-        LEFT JOIN regions r ON r.region_code = b.region_code <!-- FK 관계 반영 -->
-        WHERE b.branch_name LIKE CONCAT('%', #{branchName}, '%')
-        ORDER BY b.branch_code
-        LIMIT #{pageSize} OFFSET #{offset}
     </select>
 
     <!-- 지점 추가 -->
@@ -159,25 +129,4 @@
         DELETE FROM branchs
         WHERE branch_code = #{branchCode}
     </delete>
-
-    <select id="getBranchsDetailById" parameterType="Integer" resultType="com.apple.arentcar.dto.BranchsSearchDTO">
-        SELECT
-            b.branch_code,
-            b.branch_name,
-            b.branch_longitude,
-            b.branch_latitude,
-            b.region_code,
-            b.post_code,
-            b.branch_basic_address,
-            b.branch_detailed_address,
-            b.branch_phone_number,
-            b.available_pickup_time,
-            b.available_return_time,
-            b.created_at,
-            b.updated_at,
-            r.region_name -- regions 테이블에서 region_name도 조회
-        FROM branchs b
-        LEFT JOIN regions r ON b.region_code = r.region_code
-        WHERE b.branch_code = #{branchCode}
-    </select>
 </mapper>
