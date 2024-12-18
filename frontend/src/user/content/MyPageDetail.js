@@ -306,7 +306,7 @@ const MyPageDetail = ({ onClick }) => {
 							<div className="mypage-detail-update-info-name width200 word-right">
 								<p>이름</p>
 							</div>
-							<div className="mypage-detail-update-info-data width200">
+							<div className="mypage-detail-update-info-data width300">
 								{userName}
 							</div>
 						</div>
@@ -314,7 +314,7 @@ const MyPageDetail = ({ onClick }) => {
 							<div className="mypage-detail-update-info-name width200 word-right">
 								<p>이메일</p>
 							</div>
-							<div className="mypage-detail-update-info-data width200">
+							<div className="mypage-detail-update-info-data width300">
 								{userEmail}
 							</div>
 						</div>
@@ -322,7 +322,7 @@ const MyPageDetail = ({ onClick }) => {
 							<div className="mypage-detail-update-info-name width200 word-right">
 								<p>생년월일</p>
 							</div>
-							<div className='mypage-detail-update-info-data width200' >
+							<div className='mypage-detail-update-info-data width300' >
 								{formatDate(userBirthDate)}
 							</div>
 						</div>
@@ -330,7 +330,7 @@ const MyPageDetail = ({ onClick }) => {
 							<div className="mypage-detail-update-info-name width200 word-right">
 								<p>휴대폰번호</p>
 							</div>
-							<div className='mypage-detail-update-info-data width200'>
+							<div className='mypage-detail-update-info-data width300'>
 								{formatPhone(userPhoneNumber)}
 							</div>
 						</div>
@@ -345,7 +345,7 @@ const MyPageDetail = ({ onClick }) => {
 									<div className='mypage-detail-update-info-name width200 word-right'>
 										<p>운전면허 번호</p>
 									</div>
-									<div className='mypage-detail-update-info-data width200'>
+									<div className='mypage-detail-update-info-data width300'>
 										{driverLicenseNumber}
 									</div>
 								</div>
@@ -353,7 +353,7 @@ const MyPageDetail = ({ onClick }) => {
 									<div className='mypage-detail-update-info-name width200 word-right'>
 										<p>운전면허 발급일</p>
 									</div>
-									<div className='mypage-detail-update-info-data width200'>
+									<div className='mypage-detail-update-info-data width300'>
 										{formatDate(licenseIssueDate)}
 									</div>
 								</div>
@@ -361,7 +361,7 @@ const MyPageDetail = ({ onClick }) => {
 									<div className='mypage-detail-update-info-name width200 word-right'>
 										<p>운전면허 갱신일</p>
 									</div>
-									<div className='mypage-detail-update-info-data width200'>
+									<div className='mypage-detail-update-info-data width300'>
 										{formatDate(licenseExpiryDate)}
 									</div>
 								</div>
