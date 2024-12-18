@@ -1,7 +1,7 @@
 import React, { useEffect, useRef } from 'react';
 import 'user/content/NaverMap.css';
 
-const NaverMap = ({handleMapCloseClick , branchLocation}) => {
+const NaverMap = ({handleMapCloseClick , branchLocation, car}) => {
     const mapElement = useRef(null); // 지도 표시 영역을 참조
 
     useEffect(() => {
@@ -49,13 +49,22 @@ const NaverMap = ({handleMapCloseClick , branchLocation}) => {
         <div className='naver-map-wrap'>
             <div className='naver-map'>
                 <button className='close-button' onClick={handleMapCloseClick}>
-                    <img src={`${process.env.REACT_APP_IMAGE_URL}/close_btn.png`} alt="" />
+                    <img src={`${process.env.REACT_APP_IMAGE_URL}/close_icon.svg`} alt="" />
                 </button>
+                <h2 className='naver-map-title'>찾아오시는 길</h2>
+                
                 <div
                     className='naver-map-map'
                     ref={mapElement}
                 />
+                <h2 className='naver-map-branch-name'>{car.branch_name}</h2>
+                <div className='naver-map-detail'>
+                <p className='naver-map-address'>{car.branch_detailed_address}</p>
+                <p className='naver-map-phone-number'>연락처 : {car.branch_phone_number}</p>
+                <p className='naver-map-business-hours'>영업시간 : {car.available_pickup_time} ~ {car.available_return_time}</p>
+                </div>
             </div>
+            
         </div>
     );
 };

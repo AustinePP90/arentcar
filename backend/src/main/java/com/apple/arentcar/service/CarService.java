@@ -39,8 +39,8 @@ public class CarService {
         return CarMapper.getModelYear();
     }
 
-    public List<BranchsDTO> getAllBranchs(String region) {
-        return CarMapper.getAllBranchs(region);
+    public List<BranchsDTO> getAllBranchs() {
+        return CarMapper.getAllBranchs();
     }
 
     public List<CarTypeCategoryDTO> getCarTypeCategory() {
@@ -69,5 +69,9 @@ public class CarService {
 
     public Integer getReservationNumber() {
         return CarMapper.getReservationNumber();
+    }
+
+    public List<BranchsDTO> getSelectedRegionBranchs(String region) {
+        return CarMapper.getSelectedRegionBranchs(region);
     }
 }

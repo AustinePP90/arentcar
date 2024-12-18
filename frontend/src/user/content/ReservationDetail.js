@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import 'user/content/ReservationDetail.css'
 import NaverMap from 'user/content/NaverMap';
-import { useSelector, useDispatch } from 'react-redux';
+import { useSelector } from 'react-redux';
 import { useLocation, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
@@ -42,7 +42,6 @@ const ReservationDetail = () => {
           };
     
           fetchInsurance();
-          console.log(car);
 
           // 날짜를 밀리초 단위로 변환하는 함수
 function dateToMilliseconds(dateString) {
@@ -65,14 +64,13 @@ function calculateRentalPeriod(rentalDate, returnDate) {
 }
           
           setRentalperiod(calculateRentalPeriod(car.rental_date,car.return_date));
-          console.log(`렌탈 기간: ${calculateRentalPeriod(car.rental_date,car.return_date)}일`);
           
         //   setCarInfo({...car,user_code : userCode,payment_amount : totalRentalFee});
-    },[])
+    },[car.rental_date,car.return_date])
 
     useEffect(()=>{
         setCarInfo({...car,discount_fee : discountFee,user_code : userCode,payment_amount : totalRentalFee,insurance_type : insuranceTypeCode,rental_period : rentalperiod});
-    },[userCode,totalRentalFee,insuranceTypeCode])
+    },[car,discountFee,rentalperiod,userCode,totalRentalFee,insuranceTypeCode])
 
     useEffect(() => {
         if (car.rental_discount_rate !== 0)
@@ -82,7 +80,7 @@ function calculateRentalPeriod(rentalDate, returnDate) {
     useEffect(() => {
         setEstimatedRentalFee(rentalRate - discountFee+Number( insurance[0].insurance_fee));
         setTotalRentalFee((rentalRate - discountFee+Number( insurance[0].insurance_fee)));
-    }, [insurance]);
+    }, [insurance,discountFee,rentalRate]);
 
     useEffect(() => {
         setInsuranceTypeCode(insuranceType === '일반 자차' ? '01':'02');
@@ -99,7 +97,7 @@ function calculateRentalPeriod(rentalDate, returnDate) {
         }else{
             setTotalRentalFee((Number(estimatedRentalFee) +Number( insurance[1].insurance_fee)-Number( insurance[0].insurance_fee)));
         }
-    }, [driverRangeFee,insuranceType]);
+    }, [driverRangeFee,insuranceType,estimatedRentalFee,insurance]);
 
     const branchLocation = {
         branch_latitude: car.branch_latitude,
@@ -289,7 +287,7 @@ function calculateRentalPeriod(rentalDate, returnDate) {
                 </div>
             </div>
             {isMapClick &&
-                <NaverMap handleMapCloseClick={handleMapCloseClick} branchLocation={branchLocation} />
+                <NaverMap handleMapCloseClick={handleMapCloseClick} branchLocation={branchLocation} car={car}/>
             }
         </>
     );

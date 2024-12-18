@@ -22,7 +22,7 @@ public interface CarMapper {
 
     List<ModelYearDTO> getModelYear();
 
-    List<BranchsDTO> getAllBranchs(String region);
+    List<BranchsDTO> getAllBranchs();
 
     List<CarTypeCategoryDTO> getCarTypeCategory();
 
@@ -35,4 +35,6 @@ public interface CarMapper {
     void updateCarStatus(Integer carCode);
 
     Integer getReservationNumber();
+
+    List<BranchsDTO> getSelectedRegionBranchs(String region);
 }

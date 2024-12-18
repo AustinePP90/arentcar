@@ -73,8 +73,13 @@ public class CarController {
     }
 
     @GetMapping("/user/cars/branchs")
-    public List<BranchsDTO> getAllBranchs(@RequestParam(name = "region") String region) {
-        return carService.getAllBranchs(region);
+    public List<BranchsDTO> getAllBranchs() {
+        return carService.getAllBranchs();
+    }
+
+    @GetMapping("/user/cars/selected/region/branchs")
+    public List<BranchsDTO> getSelectedRegionBranchs(@RequestParam(name = "region") String region) {
+        return carService.getSelectedRegionBranchs(region);
     }
 
     @PutMapping("/user/cars/reservation/updatecar/status")
