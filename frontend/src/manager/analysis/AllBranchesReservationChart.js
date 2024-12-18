@@ -508,7 +508,7 @@ const AllBranchesReservationChart = ({ onClick }) => {
                 {chartData.length > 0 ? (
                     <Pie data={data} options={options} />
                 ) : (
-                    <p>데이터를 불러오는 중입니다...</p>
+                    <p>예약된 건이 없습니다.</p>
                 )}
             </div>
 
