@@ -132,6 +132,13 @@
         values(#{postCode}, #{reviewRating});
     </insert>
 
+    <update id="updateReviewContent" parameterType="com.apple.arentcar.model.Reviews">
+        UPDATE posts SET post_content = #{postContent} WHERE post_code = #{postCode};
+    </update>
+    <update id="updateReviewScore" parameterType="com.apple.arentcar.model.Reviews">
+        UPDATE reviews SET review_rating = #{reviewRating} WHERE post_code = #{postCode};
+    </update>
+
     <delete id="deleteReview">
         DELETE FROM reviews where post_code = #{postCode};
     </delete>

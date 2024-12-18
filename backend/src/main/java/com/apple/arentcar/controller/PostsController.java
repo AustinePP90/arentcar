@@ -86,8 +86,17 @@ public class PostsController {
     @PostMapping("/user/customers/reviews")
     public ResponseEntity<Reviews> createUserReview(@RequestBody Reviews reviews) {
         postsService.createReview(reviews);
-        System.out.println(reviews.getPostTitle());
         return ResponseEntity.ok(reviews);
+    }
+    @PutMapping("/user/customers/reviews")
+    public ResponseEntity<Reviews> updateUserReview(@RequestBody Reviews reviews) {
+        postsService.updateReview(reviews);
+        return ResponseEntity.ok(reviews);
+    }
+    @DeleteMapping("/user/customers/reviews/{postCode}")
+    public ResponseEntity<Reviews> deleteUserReview(@PathVariable Integer postCode) {
+        postsService.deleteReview(postCode);
+        return ResponseEntity.noContent().build();
     }
 
     @GetMapping("/user/customers/inquirys")

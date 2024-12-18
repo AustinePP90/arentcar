@@ -4,6 +4,8 @@ import axios from "axios";
 import { refreshAccessToken, handleLogout } from 'common/Common';
 import { store } from '../../redux/store';
 import Loading from 'common/Loading';
+import { useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
 
 
 
@@ -30,6 +32,9 @@ const PostInquirys = ({ onClick }) => {
     { columnName: '답변여부', field: 'inquiry_status', width: 100, align: 'center'},
     { columnName: '작업', field: '', width: 230, align: 'center'},
   ]);
+
+  const isLoginState = useSelector((state) => state.adminState.loginState);
+  const navigate = useNavigate();
 
   // 상세내용
   const [postCode,setPostCode] = useState();
@@ -336,14 +341,25 @@ const PostInquirys = ({ onClick }) => {
   }
   
   useEffect(()=>{
+    handleLogin();
     postGetCount();
     postGetInquirys();
     handleAdminCode();
+    
   },[pageNumber, totalInquirys])
 
   useEffect(()=>{
+    handleLogin();
     resizeHeight();
   },[responses])
+
+  const handleLogin = () => {
+    if (!isLoginState) {
+      alert("로그인이 필요합니다.");
+      navigate("/admin");
+      return;
+    }
+  }
 
   const handleSearchClick = async () => {
     postGetInquirys();

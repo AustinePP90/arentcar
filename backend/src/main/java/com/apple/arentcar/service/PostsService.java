@@ -52,6 +52,10 @@ public class PostsService {
         System.out.println(reviews.getPostCode());
         postsMapper.createReview(reviews);
     }
+    public void updateReview(Reviews reviews) {
+        postsMapper.updateReviewContent(reviews);
+        postsMapper.updateReviewScore(reviews);
+    }
     public void deleteReview(Integer postCode) {
         System.out.println(postCode);
         postsMapper.deleteReview(postCode);
