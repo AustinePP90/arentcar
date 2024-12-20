@@ -342,7 +342,7 @@
             </div>
             <div className="my-page-body-reservation-wrap">
               <div className="my-page-reservation-header-wrap">
-                <p className="my-page-reservation-title">나의 렌트현황</p>
+                <p className="my-page-reservation-title">나의 예약현황</p>
                 <button className="my-page-reservationpage-button mypage-button" onClick={() => handleButtonNavigation("/reservation")}>렌트카 예약하기</button>
               </div>
               <div className="my-page-reservation-list-wrap">
@@ -427,7 +427,7 @@
                         ))
                       ) : (
                         <div className="my-page-reservation-no-data">
-                          조건에 맞는 렌트내역이 없습니다.
+                          조건에 맞는 예약내역이 없습니다.
                         </div>
                       )}
                     </div>
@@ -458,7 +458,7 @@
                     <div className="manager-popup">
                       <div className="my-page-reservation-content-popup-wrap">
                         <div className="my-page-reservation-content-popup-header-wrap">
-                          <div className="my-page-popup-title">렌탈 상세내역</div>
+                          <div className="my-page-popup-title">예약 상세내역</div>
                           <button
                             className="my-page-button my-page-button-close"
                             onClick={handlePopupCloseClick}
