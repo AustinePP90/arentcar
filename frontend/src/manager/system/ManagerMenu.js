@@ -18,7 +18,6 @@ import RentalRates from 'manager/managepayment/RentalRates';
 import PostNotices from 'manager/system/PostNotices';
 import PostInquirys from 'manager/system/PostInquirys';
 import AllBranchesReservationChart from 'manager/analysis/AllBranchesReservationChart';
-import BranchesReservationChart from 'manager/analysis/BranchesReservationChart';
 import AllCarTypeReservationChart from 'manager/analysis/AllCarTypeReservationChart';
 import ManageBranchs from 'manager/managebranchs/ManageBranchs';
 
@@ -54,7 +53,6 @@ const ManagerMenu = () => {
     ManagerReservation: <ManagerReservation onClick={handleCloseClick} />,
     RentalRates: <RentalRates onClick={handleCloseClick} />,
     AllBranchesReservationChart: <AllBranchesReservationChart onClick={handleCloseClick} />,
-    BranchesReservationChart: <BranchesReservationChart onClick={handleCloseClick} />,
     AllCarTypeReservationChart: <AllCarTypeReservationChart onClick={handleCloseClick} />,
     ManageBranchs: <ManageBranchs onClick={handleCloseClick} />,
   };

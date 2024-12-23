@@ -57,7 +57,7 @@ const MyPageDetail = ({ onClick }) => {
 			}
 
 			const response = await axios.get(
-				`${process.env.REACT_APP_API_URL}/arentcar/manager/mypagedetail/${userCode}`,
+				`${process.env.REACT_APP_API_URL}/arentcar/user/users/${userCode}`,
 				{
 					headers: {
 						Authorization: `Bearer ${token}`
@@ -103,32 +103,23 @@ const MyPageDetail = ({ onClick }) => {
 	const handleDataSaveClick = async () => {
 		if (!editedUser) return;
 
-		if (!validateInputs()) {
-			return;
+		for (const key in editedUser) {
+			if (!validateInputs(key, editedUser[key])) {
+				return;
+			}
 		}
 
-		let updateUser = {
-			user_code: userCode,
-			user_id: userId,
-			user_password: userPassword,
-			user_name: userName,
-			user_email: userEmail,
-			user_phone_number: userPhoneNumber,
-			user_birth_date: userBirthDate,
-			driver_license_number: driverLicenseNumber,
-			license_issue_date: licenseIssueDate,
-			license_expiry_date: licenseExpiryDate,
-			user_category: userCategory,
-			usage_status: usageStatus,
-		};
+		let updateUser = { ...editedUser };
 
 		if (updateMode === "수정") {
 			try {
 				setLoading(true);
 				const token = localStorage.getItem('accessToken');
-				await updateUserData(token, updateUser);
+				await updateUserData(token, updateUser).then(() => setIsPopUp(false));
 				console.log(updateUser);
 				console.log(updateUserData);
+				await getUser();
+
 			} catch (error) {
 				if (error.response && error.response.status === 403) {
 					try {
@@ -154,7 +145,7 @@ const MyPageDetail = ({ onClick }) => {
 		try {
 			console.log(userCode);
 			const response = await axios.put(
-				`${process.env.REACT_APP_API_URL}/arentcar/manager/mypagedetail/${userCode}`,
+				`${process.env.REACT_APP_API_URL}/arentcar/user/users/${userCode}`,
 				updateUser,
 				{
 					headers: {
@@ -168,10 +159,13 @@ const MyPageDetail = ({ onClick }) => {
 				// 200 또는 204는 성공으로 처리
 				if (response.status === 200 && response.data) {
 					// 200 이고 데이터가 있으면 상태 업데이트
-					setUser(response.data);
-					setIsPopUp(false);
+						alert("자료가 수정되었습니다");
+						return response.data;
+		
+				} else {
+					alert("자료가 수정되었습니다.");
+					return;
 				}
-				alert("자료가 수정되었습니다.");
 			} else {
 				console.error("업데이트 실패:", response.status, response.data);
 				alert("수정 중 오류가 발생했습니다. " + (response.data?.message || "관리자에게 문의하세요."));
@@ -379,7 +373,7 @@ const MyPageDetail = ({ onClick }) => {
 				</div>
 				<div className="mypage-detail-update-signout">
 					<div className='mypage-detail-update-signout-label'>
-						<p>회원탈퇴 확인</p>
+						<p>회원탈퇴 확인hkhkhkhk</p>
 					</div>
 					<div className='mypage-detail-update-signout-box'>
 						<div className="mypage-detail-update-signout-act">
