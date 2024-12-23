@@ -187,10 +187,6 @@ function calculateRentalPeriod(rentalDate, returnDate) {
     setRentalTime([rentalTime, returnTime])
   }
 
-  useEffect(()=>{
-    console.log(rentalperiod);
-  },[rentalperiod])
-
   return (
     <div className="rental-cars-page-wrap">
       <SelectBranch branchName={selectBranch} hendelResetBranch={hendelResetBranch} hendelSelectPeriod={hendelSelectPeriod} rentalPeriod={rentalPeriod}></SelectBranch>

@@ -1,5 +1,5 @@
 import axios from 'axios';
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import 'user/content/PaymentPage.css';
 import * as PortOne from "@portone/browser-sdk/v2";
@@ -11,10 +11,11 @@ const PaymentPage = () => {
   const location = useLocation();
   const reservationInfo = location.state;
   const isUserName = useSelector((state) => state.userState.userName);
+  const userCame = useSelector((state) => state.userState.userCode);
   const currentDate = new Date();
 
   const params = {
-    userCode: reservationInfo.user_code,
+    userCode: userCame,
     carCode: reservationInfo.car_code,
     rentalLocation: reservationInfo.branch_name,
     rentalDate: reservationInfo.rental_date,
@@ -133,6 +134,10 @@ const PaymentPage = () => {
     return fee.toString().slice(0, -3) + ',' + fee.toString().slice(-3);
 }
 
+useEffect(()=>{
+  console.log(params);
+},[params])
+
   return (
     <div className='payment-page-wrap'>
       <div className='payment-page-title-wrap'>
@@ -188,7 +193,7 @@ const PaymentPage = () => {
               <span>결제 금액</span>
               <span>{addCommaToCurrency(reservationInfo.payment_amount)}원</span>
             </div>
-        <button className='payment-page-side-payment-button' onClick={() => requestPayment()}>결제하기</button>
+        <button className='payment-page-side-payment-button' onClick={() => InsertUserReservation()}>결제하기</button>
       </div>
       </div>
 
