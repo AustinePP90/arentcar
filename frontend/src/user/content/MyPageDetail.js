@@ -57,7 +57,7 @@ const MyPageDetail = ({ onClick }) => {
 			}
 
 			const response = await axios.get(
-				`${process.env.REACT_APP_API_URL}/arentcar/manager/mypagedetail/${userCode}`,
+				`${process.env.REACT_APP_API_URL}/arentcar/user/users/${userCode}`,
 				{
 					headers: {
 						Authorization: `Bearer ${token}`
@@ -145,7 +145,7 @@ const MyPageDetail = ({ onClick }) => {
 		try {
 			console.log(userCode);
 			const response = await axios.put(
-				`${process.env.REACT_APP_API_URL}/arentcar/manager/mypagedetail/${userCode}`,
+				`${process.env.REACT_APP_API_URL}/arentcar/user/users/${userCode}`,
 				updateUser,
 				{
 					headers: {
@@ -373,7 +373,7 @@ const MyPageDetail = ({ onClick }) => {
 				</div>
 				<div className="mypage-detail-update-signout">
 					<div className='mypage-detail-update-signout-label'>
-						<p>회원탈퇴 확인</p>
+						<p>회원탈퇴 확인hkhkhkhk</p>
 					</div>
 					<div className='mypage-detail-update-signout-box'>
 						<div className="mypage-detail-update-signout-act">

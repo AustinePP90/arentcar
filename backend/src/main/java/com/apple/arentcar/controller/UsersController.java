@@ -41,8 +41,7 @@ public class UsersController {
         return usersService.getAllUsers();
     }
 
-    @GetMapping({"/user/users/{userCode}",
-                 "/manager/mypagedetail/{userCode}"})
+    @GetMapping("/user/users/{userCode}")
     public ResponseEntity<Users> getUsersById(
             @PathVariable Integer userCode) {
         Users users = usersService.getUsersById(userCode);
@@ -70,8 +69,7 @@ public class UsersController {
         return ResponseEntity.status(HttpStatus.CREATED).body(savedUsers);
     }
 
-    @PutMapping({"/user/users/{userCode}",
-                 "/manager/mypagedetail/{userCode}"})
+    @PutMapping("/user/users/{userCode}")
     public ResponseEntity<Void> updateUsersById(
             @PathVariable Integer userCode,
             @RequestBody Users users) {
