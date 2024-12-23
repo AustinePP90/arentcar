@@ -26,10 +26,27 @@ const MyPageDetail = ({ onClick }) => {
 
 
 	useEffect(() => {
-		if (userCode) {
-			getUser();
-		}
-	}, [userCode]);
+    const fetchUser = async () => {
+        const token = localStorage.getItem('accessToken');
+        if (!token) {
+            console.error("Token이 없습니다. 로그인을 다시 시도해주세요.");
+            handleLogout();
+            return;
+        }
+        if (userCode) {
+            try {
+                await getUser(token); // getUser 호출
+            } catch (error) {
+                console.error("User 정보 로드 실패:", error);
+            }
+        } else {
+            console.error("UserCode가 없습니다.");
+        }
+    };
+
+    fetchUser(); // 비동기 함수 호출
+}, [userCode]); // userCode가 변경될 때 실행
+
 
 	useEffect(() => {
 		// user 상태가 변경될 때마다 팝업 상태 변수 업데이트
@@ -43,52 +60,63 @@ const MyPageDetail = ({ onClick }) => {
 	}, [user], isPopUp); // user 상태 변경 시에만 실행
 
 	// 사용자 정보 불러오기
-	const getUser = async () => {
-
+	const getUser = async (token) => {
 		try {
-			let token = localStorage.getItem('token');
+	        // 유저 정보 API 호출
+        const response = await axios.get(
+            `${process.env.REACT_APP_API_URL}/arentcar/user/users/${userCode}`,
+            {
+          		headers: {
+           		 Authorization: `Bearer ${token}`
+          },
+          withCredentials: true,
+            }
+        );
 
-			if (!token) {
-				token = await refreshAccessToken();
-				if (!token) {
-					console.error("Failed to refresh acccess token");
-					return;
-				}
-			}
+        // 성공적으로 데이터를 가져왔을 때 처리
+        if (response.status === 200 && response.data) {
 
-			const response = await axios.get(
-				`${process.env.REACT_APP_API_URL}/arentcar/user/users/${userCode}`,
-				{
-					headers: {
-						Authorization: `Bearer ${token}`
-					},
-					withCredentials: true,
-				}
-			);
+            const userData = response.data;
+            setUser(userData); // 전체 사용자 데이터 설정
+            setUserName(userData.user_name);
+            setUserPassword(userData.user_password);
+            setUserEmail(userData.user_email);
+            setUserBirthDate(userData.user_birth_date);
+            setUserPhoneNumber(userData.user_phone_number);
+            setDriverLicenseNumber(userData.driver_license_number);
+            setLicenseIssueDate(userData.license_issue_date);
+            setLicenseExpiryDate(userData.license_expiry_date);
+            setUserCategory(userData.user_category);
+            setUsageStatus(userData.usage_status);
 
-			if (response.status === 200 && response.data) {
-				const userData = response.data;
-				setUser(userData);
-				setUserName(userData.user_name);
-				setUserPassword(userData.user_password);
-				setUserEmail(userData.user_email);
-				setUserBirthDate(userData.user_birth_date);
-				setUserPhoneNumber(userData.user_phone_number);
-				setDriverLicenseNumber(userData.driver_license_number);
-				setLicenseIssueDate(userData.license_issue_date);
-				setLicenseExpiryDate(userData.license_expiry_date);
-				setUserCategory(userData.user_category);
-				setUsageStatus(userData.usage_status);
+						console.log("User data loaded:", userData);
+        } else {
+            console.error("API Error:", response.status, response.data);
+        }
+			} catch (error) {
+        if (error.response && error.response.status === 403) {
+            console.warn("Token expired or unauthorized. Attempting to refresh token...");
 
-				console.log("userData상태 : ", userData);
-			} else {
-				console.error("API Error :", response.status, response.data);
-			}
+            try {
+                // 토큰 새로고침 로직 호출
+                const newToken = await refreshAccessToken();
+                if (newToken) {
+                    await getUser(newToken); // 새 토큰으로 재요청
+                } else {
+                    alert("인증이 만료되었습니다. 다시 로그인 해주세요.");
+                    handleLogout(); // 로그아웃 처리
+                }
+            } catch (refreshError) {
+                console.error("Failed to refresh token:", refreshError);
+                alert("인증이 만료되었습니다. 다시 로그인 해주세요.");
+                handleLogout(); // 로그아웃 처리
+            }
+        } else {
+            console.error("Failed to fetch user data:", error);
+        }
+    }
+};
 
-		} catch (error) {
-			console.error('데이터를 불러오지 못했습니다', error);
-		}
-	};
 
 	const handleUpdateClick = () => {
 		if (!user) {  // user 데이터가 있는지 확인
@@ -111,34 +139,33 @@ const MyPageDetail = ({ onClick }) => {
 
 		let updateUser = { ...editedUser };
 
-		if (updateMode === "수정") {
-			try {
-				setLoading(true);
-				const token = localStorage.getItem('accessToken');
-				await updateUserData(token, updateUser).then(() => setIsPopUp(false));
-				console.log(updateUser);
-				console.log(updateUserData);
-				await getUser();
+		try {
+			setLoading(true);
 
-			} catch (error) {
-				if (error.response && error.response.status === 403) {
-					try {
-						const newToken = await refreshAccessToken();
-						await updateUserData(newToken, updateUser);
-					} catch (error) {
-						alert("인증이 만료되었습니다. 다시 로그인 해주세요." + error);
-						handleLogout();
-					}
-				} else {
-					alert("수정 중 오류가 발생했습니다." + error);
-				}
-			} finally {
-				setLoading(false);
+			let token = localStorage.getItem('accessToken');
+			if (!token) {
+					token = await refreshAccessToken(); // 토큰 갱신
+					if (!token) throw new Error("토큰 갱신 실패");
 			}
-		}
 
-		setIsPopUp(false);
-	};
+			await updateUserData(token, updateUser); // 데이터 업데이트
+			console.log("User updated successfully:", updateUser);
+
+			setIsPopUp(false); // 팝업 닫기
+			await getUser(token); // 최신 데이터 로드
+	} catch (error) {
+			console.error("Error during update:", error);
+
+			if (error.response && error.response.status === 403) {
+					alert("인증이 만료되었습니다. 다시 로그인 해주세요.");
+					handleLogout();
+			} else {
+					alert("수정 중 오류가 발생했습니다. 네트워크 상태를 확인하세요.");
+			}
+	} finally {
+			setLoading(false);
+	}
+};
 
 	// 사용자 정보 업데이트
 	const updateUserData = async (token, updateUser) => {
