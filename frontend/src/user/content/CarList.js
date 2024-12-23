@@ -6,16 +6,16 @@ import { useNavigate } from 'react-router-dom';
 const RentalCar = ({ ...selectedFilters }) => {
   const [cars, setCars] = useState([]);
   const [carsCount, setCarsCount] = useState(0);
-  const navigate  = useNavigate();
+  const navigate = useNavigate();
 
   const handleCarClick = (car) => {
-    navigate('/reservationdetail',{
+    navigate('/reservationdetail', {
       state: {
         ...car,
-        rental_date : selectedFilters.rentalDate,
-        return_date : selectedFilters.returnDate,
-        rental_time : selectedFilters.rentalTime,
-        return_time : selectedFilters.returnTime,
+        rental_date: selectedFilters.rentalDate,
+        return_date: selectedFilters.returnDate,
+        rental_time: selectedFilters.rentalTime,
+        return_time: selectedFilters.returnTime,
       }
     });
   };
@@ -64,34 +64,34 @@ const RentalCar = ({ ...selectedFilters }) => {
 
   return (
     <>
-    <div className="car-list-wrap">
-    <h3 className='car-list-title'>총 <span>{`${cars != [] ? carsCount : 0}`}</span> 건의 검색 결과가 있습니다.</h3>
-      {cars.map((car, index) => (
+      <div className="car-list-wrap">
+        <h3 className='car-list-title'>총 <span>{`${cars != [] ? carsCount : 0}`}</span> 건의 검색 결과가 있습니다.</h3>
+        {cars.map((car, index) => (
           <div className="car-list-card-wrap" key={index} onClick={() => handleCarClick(car)}>
             <div className='car-list-card-top-area'>
-            <div className="car-list-card-info">
-              <img
-                className="car-list-card-info-logo"
-                src={`${process.env.REACT_APP_IMAGE_URL}/${car.brand_image_name}`}
-                alt="로고"
-              />
-              <h3 className="car-list-card-info-car-name">{car.car_type_name}</h3>
-            </div>
-            <div className="car-list-card-car-image-wrap">
-              <img
-                className="car-list-card-car-image"
-                src={`${process.env.REACT_APP_IMAGE_URL}/${car.car_image_name}`}
-                alt="Car"
-                id="car-image"
-              />
-            </div>
+              <div className="car-list-card-info">
+                <img
+                  className="car-list-card-info-logo"
+                  src={`${process.env.REACT_APP_IMAGE_URL}/${car.brand_image_name}`}
+                  alt="로고"
+                />
+                <h3 className="car-list-card-info-car-name">{car.car_type_name}</h3>
+              </div>
+              <div className="car-list-card-car-image-wrap">
+                <img
+                  className="car-list-card-car-image"
+                  src={`${process.env.REACT_APP_IMAGE_URL}/${car.car_image_name}`}
+                  alt="Car"
+                  id="car-image"
+                />
+              </div>
             </div>
             <div className='car-list-card-bottom-area'>
               <p>{car.fuel_type} | {car.seating_capacity} | {car.model_year}</p>
             </div>
           </div>
         ))}
-    </div>
+      </div>
     </>
   );
 };

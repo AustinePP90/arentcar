@@ -79,7 +79,12 @@ const RentalCarsPage = () => {
     };
 
     fetchFilters();
-                // 날짜를 밀리초 단위로 변환하는 함수
+
+        
+  }, []);
+
+  useEffect(()=>{
+                    // 날짜를 밀리초 단위로 변환하는 함수
 function dateToMilliseconds(dateString) {
   const year = Number(dateString.substring(0, 4));
   const month = Number(dateString.substring(4, 6)) - 1; // 월은 0부터 시작
@@ -98,11 +103,10 @@ function calculateRentalPeriod(rentalDate, returnDate) {
 
   return rentalDays;
 }
-        if(rentalPeriod.length>0){
-
-          setRentalperiod(calculateRentalPeriod(rentalPeriod[0].getFullYear().toString() + (rentalPeriod[0].getMonth() + 1).toString() + rentalPeriod[0].getDate().toString(),rentalPeriod[1].getFullYear().toString() + (rentalPeriod[1].getMonth() + 1).toString() + rentalPeriod[1].getDate().toString()));
-        }
-  }, []);
+    if(rentalPeriod.length>0){
+      setRentalperiod(calculateRentalPeriod(rentalPeriod[0].getFullYear().toString() + (rentalPeriod[0].getMonth() + 1).toString() + rentalPeriod[0].getDate().toString(),rentalPeriod[1].getFullYear().toString() + (rentalPeriod[1].getMonth() + 1).toString() + rentalPeriod[1].getDate().toString()));
+    }
+  },[rentalPeriod])
 
   const handleFilterChange = (id, value) => {
     setSelectedFilters((prev) => ({
@@ -182,7 +186,6 @@ function calculateRentalPeriod(rentalDate, returnDate) {
     setRentalPeriod([rentalDate, returnDate]);
     setRentalTime([rentalTime, returnTime])
   }
-
 
   return (
     <div className="rental-cars-page-wrap">

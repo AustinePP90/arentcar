@@ -1,5 +1,5 @@
 import axios from 'axios';
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import 'user/content/PaymentPage.css';
 import * as PortOne from "@portone/browser-sdk/v2";
@@ -11,10 +11,11 @@ const PaymentPage = () => {
   const location = useLocation();
   const reservationInfo = location.state;
   const isUserName = useSelector((state) => state.userState.userName);
+  const userCode = useSelector((state) => state.userState.userCode);
   const currentDate = new Date();
 
   const params = {
-    userCode: reservationInfo.user_code,
+    userCode: userCode,
     carCode: reservationInfo.car_code,
     rentalLocation: reservationInfo.branch_name,
     rentalDate: reservationInfo.rental_date,
