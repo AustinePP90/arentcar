@@ -11,11 +11,11 @@ const PaymentPage = () => {
   const location = useLocation();
   const reservationInfo = location.state;
   const isUserName = useSelector((state) => state.userState.userName);
-  const userCame = useSelector((state) => state.userState.userCode);
+  const userCode = useSelector((state) => state.userState.userCode);
   const currentDate = new Date();
 
   const params = {
-    userCode: userCame,
+    userCode: userCode,
     carCode: reservationInfo.car_code,
     rentalLocation: reservationInfo.branch_name,
     rentalDate: reservationInfo.rental_date,
@@ -134,10 +134,6 @@ const PaymentPage = () => {
     return fee.toString().slice(0, -3) + ',' + fee.toString().slice(-3);
 }
 
-useEffect(()=>{
-  console.log(params);
-},[params])
-
   return (
     <div className='payment-page-wrap'>
       <div className='payment-page-title-wrap'>
@@ -193,7 +189,7 @@ useEffect(()=>{
               <span>결제 금액</span>
               <span>{addCommaToCurrency(reservationInfo.payment_amount)}원</span>
             </div>
-        <button className='payment-page-side-payment-button' onClick={() => InsertUserReservation()}>결제하기</button>
+        <button className='payment-page-side-payment-button' onClick={() => requestPayment()}>결제하기</button>
       </div>
       </div>
 
