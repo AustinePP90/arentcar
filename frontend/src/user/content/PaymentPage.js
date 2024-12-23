@@ -46,7 +46,7 @@ const PaymentPage = () => {
       orderName: reservationInfo.car_type_name, // 결제 상품명
       totalAmount: 100, // 결제 금액
       currency: "KRW", // 올바른 통화 코드
-      channelKey: "channel-key-7c932c01-1547-4919-b86d-e0542a9b0b8b", // 채널 키
+      channelKey: "channel-key-c803934b-a017-4690-bc1c-1ad47f19d805", // 채널 키
       payMethod: "CARD", // 결제 방식
     });
   
