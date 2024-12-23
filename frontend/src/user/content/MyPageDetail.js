@@ -88,8 +88,6 @@ const MyPageDetail = ({ onClick }) => {
             setLicenseExpiryDate(userData.license_expiry_date);
             setUserCategory(userData.user_category);
             setUsageStatus(userData.usage_status);
-
-						console.log("User data loaded:", userData);
         } else {
             console.error("API Error:", response.status, response.data);
         }
@@ -149,7 +147,7 @@ const MyPageDetail = ({ onClick }) => {
 			}
 
 			await updateUserData(token, updateUser); // 데이터 업데이트
-			console.log("User updated successfully:", updateUser);
+			// console.log("User updated successfully:", updateUser);
 
 			setIsPopUp(false); // 팝업 닫기
 			await getUser(token); // 최신 데이터 로드
