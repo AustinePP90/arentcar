@@ -398,7 +398,7 @@ const MyPageDetail = ({ onClick }) => {
 				</div>
 				<div className="mypage-detail-update-signout">
 					<div className='mypage-detail-update-signout-label'>
-						<p>회원탈퇴 확인hkhkhkhk</p>
+						<p>회원탈퇴 확인</p>
 					</div>
 					<div className='mypage-detail-update-signout-box'>
 						<div className="mypage-detail-update-signout-act">
