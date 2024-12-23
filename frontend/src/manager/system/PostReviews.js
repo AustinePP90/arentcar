@@ -5,6 +5,8 @@ import 'manager/system/PostReviews.css';
 // import ReviewPopup from 'manager/system/ReviewPopup';
 import { AvgCharts, RvCharts } from 'manager/system/PostCharts';
 import Loading from 'common/Loading';
+import { useNavigate } from 'react-router-dom';
+import { useSelector } from 'react-redux';
 
 
 const PostReviews = ({ onClick }) => {
@@ -44,7 +46,8 @@ const PostReviews = ({ onClick }) => {
   const [statistics, setStatistics] = useState();
   const [stats, setStats] = useState(0);
 
-
+  const isLoginState = useSelector((state) => state.adminState.loginState);
+  const navigate = useNavigate();
 
   const pageReviews = async () => {
     try {
@@ -189,9 +192,18 @@ const PostReviews = ({ onClick }) => {
   }
 
   useEffect(()=>{
+    handleLogin();
     getTotalCount();
     pageReviews();
   }, [pageNumber])
+
+  const handleLogin = () => {
+    if (!isLoginState) {
+      alert("로그인이 필요합니다.");
+      navigate("/admin");
+      return;
+    }
+  }
 
   //검색
   const handleSearchClick = async () => {
@@ -359,7 +371,7 @@ const PostReviews = ({ onClick }) => {
                   <div className='manager-post-review-popup-line-statistics'>
                     {/* <차트> $ npm install recharts */}
                     <AvgCharts stats={stats}/>
-                    <div className='manager-post-review-popup-bold'>평균</div>
+                    <div className='manager-post-review-popup-bold'>평균점수</div>
                   </div>
                 </div>
               </div>

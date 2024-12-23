@@ -260,7 +260,7 @@ const Customers = () => {
                 {/* color: (pageNumber + 1) >= totalPages ? '#aaa' : '#fff', backgroundColor:  (pageNumber + 1) >= totalPages ? '#c25d16' : '#ff7916'  {e < totalPages && ( <> / </> )}  */}
 
                 <div className="create">
-                  <Link className="createBut" to="/customers/IQ">후기작성</Link>
+                  <Link className="createBut" to="/customers/IQ">문의작성</Link>
                 </div>
               </div>
             </div>

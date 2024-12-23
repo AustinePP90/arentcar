@@ -7,11 +7,11 @@
 }
 
 .manager-branch-button-detail {
-  color: #77777a;
+  color: rgb(38, 49, 155);
 }
 
 .manager-branch-button-delete {
-      color: #ee0a0a;
+      color: green;
 }
 
 .manager-branch-popup-section {

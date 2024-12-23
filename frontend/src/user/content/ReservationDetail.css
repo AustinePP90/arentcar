@@ -42,6 +42,7 @@
     font-size: 18px;
     font-weight: bold;
     color: rgb(87, 141, 211);
+    cursor: pointer;
 }
 .reservation-detail-side-car-image{
     position: absolute;
@@ -180,7 +181,7 @@
     height: 60px;
     border-radius: 30px;
     margin: 0 auto;
-    background-color: #D60228;
+    background-color: #ff7916;
     font-size: 18px;
     font-weight: bold;
     color: white;

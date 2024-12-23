@@ -10,7 +10,6 @@ const PaymentCompletedPage = () => {
     const reservationInfo = location.state;
     const [reservationNumber,setReservationNumber] =useState(0);
     const userName = useSelector((state) => state.userState.userName);
-    const userLicense = useSelector((state) => state.userState.userLicense);
 
     const addCommaToCurrency = (fee) => {
       if (fee.toString().length > 6) {
@@ -28,13 +27,6 @@ const PaymentCompletedPage = () => {
   }
 
     useEffect(() => {
-        console.log(reservationInfo);
-    }, [reservationInfo])
-
-    useEffect(() => {
-        console.log(reservationNumber);
-    }, [reservationNumber])
-    useEffect(() => {
         const getReservationNumber = async () => {
             try {
               const response = await axios.get(
@@ -42,7 +34,6 @@ const PaymentCompletedPage = () => {
               );
               if (response.data) {
                 setReservationNumber(response.data);
-                console.log('예약번호'+response.data);
               }
             } catch (error) {
               if (axios.isCancel(error)) {

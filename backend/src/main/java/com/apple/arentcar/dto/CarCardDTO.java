@@ -32,6 +32,14 @@ public class CarCardDTO {
 
     private String branchLongitude;
 
+    private String branchDetailedAddress;
+
+    private String branchPhoneNumber;
+
+    private String availablePickupTime;
+
+    private String availableReturnTime;
+
     private Integer rentalRate;
 
     private Integer rentalDiscountRate;

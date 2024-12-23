@@ -4,11 +4,19 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="com.apple.arentcar.mapper.BranchsMapper">
+
+    <!--  유저 입장에서 모든 지점 조회-->
+    <select id="findAllBranches" resultType="com.apple.arentcar.model.Branchs">
+        SELECT * FROM branchs
+    </select>
+
+    <!-- 지점명 검색 -->
     <select id="findBranchsByBranchName" resultType="com.apple.arentcar.model.Branchs">
         SELECT * FROM branchs
         WHERE branch_name LIKE CONCAT('%', #{branchname}, '%')
     </select>
 
+    <!-- 차트에 넣을 지점명, 예약건수 조회 -->
     <select id="getBranchChartData" resultType="com.apple.arentcar.dto.ChartDataDTO">
         SELECT b.branch_name AS branchName , COUNT(r.reservation_code) as reservationCode
         FROM reservations r
@@ -16,7 +24,6 @@
         WHERE r.rental_date BETWEEN #{startDate} AND #{endDate}
         GROUP BY b.branch_name
         order by reservationCode DESC
-        LIMIT 5;
     </select>
 
     <!-- 전체 지점 수 조회 -->
@@ -47,6 +54,28 @@
         WHERE b.branch_name LIKE CONCAT('%', #{branchName}, '%')
         ORDER BY b.branch_code
         LIMIT #{pageSize} OFFSET #{offset}
+    </select>
+
+    <!-- 지점 상세 -->
+    <select id="getBranchsDetailById" parameterType="Integer" resultType="com.apple.arentcar.dto.BranchsSearchDTO">
+        SELECT
+            b.branch_code,
+            b.branch_name,
+            b.branch_longitude,
+            b.branch_latitude,
+            b.region_code,
+            b.post_code,
+            b.branch_basic_address,
+            b.branch_detailed_address,
+            b.branch_phone_number,
+            b.available_pickup_time,
+            b.available_return_time,
+            b.created_at,
+            b.updated_at,
+            r.region_name
+        FROM branchs b
+                 LEFT JOIN regions r ON b.region_code = r.region_code
+        WHERE b.branch_code = #{branchCode}
     </select>
 
     <!-- 지점 추가 -->
@@ -100,25 +129,4 @@
         DELETE FROM branchs
         WHERE branch_code = #{branchCode}
     </delete>
-
-    <select id="getBranchsDetailById" parameterType="Integer" resultType="com.apple.arentcar.dto.BranchsSearchDTO">
-        SELECT
-            b.branch_code,
-            b.branch_name,
-            b.branch_longitude,
-            b.branch_latitude,
-            b.region_code,
-            b.post_code,
-            b.branch_basic_address,
-            b.branch_detailed_address,
-            b.branch_phone_number,
-            b.available_pickup_time,
-            b.available_return_time,
-            b.created_at,
-            b.updated_at,
-            r.region_name -- regions 테이블에서 region_name도 조회
-        FROM branchs b
-        LEFT JOIN regions r ON b.region_code = r.region_code
-        WHERE b.branch_code = #{branchCode}
-    </select>
 </mapper>

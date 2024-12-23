@@ -24,6 +24,8 @@ public interface PostsMapper {
     Reviews getReview(Integer postCode);
     void createReviewPosts(Reviews reviews);
     void createReview(Reviews reviews);
+    void updateReviewContent(Reviews reviews);
+    void updateReviewScore(Reviews reviews);
     void deleteReview(Integer postCode);
     void deletePostsRV(Integer postCode);
     List<ChartsAvg> dayChartsAvg();

@@ -3,7 +3,7 @@ import "./Reviews.css"
 import { useEffect, useRef, useState } from "react";
 import axios from "axios";
 import { store } from '../../redux/store';
-
+import Loading from 'common/Loading';
 
 const Reviews = () => {
   const [reviews, setReviews] = useState();
@@ -13,7 +13,10 @@ const Reviews = () => {
   const [postContent,setPostContent] = useState("");
   const [authorCode,setAuthorCode] = useState();
   const [authorName,setAuthorName] = useState();
+  const [crystalCode, setCrystalCode] = useState();
+  const [updateState, setUpdateState] = useState(false);
   const navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
 
 
   const detailReviews = async () => {
@@ -22,10 +25,11 @@ const Reviews = () => {
       
       if (response.data) {
         setReviews(response.data);
+        setCrystalCode(response.data.author_code)
       }
     } catch (error) {
       console.error('There was an error fetching the movies!', error);
-    }
+    } 
   }
 
   const createReview = async (newPost) => {
@@ -33,6 +37,26 @@ const Reviews = () => {
       const response = await axios.post(`${process.env.REACT_APP_API_URL}/arentcar/user/customers/reviews`,
         newPost
       );
+
+    } catch (error) {
+      console.error('There was an error fetching the movies!', error);
+    }
+  }
+
+  const updateReview = async (newPost) => {
+    try {
+      const response = await axios.put(`${process.env.REACT_APP_API_URL}/arentcar/user/customers/reviews`,
+        newPost
+      );
+
+    } catch (error) {
+      console.error('There was an error fetching the movies!', error);
+    }
+  }
+
+  const deleteReview = async () => {
+    try {
+      const response = await axios.delete(`${process.env.REACT_APP_API_URL}/arentcar/user/customers/reviews/${params}`);
 
     } catch (error) {
       console.error('There was an error fetching the movies!', error);
@@ -110,7 +134,55 @@ const Reviews = () => {
     createReview(newPost);
     alert("후기를 남겨주셔서 감사합니다.");
 
-    navigate("/")
+    navigate('/customers', {state : { postState: 1 }})
+  }
+  
+  const handleUpdate = () => {
+    if(updateState === false) {
+      setScore(reviews.review_rating);
+      setPostContent(reviews.post_content);
+      setUpdateState(!updateState);
+    } else {
+      // if(reviews.review_rating === score || reviews.post_content === postContent) {}
+
+      if( postContent === "" ) {
+        if (window.confirm('후기를 정말로 삭제하시겠습니까?')) {
+          setLoading(true);
+          deleteReview().then(()=>{
+            alert("삭제되었습니다.");
+            setLoading(false);
+            navigate('/customers', {state : { postState: 1 }})
+          },()=>{
+            alert("삭제의 실패하였습니다.");
+            setLoading(false);
+          })
+        }
+      } else {
+        const newPost = {
+          post_code: params,
+          post_type: null,
+          post_title: authorName+"님 후기",
+          post_content: postContent,
+          author_code: authorCode,
+          author_type: null,
+          author: null,
+          created_at: null,
+          updated_at: null,
+          review_rating: score,
+        }
+
+        setLoading(true);
+        updateReview(newPost).then(()=>{
+          detailReviews();
+          alert("수정되었습니다.");
+          setUpdateState(!updateState);
+          setLoading(false);
+        }, ()=>{
+          setLoading(false);
+        });
+
+      }
+    }
   }
   
   return(
@@ -127,7 +199,15 @@ const Reviews = () => {
               <div className="user-customers-detail-reviews-title">
                 <h4>
                   {reviews && (<>
-                    {reviews.post_title} <span style={{color:"#ee0a0a"}}> {scoreSeting(reviews.review_rating)} </span>
+                    {reviews.post_title} 
+                    <span style={{color:"#ee0a0a"}}> 
+                      {updateState ? <>
+                        ( {StarSeting()} )
+                      </> : <>
+                        {scoreSeting(reviews.review_rating)} 
+                      </>}
+
+                    </span>
                   </>)}
                 </h4>
                 
@@ -147,9 +227,16 @@ const Reviews = () => {
             </div>
             <hr/>
             <div className="user-customers-detail-reviews-content">
-              {reviews && (<>
-                {reviews.post_content}
-              </>)}
+              {updateState ? <>
+                <textarea className="width400 user-customers-create-review-popup-content"
+                rows={11} ref={textarea} value={postContent} onChange={(e)=>{handleResizeHeight(e)}}/>
+              </> : <>
+                {reviews && (<>
+                  {reviews.post_content}
+                </>)}
+              </> }
+
+
             </div>
           </div>
         ) : (
@@ -177,10 +264,15 @@ const Reviews = () => {
         )}
         <div className="user-customers-list">
             {/* + state={{ postState: dtataInfo }} */}
-            <Link to={"/customers"} state={{ postState: 1 }} className="user-customers-list-button">리스트</Link> 
+            <Link to={"/customers"} state={{ postState: 1 }} className="user-customers-list-button">목록보기</Link> 
             {!params && (<button className="user-customers-create-review-popup-button" onClick={()=>handleCreate()}>작성</button> )} 
+            {authorCode === crystalCode && 
+            (<button className="user-customers-create-review-popup-button" onClick={()=>handleUpdate()}>수정</button>)}
         </div>
       </div>
+      {loading && (
+        <Loading />
+      )}
     </div>
   )
 }
