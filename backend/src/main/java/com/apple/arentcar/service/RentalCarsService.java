@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.List;
 
 @Service
@@ -28,7 +29,10 @@ public class RentalCarsService {
     public RentalCars createRentalCars(RentalCars rentalCars) {
         // 중복 차량 번호 검사
         if (rentalCarsMapper.existsByCarNumber(rentalCars.getCarNumber())) {
-            throw new DuplicateCarNumberException("이미 등록된 차량 번호입니다.");
+            throw new DuplicateCarNumberException(
+                    String.format("해당 차량 번호 '%s'는 이미 등록되어 있습니다.", rentalCars.getCarNumber()),
+                    List.of("중복된 차량 번호를 등록하려고 시도했습니다.")
+            );
         }
 
         rentalCarsMapper.createRentalCars(rentalCars);

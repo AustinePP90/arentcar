@@ -734,8 +734,8 @@ const RentalCarInfo = ({ onClick }) => {
       alert("차량이 등록되었습니다.");
     } catch (error) {
       console.error(error); // 디버그용 로그
-      if (error.response && error.response.status === 400) {
-        alert(error.response.data); // "이미 등록된 차량 번호입니다." 메시지 출력
+      if (error.response && error.response.status === 409) {
+        alert(error.response.data.message); // "이미 등록된 차량 번호입니다." 메시지 출력
       } else {
         alert("차량 등록 중 오류가 발생했습니다." + error);
       }

@@ -1,6 +1,8 @@
 package com.apple.arentcar.exception;
 
 import org.apache.ibatis.exceptions.PersistenceException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -19,6 +21,8 @@ import java.util.Map;
 
 @ControllerAdvice
 public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
+
+    private static final Logger log = LoggerFactory.getLogger(GlobalExceptionHandler.class);
 
     // 404 에러 처리 (자원 찾기 실패)
     @ExceptionHandler(com.apple.arentcar.exception.ResourceNotFoundException.class)
@@ -76,8 +80,10 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
     // 중복 차량 번호 등록 예외 처리
     @ExceptionHandler(DuplicateCarNumberException.class)
-    public ResponseEntity<String> handleDuplicateCarNumberException(DuplicateCarNumberException ex) {
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
+    public ResponseEntity<ErrorResponse> handleDuplicateCarNumberException(DuplicateCarNumberException ex) {
+        ErrorResponse errorResponse = new ErrorResponse(ex.getMessage(), ErrorCode.DUPLICATE_CAR_NUMBER, ex.getDetails());
+        log.warn("중복 차량 번호 등록 시도 : {}", ex.getMessage());
+        return new ResponseEntity<>(errorResponse, HttpStatus.CONFLICT);
     }
 
     // 그 외 모든 예외 처리
