@@ -1,15 +1,13 @@
 package com.apple.arentcar.exception;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NonNull;
-import lombok.Setter;
+import lombok.*;
 
 import java.util.List;
 
 @Getter
 @Setter
 @AllArgsConstructor
+@RequiredArgsConstructor
 public class ErrorResponse {
     @NonNull
     private String message;

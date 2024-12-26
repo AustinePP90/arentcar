@@ -5,6 +5,9 @@ import com.apple.arentcar.dto.RentalCarsDTO;
 import com.apple.arentcar.dto.RentalCarsCarOptionAttrDTO;
 import com.apple.arentcar.model.RentalCars;
 import com.apple.arentcar.service.RentalCarsService;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.Min;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -15,6 +18,7 @@ import org.springframework.web.bind.annotation.*;
 import java.io.IOException;
 import java.util.List;
 
+@Slf4j
 @RestController
 @RequestMapping("/arentcar")
 public class RentalCarsController {
@@ -24,24 +28,29 @@ public class RentalCarsController {
 
     // 차량 등록
     @PostMapping("/manager/rentalcars")
-    public ResponseEntity<RentalCars> createRentalCars(@RequestBody RentalCars rentalCars) {
+    public ResponseEntity<RentalCars> createRentalCars(@RequestBody @Valid RentalCars rentalCars) {
         RentalCars savedRentalCars = rentalCarsService.createRentalCars(rentalCars);
+        log.info("차량 등록 성공 : 차량 코드={}, 차량 번호={}", rentalCars.getCarCode(), rentalCars.getCarNumber());
         return ResponseEntity.status(HttpStatus.CREATED).body(savedRentalCars);
     }
 
     // 차량 삭제
     @DeleteMapping("/manager/rentalcars/{carCode}")
-    public ResponseEntity<Void> deleteRentalCars(@PathVariable Integer carCode) {
+    public ResponseEntity<Void> deleteRentalCars(@PathVariable @Min(1) Integer carCode) {
+        log.info("차량 삭제 요청 : 차량 코드={}", carCode);
         rentalCarsService.deleteRentalCarsById(carCode);
+        log.info("차량 삭제 성공 : 차량 코드={}", carCode);
         return ResponseEntity.noContent().build();
     }
 
     // 차량 수정
     @PutMapping("/manager/rentalcars/{carCode}")
-    public ResponseEntity<Void> updateRentalCarsById(@PathVariable Integer carCode,
-                                                     @RequestBody RentalCars rentalCars) {
+    public ResponseEntity<Void> updateRentalCarsById(@PathVariable @Min(1) Integer carCode,
+                                                     @RequestBody @Valid RentalCars rentalCars) {
+        log.info("차량 수정 요청 : 차량 코드={}, 차량 번호={}", carCode, rentalCars.getCarNumber());
         rentalCars.setCarCode(carCode);
         rentalCarsService.updateRentalCarsById(rentalCars);
+        log.info("차량 수정 성공 : 차량 코드={}", carCode);
         return ResponseEntity.noContent().build();
     }
 
@@ -108,9 +117,9 @@ public class RentalCarsController {
 
     // 차량 데이터를 엑셀 파일로 생성하기
     @GetMapping("manager/rentalcars/download")
-    public ResponseEntity<byte[]> downloadExcel() throws IOException {
+    public ResponseEntity<byte[]> downloadExcel() {
         byte[] excelContent = rentalCarsService.generateExcelFile();
-
+        log.info("엑셀 파일 다운로드 성공 : rentalcars.xlsx"); // 성공 로그 추가
         return ResponseEntity.ok()
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=rentalcars.xlsx")
                 .contentType(MediaType.APPLICATION_OCTET_STREAM)

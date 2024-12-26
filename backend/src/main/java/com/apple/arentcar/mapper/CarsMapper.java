@@ -20,6 +20,9 @@ public interface CarsMapper {
                                            @Param("offset") int offset);
     // 조건에 따라 차종 수 조회
     int countCarsWithConditions(@Param("carTypeName") String carTypeName);
+    // PK로 차종 존재 여부 검사
+    @Select("SELECT EXISTS (SELECT 1 FROM car_types WHERE car_type_code = #{carTypeCode})")
+    boolean existsByCarTypeCode(@Param("carTypeCode") Integer carTypeCode);
     // 차종 추가
     void createCars(CarTypes carTypes);
     // 차종 삭제

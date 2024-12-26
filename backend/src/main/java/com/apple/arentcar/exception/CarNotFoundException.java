@@ -7,18 +7,20 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import java.util.List;
 
 @Getter
-@ResponseStatus(HttpStatus.CONFLICT)
-public class DuplicateCarNumberException extends RuntimeException {
+@ResponseStatus(HttpStatus.NOT_FOUND)
+public class CarNotFoundException extends RuntimeException {
     private List<String> details;
 
-    public DuplicateCarNumberException(String message) { super(message); }
+    public CarNotFoundException(String message) {
+        super(message);
+    }
 
-    public DuplicateCarNumberException(String message, List<String> details) {
+    public CarNotFoundException(String message, List<String> details) {
         super(message);
         this.details = details;
     }
 
-    public DuplicateCarNumberException(String message, Throwable cause) {
+    public CarNotFoundException(String message, Throwable cause) {
         super(message, cause);
     }
 }

@@ -3,22 +3,25 @@ package com.apple.arentcar.service;
 import com.apple.arentcar.dto.RentalCarsBranchOptionAttrDTO;
 import com.apple.arentcar.dto.RentalCarsDTO;
 import com.apple.arentcar.dto.RentalCarsCarOptionAttrDTO;
+import com.apple.arentcar.exception.CarNotFoundException;
 import com.apple.arentcar.exception.DuplicateCarNumberException;
+import com.apple.arentcar.exception.ExcelFileGenerationException;
 import com.apple.arentcar.mapper.RentalCarsMapper;
 import com.apple.arentcar.model.RentalCars;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
-import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.List;
 
+@Slf4j
 @Service
 public class RentalCarsService {
 
@@ -34,16 +37,37 @@ public class RentalCarsService {
                     List.of("중복된 차량 번호를 등록하려고 시도했습니다.")
             );
         }
-
         rentalCarsMapper.createRentalCars(rentalCars);
         return rentalCars;
     }
 
     // 차량 삭제
-    public void deleteRentalCarsById(Integer carCode) { rentalCarsMapper.deleteRentalCarsById(carCode); }
+    public void deleteRentalCarsById(Integer carCode) {
+        // 차량 존재 여부 확인
+        if (!rentalCarsMapper.existsByCarCode(carCode)) {
+            throw new CarNotFoundException(
+                    String.format("차량 코드 '%d'에 해당하는 차량을 찾을 수 없습니다.", carCode),
+                    List.of("차량 코드를 찾을 수 없어 차량 삭제에 실패했습니다.")
+            );
+        }
+        rentalCarsMapper.deleteRentalCarsById(carCode);
+    }
 
     // 차량 수정
-    public void updateRentalCarsById(RentalCars rentalCars) { rentalCarsMapper.updateRentalCarsById(rentalCars); }
+    public void updateRentalCarsById(RentalCars rentalCars) {
+        // 차량 존재 여부 확인
+        if (!rentalCarsMapper.existsByCarCode(rentalCars.getCarCode())) {
+            throw new CarNotFoundException(
+                    String.format("차량 코드 '%d'에 해당하는 차량을 찾을 수 없습니다.", rentalCars.getCarCode()),
+                    List.of("차량 코드를 찾을 수 없어 차량 수정에 실패했습니다.")
+            );
+        }
+        try {
+            rentalCarsMapper.updateRentalCarsById(rentalCars);
+        } catch (DataIntegrityViolationException e) {
+            throw new RuntimeException("데이터 무결성 제약 조건 위반으로 차량 정보를 수정할 수 없습니다.", e);
+        }
+    }
     
     // 차량 조회 및 페이지네이션(검색 기능 포함)
     public List<RentalCarsDTO> getRentalCarsWithPaging(String carNumber, String carStatus, String carTypeName, String branchName,
@@ -80,7 +104,7 @@ public class RentalCarsService {
     }
 
     // 차량 데이터를 엑셀 파일로 생성하기
-    public byte[] generateExcelFile() throws IOException {
+    public byte[] generateExcelFile() {
         List<RentalCarsDTO> rentalCarsDTO = rentalCarsMapper.getRentalCarsForExcel();
 
         // Workbook은 엑셀 파일을 생성하는 데 사용되며, ByteArrayOutputStream은 엑셀 파일을 바이트 배열로 변환하는 데 사용됨
@@ -128,11 +152,21 @@ public class RentalCarsService {
 
             workbook.write(out);
             return out.toByteArray(); // 엑셀 파일을 바이트 배열로 반환
+        } catch (IOException e) {
+            log.error("엑셀 파일 생성 중 IOException 발생 : {}", e.getMessage(), e); // 로그 기록
+            throw new ExcelFileGenerationException("엑셀 파일 생성 중 오류가 발생했습니다.", e);
         }
     }
 
     // 정비중인 차량 정비완료(렌탈가능)로 수정
     public void updateRentalCarsStatusToAvailableById(Integer carCode) {
+        // 차량 존재 여부 확인
+        if (!rentalCarsMapper.existsByCarCode(carCode)) {
+            throw new CarNotFoundException(
+                    String.format("차량 코드 '%d'에 해당하는 차량을 찾을 수 없습니다.", carCode),
+                    List.of("차량 코드를 찾을 수 없어 차량상태 변경에 실패했습니다.")
+            );
+        }
         rentalCarsMapper.updateRentalCarsStatusToAvailableById(carCode);
     }
 

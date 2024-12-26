@@ -14,9 +14,12 @@ public interface RentalCarsMapper {
 
     // 차량 등록
     void createRentalCars(RentalCars rentalCars);
-    // 충복 차량 번호 검사
+    // 중복 차량 번호 검사
     @Select("SELECT EXISTS (SELECT 1 FROM rental_cars WHERE car_number = #{carNumber})")
     boolean existsByCarNumber(@Param("carNumber") String carNumber);
+    // PK로 차량 존재 여부 검사
+    @Select("SELECT EXISTS (SELECT 1 FROM rental_cars WHERE car_code = #{carCode})")
+    boolean existsByCarCode(@Param("carCode") Integer carCode);
     // 차량 삭제
     @Delete("DELETE FROM rental_cars where car_code = #{carCode}")
     void deleteRentalCarsById(@Param("carCode") Integer carCode);

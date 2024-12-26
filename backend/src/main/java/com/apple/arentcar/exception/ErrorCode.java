@@ -27,10 +27,11 @@ public enum ErrorCode {
     MYBATIS_MAPPING_ERROR(500, "D004", "MyBatis Mapping Error"),
     NO_DATA_FOUND (404, "D005", "Requested Data Not Found"),
 
-    // File Upload Errors (400)
+    // File Errors (400)
     FILE_SIZE_EXCEED(400, "F001", "File Size Exceeds Maximum Limit"),
     INVALID_FILE_TYPE(400, "F002", "Invalid File Type"),
     FILE_UPLOAD_ERROR(500, "F003", "File Upload Failed"),
+    EXCEL_GENERATION_FAILED(500, "F004", "Excel Generation Failed"),
 
     // Validation Errors (400)
     VALIDATION_ERROR(400, "V001", "Validation Error"),
