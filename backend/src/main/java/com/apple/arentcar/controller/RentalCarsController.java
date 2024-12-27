@@ -15,7 +15,6 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.io.IOException;
 import java.util.List;
 
 @Slf4j
@@ -104,13 +103,13 @@ public class RentalCarsController {
     }
 
     // <select>의 <option>값으로 차량코드/명 동적으로 불러오기
-    @GetMapping("manager/rentalcars/car/option")
+    @GetMapping("manager/rentalcars/options/cars")
     public List<RentalCarsCarOptionAttrDTO> getRentalCarsCodeName() {
         return rentalCarsService.getRentalCarsCodeName();
     }
 
     // <select>의 <option>값으로 지점코드/지점명 동적으로 불러오기
-    @GetMapping("manager/rentalcars/branch/option")
+    @GetMapping("manager/rentalcars/options/branches")
     public List<RentalCarsBranchOptionAttrDTO> getRentalCarsBranchCodeName() {
         return rentalCarsService.getRentalCarsBranchCodeName();
     }

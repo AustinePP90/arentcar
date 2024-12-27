@@ -182,7 +182,7 @@ const RentalCarInfo = ({ onClick }) => {
   }, []);
 
   const getCarMenuOptions = async (token) => {
-    const response = await axios.get(`${process.env.REACT_APP_API_URL}/arentcar/manager/rentalcars/car/option`, {
+    const response = await axios.get(`${process.env.REACT_APP_API_URL}/arentcar/manager/rentalcars/options/cars`, {
       headers: { Authorization: `Bearer ${token}` },
       withCredentials: true, 
     });
@@ -190,7 +190,7 @@ const RentalCarInfo = ({ onClick }) => {
   };
 
   const getBranchMenuOptions = async (token) => {
-    const response = await axios.get(`${process.env.REACT_APP_API_URL}/arentcar/manager/rentalcars/branch/option`, {
+    const response = await axios.get(`${process.env.REACT_APP_API_URL}/arentcar/manager/rentalcars/options/branches`, {
       headers: { Authorization: `Bearer ${token}` },
       withCredentials: true, 
     });
