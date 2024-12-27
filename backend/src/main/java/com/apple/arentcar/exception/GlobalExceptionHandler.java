@@ -1,10 +1,8 @@
 package com.apple.arentcar.exception;
 
+import lombok.extern.slf4j.Slf4j;
 import org.apache.ibatis.exceptions.PersistenceException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.dao.DuplicateKeyException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
@@ -17,15 +15,12 @@ import org.springframework.web.method.annotation.MethodArgumentTypeMismatchExcep
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
 import java.sql.SQLException;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
+@Slf4j
 @ControllerAdvice
 public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
-
-    private static final Logger log = LoggerFactory.getLogger(GlobalExceptionHandler.class);
 
     // 404 에러 처리 (자원 찾기 실패)
     @ExceptionHandler(com.apple.arentcar.exception.ResourceNotFoundException.class)
@@ -33,17 +28,18 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
     }
 
-//    // 유효성 검사 실패 예외 처리
-//    @ExceptionHandler(MethodArgumentNotValidException.class)
-//    public ResponseEntity<ErrorResponse> handleValidationExceptions(MethodArgumentNotValidException ex) {
-//        List<String> errors = ex.getBindingResult()
-//                .getFieldErrors()
-//                .stream()
-//                .map(fieldError -> fieldError.getField() + " : " + fieldError.getDefaultMessage())
-//                .collect(Collectors.toList());
-//        ErrorResponse errorResponse = new ErrorResponse("유효성 검사 실패", ErrorCode.INVALID_INPUT_VALUE, errors);
-//        return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
-//    }
+    // 유효성 검사 실패 예외 처리 (ResponseEntityExceptionHandler의 메소드 오버라이드)
+    @Override
+    protected ResponseEntity<Object> handleMethodArgumentNotValid(
+            MethodArgumentNotValidException ex, HttpHeaders headers, HttpStatusCode status, WebRequest request) {
+        List<String> errors = ex.getBindingResult()
+                .getFieldErrors()
+                .stream()
+                .map(fieldError -> fieldError.getField() + " : " + fieldError.getDefaultMessage())
+                .collect(Collectors.toList());
+        ErrorResponse errorResponse = new ErrorResponse("유효성 검사 실패", ErrorCode.INVALID_INPUT_VALUE, errors);
+        return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
+    }
 
     // 데이터 무결성 위반 예외 처리 (예: 중복된 키, 외래 키 제약 위반 등)
     @ExceptionHandler(DataIntegrityViolationException.class)
